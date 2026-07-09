@@ -1,0 +1,235 @@
+/* ==========================================================
+   SISTEMA LEOS
+   Loading Component
+   ========================================================== */
+
+
+/* ==========================================================
+   CONTENEDOR BASE
+   ========================================================== */
+
+.loading{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:var(--space-4);
+
+    width:100%;
+
+    padding:var(--space-7);
+
+}
+
+
+
+/* ==========================================================
+   SPINNER
+   ========================================================== */
+
+.loading-spinner{
+
+    width:48px;
+
+    height:48px;
+
+    border-radius:50%;
+
+    border:4px solid rgba(0,0,0,.08);
+
+    border-top-color:var(--color-primary);
+
+    animation:loading-spin .8s linear infinite;
+
+}
+
+
+
+/* ==========================================================
+   TEXTO
+   ========================================================== */
+
+.loading-text{
+
+    color:var(--text-secondary);
+
+    font-size:var(--font-size-md);
+
+    font-weight:var(--font-weight-medium);
+
+    text-align:center;
+
+}
+
+
+
+/* ==========================================================
+   TAMAÑOS
+   ========================================================== */
+
+.loading-sm .loading-spinner{
+
+    width:24px;
+
+    height:24px;
+
+    border-width:3px;
+
+}
+
+.loading-sm .loading-text{
+
+    font-size:var(--font-size-sm);
+
+}
+
+
+
+.loading-md .loading-spinner{
+
+    width:48px;
+
+    height:48px;
+
+}
+
+
+
+.loading-lg .loading-spinner{
+
+    width:72px;
+
+    height:72px;
+
+    border-width:5px;
+
+}
+
+.loading-lg .loading-text{
+
+    font-size:var(--font-size-lg);
+
+}
+
+
+
+/* ==========================================================
+   PANTALLA COMPLETA
+   ========================================================== */
+
+.loading-fullscreen{
+
+    position:fixed;
+
+    inset:0;
+
+    width:100vw;
+
+    height:100vh;
+
+    background:rgba(255,255,255,.85);
+
+    backdrop-filter:blur(4px);
+
+    z-index:9999;
+
+}
+
+
+
+/* ==========================================================
+   MODO OSCURO
+   ========================================================== */
+
+[data-theme="dark"] .loading-spinner{
+
+    border-color:rgba(255,255,255,.15);
+
+    border-top-color:var(--color-secondary);
+
+}
+
+
+
+[data-theme="dark"] .loading-fullscreen{
+
+    background:rgba(15,23,42,.88);
+
+}
+
+
+
+[data-theme="dark"] .loading-text{
+
+    color:var(--text-primary);
+
+}
+
+
+
+/* ==========================================================
+   ANIMACIÓN
+   ========================================================== */
+
+@keyframes loading-spin{
+
+    from{
+
+        transform:rotate(0deg);
+
+    }
+
+    to{
+
+        transform:rotate(360deg);
+
+    }
+
+}
+
+
+
+/* ==========================================================
+   RESPONSIVE
+   ========================================================== */
+
+@media(max-width:768px){
+
+    .loading{
+
+        padding:var(--space-5);
+
+    }
+
+    .loading-lg .loading-spinner{
+
+        width:60px;
+
+        height:60px;
+
+    }
+
+}
+
+
+
+@media(max-width:480px){
+
+    .loading{
+
+        gap:var(--space-3);
+
+    }
+
+    .loading-text{
+
+        font-size:var(--font-size-sm);
+
+    }
+
+}

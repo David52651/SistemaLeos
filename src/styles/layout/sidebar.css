@@ -11,7 +11,7 @@
 
 .sidebar {
 
-    width: var(--sidebar-width);
+    width:var(--sidebar-width);
 
     height:100vh;
 
@@ -45,8 +45,10 @@
 
 
 
+
+
 /* =====================================================
-   CABECERA SIDEBAR
+   CABECERA
 ===================================================== */
 
 
@@ -57,10 +59,8 @@
         var(--navbar-height);
 
 
-
     padding:
         var(--space-4);
-
 
 
     display:flex;
@@ -95,10 +95,6 @@
         var(--font-size-xl);
 
 
-    font-weight:
-        var(--font-weight-bold);
-
-
 }
 
 
@@ -118,7 +114,7 @@
 
 
 /* =====================================================
-   MENU SIDEBAR
+   MENU
 ===================================================== */
 
 
@@ -136,19 +132,12 @@
     flex-direction:column;
 
 
-
     gap:.5rem;
 
 
 }
 
 
-
-
-
-/* =====================================================
-   ITEMS MENU
-===================================================== */
 
 
 .menu-item {
@@ -160,37 +149,29 @@
     align-items:center;
 
 
-
     padding:
         .75rem 1rem;
-
 
 
     border-radius:
         var(--radius-md);
 
 
-
     color:
         var(--text-secondary);
 
 
-
     text-decoration:none;
-
 
 
     font-weight:
         var(--font-weight-medium);
 
 
-
     transition:
         var(--transition-fast);
 
-
 }
-
 
 
 
@@ -202,13 +183,11 @@
         var(--bg-hover);
 
 
-
     color:
         var(--color-primary);
 
 
 }
-
 
 
 
@@ -229,7 +208,6 @@
         var(--color-white);
 
 
-
     box-shadow:
         var(--shadow-md);
 
@@ -240,15 +218,32 @@
 
 
 
+
 /* =====================================================
-   OVERLAY MOBILE
+   CONTENIDO PRINCIPAL
 ===================================================== */
 
 
-.sidebar-overlay {
+.main-content {
 
 
-    display:none;
+    margin-left:
+        var(--sidebar-width);
+
+
+    width:
+        calc(
+            100% - var(--sidebar-width)
+        );
+
+
+    min-height:100vh;
+
+
+    display:flex;
+
+
+    flex-direction:column;
 
 
 }
@@ -259,8 +254,9 @@
 
 
 
+
 /* =====================================================
-   TABLET Y MOVIL
+   TABLET Y MOBILE
 ===================================================== */
 
 
@@ -275,14 +271,10 @@
             translateX(-100%);
 
 
-
         box-shadow:
             var(--shadow-lg);
 
-
-
     }
-
 
 
 
@@ -301,28 +293,68 @@
 
 
 
+    /*
+       IMPORTANTE:
+       Al ocultarse el sidebar,
+       el contenido recupera todo el ancho
+    */
+
+
+    .main-content {
+
+
+        margin-left:0;
+
+
+        width:100%;
+
+
+    }
+
+
+
+
+
     .sidebar-overlay {
 
 
         display:block;
 
 
-
         position:fixed;
 
 
-
         inset:0;
-
 
 
         background:
             rgba(0,0,0,.45);
 
 
-
         z-index:
             calc(var(--z-sidebar) - 1);
+
+
+    }
+
+
+}
+
+
+
+
+/* =====================================================
+   ESCRITORIO
+===================================================== */
+
+
+@media(min-width:992px){
+
+
+    .sidebar-overlay{
+
+
+        display:none;
 
 
     }

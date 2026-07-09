@@ -1,171 +1,139 @@
- /* ==========================================================
+/* ==========================================================
    SISTEMA LEOS
    Buttons System
-   ========================================================== */
+========================================================== */
 
 
 /* ==========================================================
-   BOTON BASE
-   ========================================================== */
+   BOTÓN BASE
+========================================================== */
 
-.btn {
+.btn{
 
-    display: inline-flex;
+    display:inline-flex;
 
-    align-items: center;
+    align-items:center;
 
-    justify-content: center;
+    justify-content:center;
 
-    gap: .5rem;
+    gap:.6rem;
 
+    border:none;
 
-    border: none;
+    border-radius:var(--radius-sm);
 
-    border-radius: var(--radius-sm);
+    padding:.70rem 1.25rem;
 
-    padding:
-        .65rem 1.2rem;
+    min-height:42px;
 
+    font-family:var(--font-family);
 
-    font-family: var(--font-family);
+    font-size:var(--font-size-md);
 
-    font-size: var(--font-size-md);
+    font-weight:var(--font-weight-medium);
 
-    font-weight: var(--font-weight-medium);
+    white-space:nowrap;
 
+    cursor:pointer;
 
-    cursor: pointer;
-
+    user-select:none;
 
     transition:
         background var(--transition-normal),
+        color var(--transition-normal),
+        border var(--transition-normal),
         transform var(--transition-fast),
         box-shadow var(--transition-normal);
 
-
-    box-shadow: var(--shadow-sm);
-
-}
-
-
-
-/* Hover general */
-
-.btn:hover {
-
-    transform: translateY(-1px);
-
-    box-shadow: var(--shadow-md);
+    box-shadow:var(--shadow-sm);
 
 }
 
 
+/* ==========================================================
+   HOVER
+========================================================== */
 
-/* Click */
+.btn:hover{
 
-.btn:active {
+    transform:translateY(-2px);
 
-    transform: translateY(0);
+    box-shadow:var(--shadow-md);
 
 }
 
 
+/* ==========================================================
+   ACTIVE
+========================================================== */
 
-/* Deshabilitado */
+.btn:active{
 
-.btn:disabled {
+    transform:translateY(0);
 
-    opacity: .6;
+}
 
-    cursor: not-allowed;
+
+/* ==========================================================
+   DISABLED
+========================================================== */
+
+.btn:disabled{
+
+    opacity:.65;
+
+    cursor:not-allowed;
 
     transform:none;
 
-}
+    box-shadow:none;
 
+}
 
 
 /* ==========================================================
-   BOTON PRINCIPAL
-   ========================================================== */
+   VARIANTES
+========================================================== */
 
-.btn-primary {
+.btn-primary{
 
-    background:
-        var(--color-primary);
+    background:var(--color-primary);
 
-    color:
-        var(--color-white);
+    color:white;
 
 }
 
+.btn-primary:hover{
 
-.btn-primary:hover {
-
-    background:
-        var(--color-primary-dark);
+    background:var(--color-primary-dark);
 
 }
 
 
 
-/* ==========================================================
-   SECUNDARIO
-   ========================================================== */
+/* ---------------------------------------------------------- */
 
-.btn-secondary {
+.btn-secondary{
 
-    background:
-        var(--color-secondary);
+    background:var(--color-secondary);
 
-    color:
-        var(--color-black);
+    color:var(--color-black);
 
 }
 
+.btn-secondary:hover{
 
-.btn-secondary:hover {
-
-    filter:
-        brightness(.9);
+    filter:brightness(.92);
 
 }
 
 
 
-/* ==========================================================
-   DESTACADO
-   ========================================================== */
+/* ---------------------------------------------------------- */
 
-.btn-accent {
+.btn-success{
 
-    background:
-        var(--color-accent);
-
-    color:
-        #111;
-
-}
-
-
-.btn-accent:hover {
-
-    filter:
-        brightness(.9);
-
-}
-
-
-
-/* ==========================================================
-   ESTADOS
-   ========================================================== */
-
-
-.btn-success {
-
-    background:
-        var(--success);
+    background:var(--success);
 
     color:white;
 
@@ -173,10 +141,11 @@
 
 
 
-.btn-danger {
+/* ---------------------------------------------------------- */
 
-    background:
-        var(--danger);
+.btn-danger{
+
+    background:var(--danger);
 
     color:white;
 
@@ -184,10 +153,11 @@
 
 
 
-.btn-warning {
+/* ---------------------------------------------------------- */
 
-    background:
-        var(--warning);
+.btn-warning{
+
+    background:var(--warning);
 
     color:#111;
 
@@ -195,110 +165,180 @@
 
 
 
-/* ==========================================================
-   BOTONES OUTLINE
-   ========================================================== */
+/* ---------------------------------------------------------- */
 
+.btn-outline{
 
-.btn-outline {
+    background:transparent;
 
-    background:
-        transparent;
+    color:var(--color-primary);
 
-    border:
-        1px solid var(--color-primary);
+    border:1px solid var(--color-primary);
 
-    color:
-        var(--color-primary);
+}
+
+.btn-outline:hover{
+
+    background:var(--color-primary);
+
+    color:white;
 
 }
 
 
 
-.btn-outline:hover {
+/* ---------------------------------------------------------- */
 
+.btn-ghost{
 
-    background:
-        var(--color-primary);
+    background:transparent;
 
-    color:
-        white;
+    color:var(--text-primary);
+
+    box-shadow:none;
+
+}
+
+.btn-ghost:hover{
+
+    background:var(--bg-hover);
 
 }
 
 
-
-/* ==========================================================
-   BOTON SOLO ICONO
-   ========================================================== */
-
-
-.btn-icon {
-
-
-    width:42px;
-
-    height:42px;
-
-
-    padding:0;
-
-
-    border-radius:
-        var(--radius-circle);
-
-}
 
 
 
 /* ==========================================================
    TAMAÑOS
-   ========================================================== */
+========================================================== */
 
+.btn-sm{
 
-.btn-sm {
+    padding:.45rem .9rem;
 
+    font-size:var(--font-size-sm);
 
-    padding:
-        .35rem .8rem;
-
-
-    font-size:
-        var(--font-size-sm);
+    min-height:36px;
 
 }
 
 
 
-.btn-lg {
+.btn-md{
 
-
-    padding:
-        .9rem 1.8rem;
-
-
-    font-size:
-        var(--font-size-lg);
+    min-height:42px;
 
 }
+
+
+
+.btn-lg{
+
+    padding:1rem 2rem;
+
+    font-size:var(--font-size-lg);
+
+    min-height:50px;
+
+}
+
+
+
+
+
+/* ==========================================================
+   FULL WIDTH
+========================================================== */
+
+.btn-full{
+
+    width:100%;
+
+}
+
+
+
+
+
+/* ==========================================================
+   ICONOS
+========================================================== */
+
+.btn-icon{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:1rem;
+
+}
+
+
+
+
+
+/* ==========================================================
+   LOADING
+========================================================== */
+
+.btn-loading{
+
+    pointer-events:none;
+
+}
+
+
+
+
+
+.btn-spinner{
+
+    width:16px;
+
+    height:16px;
+
+    border-radius:50%;
+
+    border:2px solid rgba(255,255,255,.35);
+
+    border-top-color:white;
+
+    animation:btn-spin .7s linear infinite;
+
+}
+
+
+
+
+
+@keyframes btn-spin{
+
+    to{
+
+        transform:rotate(360deg);
+
+    }
+
+}
+
 
 
 
 
 /* ==========================================================
    RESPONSIVE
-   ========================================================== */
-
+========================================================== */
 
 @media(max-width:768px){
 
+    .btn{
 
-    .btn {
-
-
-        width:100%;
+        min-height:44px;
 
     }
-
 
 }
