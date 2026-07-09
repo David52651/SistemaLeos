@@ -16,7 +16,7 @@
 
 
     background:
-        var(--bg-card);
+        var(--table-bg);
 
 
 
@@ -80,7 +80,7 @@
 
 
     background:
-        var(--bg-card);
+        var(--table-bg);
 
 
 
@@ -490,7 +490,7 @@
     background:
 
 
-        var(--bg-card);
+        var(--table-bg);
 
 
 
@@ -661,18 +661,15 @@
 
 .table-responsive {
 
-
     width:100%;
-
 
     overflow-x:auto;
 
+    background:var(--table-bg);
 
+    border-radius:var(--radius-lg);
 
-    -webkit-overflow-scrolling:
-        touch;
-
-
+    border:1px solid var(--border-color);
 
 }
 
@@ -729,6 +726,77 @@
 
 
     }
+
+}
+
+/* =====================================================
+   OVERRIDE BOOTSTRAP TABLE VARIABLES
+   SISTEMA LEOS
+===================================================== */
+
+
+.table {
+
+
+    --bs-table-bg:
+        var(--table-bg);
+
+
+    --bs-table-color:
+        var(--table-row-text);
+
+
+    --bs-table-border-color:
+        var(--table-border);
+
+
+
+    background-color:
+        var(--table-bg);
+
+
+
+    color:
+        var(--table-row-text);
+
+
+
+}
+
+
+
+
+.table tbody {
+
+
+    --bs-table-bg:
+        var(--table-row-bg);
+
+
+}
+
+
+
+
+.table td {
+
+
+    color:
+        var(--table-row-text);
+
+
+
+}
+
+
+
+
+.table th {
+
+
+    color:
+        var(--table-header-text);
+
 
 
 }

@@ -1,11 +1,19 @@
 import { useState } from "react";
 import { toast } from "sonner";
 
+
 import { useInventario } from "../hooks/useInventario";
 import { useCatalogosInventario } from "../hooks/useCatalogosInventario";
 
+
 import ArticuloForm from "../components/ArticuloForm";
 import ArticuloModal from "../components/modals/ArticuloModal";
+
+
+import Card from "@/components/ui/Card";
+import Table from "@/components/ui/Table";
+import Button from "@/components/ui/Button";
+
 
 
 import {
@@ -18,10 +26,13 @@ import {
 } from "../services/inventario.service";
 
 
-import { generarCodigoArticulo } from "../utils/generarCodigoArticulo";
+
+import { generarCodigoArticulo }
+from "../utils/generarCodigoArticulo";
 
 
-import { createCategoria } 
+
+import { createCategoria }
 from "@/modules/catalogos/categorias/services/categorias.service";
 
 
@@ -38,550 +49,746 @@ from "@/modules/catalogos/danzas/services/danzas.service";
 
 
 
-export default function InventarioPage() {
 
 
-  const [
-    modalCategoria,
-    setModalCategoria
-  ] = useState(false);
+export default function InventarioPage(){
 
 
 
-  const [
-    modalTalla,
-    setModalTalla
-  ] = useState(false);
+const [
+ modalCategoria,
+ setModalCategoria
+]=useState(false);
 
 
 
-  const [
-    modalPropietario,
-    setModalPropietario
-  ] = useState(false);
+const [
+ modalTalla,
+ setModalTalla
+]=useState(false);
 
 
 
-  const [
-    modalDanza,
-    setModalDanza
-  ] = useState(false);
+const [
+ modalPropietario,
+ setModalPropietario
+]=useState(false);
 
 
 
-  const {
-    data: articulos,
-    isLoading,
-    refetch,
+const [
+ modalDanza,
+ setModalDanza
+]=useState(false);
 
-  } = useInventario();
 
 
 
-  const {
-    tallas,
 
-  } = useCatalogosInventario();
+const {
+ data:articulos,
+ isLoading,
+ refetch
 
+}=useInventario();
 
 
-  const [
-    editing,
-    setEditing
-  ] = useState(null);
 
 
 
+const {
+ tallas
 
+}=useCatalogosInventario();
 
-  async function crearCategoria(values){
 
-    try{
 
-      await createCategoria(values);
 
-      toast.success(
-        "Categoría creada correctamente"
-      );
 
-      setModalCategoria(false);
+const [
+ editing,
+ setEditing
 
-      refetch();
+]=useState(null);
 
 
-    }catch(error){
 
-      toast.error(error.message);
 
-    }
 
-  }
 
 
-  async function crearTalla(values){
+async function crearCategoria(values){
 
-    try{
+try{
 
-      await createTalla(values);
+await createCategoria(values);
 
-      toast.success(
-        "Talla creada correctamente"
-      );
+toast.success(
+"Categoría creada correctamente"
+);
 
+setModalCategoria(false);
 
-      setModalTalla(false);
+refetch();
 
-      refetch();
 
+}catch(error){
 
-    }catch(error){
+toast.error(error.message);
 
-      toast.error(error.message);
+}
 
-    }
 
-  }
+}
 
 
-  async function crearPropietario(values){
 
-    try{
 
-      await createPropietario(values);
 
 
-      toast.success(
-        "Propietario creado correctamente"
-      );
 
+async function crearTalla(values){
 
-      setModalPropietario(false);
+try{
 
-      refetch();
+await createTalla(values);
 
+toast.success(
+"Talla creada correctamente"
+);
 
 
-    }catch(error){
+setModalTalla(false);
 
-      toast.error(error.message);
+refetch();
 
-    }
 
-  }
+}catch(error){
 
-  async function crearDanza(values){
+toast.error(error.message);
 
-    try{
+}
 
-      await createDanza(values);
+}
 
 
-      toast.success(
-        "Danza creada correctamente"
-      );
 
 
-      setModalDanza(false);
 
 
-      refetch();
+async function crearPropietario(values){
 
+try{
 
-    }catch(error){
 
-      toast.error(error.message);
+await createPropietario(values);
 
-    }
 
-  }
+toast.success(
+"Propietario creado correctamente"
+);
 
 
-  if(isLoading){
+setModalPropietario(false);
 
-    return <p>Cargando inventario...</p>;
+refetch();
 
-  }
 
 
-  async function guardarArticulo(values){
+}catch(error){
 
+toast.error(error.message);
 
-    try{
+}
 
 
-      if(!editing){
+}
 
 
-        const duplicado =
-          await existeArticulo(values);
 
 
 
-        if(duplicado){
 
-          toast.error(
-            "Ya existe un artículo con esas características"
-          );
 
+async function crearDanza(values){
 
-          return;
+try{
 
-        }
 
+await createDanza(values);
 
-      }
 
+toast.success(
+"Danza creada correctamente"
+);
 
-      const tallaSeleccionada =
-        tallas.data?.find(
-          talla =>
-          talla.id === values.talla_id
-        );
 
+setModalDanza(false);
 
-      const codigo =
-        generarCodigoArticulo(
-          values.nombre,
-          tallaSeleccionada?.nombre
-        );
+refetch();
 
-      const {
 
-        danzas_ids:_danzas_ids,
+}catch(error){
 
-        ...restoValores
+toast.error(error.message);
 
+}
 
-      } = values;
 
+}
 
-      const payload={
 
-        ...restoValores,
 
-        codigo,
 
-      };
 
 
+if(isLoading){
 
+return (
 
+<p>
+Cargando inventario...
+</p>
 
+);
 
+}
 
-      let articuloGuardado;
 
 
 
 
 
-      if(editing){
 
 
-        await updateArticulo(
-          editing.id,
-          payload
-        );
+async function guardarArticulo(values){
 
 
-        await guardarDanzasArticulo(
+try{
 
-          editing.id,
 
-          values.danzas_ids || []
 
-        );
+if(!editing){
 
 
+const duplicado =
+await existeArticulo(values);
 
-        setEditing(null);
 
 
+if(duplicado){
 
-      }else{
+toast.error(
+"Ya existe un artículo con esas características"
+);
 
+return;
 
+}
 
-        articuloGuardado =
-          await createArticulo(payload);
 
+}
 
 
-        await guardarDanzasArticulo(
 
-          articuloGuardado.id,
 
-          values.danzas_ids || []
+const tallaSeleccionada =
+tallas.data?.find(
+talla=>talla.id===values.talla_id
+);
 
-        );
 
 
-      }
 
-      toast.success(
-        "Artículo guardado correctamente"
-      );
 
+const codigo =
+generarCodigoArticulo(
+values.nombre,
+tallaSeleccionada?.nombre
+);
 
-      refetch();
 
 
 
 
-    }catch(error){
+const {
 
+danzas_ids:_danzas_ids,
 
-      toast.error(
-        error.message
-      );
+...restoValores
 
 
-    }
+}=values;
 
 
-  }
 
 
 
+const payload={
 
-  return (
+...restoValores,
 
-    <div className="inventario-page">
+codigo
 
+};
 
-      <h1>
-        Inventario
-      </h1>
 
-      <ArticuloForm
 
-        onSubmit={guardarArticulo}
 
-        initialValues={editing}
 
-        onOpenCategoria={
-          ()=>setModalCategoria(true)
-        }
 
-        onOpenTalla={
-          ()=>setModalTalla(true)
-        }
 
-        onOpenPropietario={
-          ()=>setModalPropietario(true)
-        }
+let articuloGuardado;
 
-        onOpenDanza={
-          ()=>setModalDanza(true)
-        }
 
-      />
 
-      <ArticuloModal
 
-        modalCategoria={modalCategoria}
 
-        setModalCategoria={setModalCategoria}
 
 
-        modalTalla={modalTalla}
+if(editing){
 
-        setModalTalla={setModalTalla}
 
+await updateArticulo(
+editing.id,
+payload
+);
 
-        modalPropietario={modalPropietario}
 
-        setModalPropietario={setModalPropietario}
 
+await guardarDanzasArticulo(
 
-        modalDanza={modalDanza}
+editing.id,
 
-        setModalDanza={setModalDanza}
+values.danzas_ids || []
 
+);
 
-        crearCategoria={crearCategoria}
 
-        crearTalla={crearTalla}
 
-        crearPropietario={crearPropietario}
+setEditing(null);
 
-        crearDanza={crearDanza}
 
-      />
 
-      <hr />
+}else{
 
-      <table>
 
+articuloGuardado =
+await createArticulo(payload);
 
-        <thead>
 
-          <tr>
 
-            <th>Código</th>
 
-            <th>Nombre</th>
+await guardarDanzasArticulo(
 
-            <th>Categoría</th>
+articuloGuardado.id,
 
-            <th>Talla</th>
+values.danzas_ids || []
 
-            <th>Propietario</th>
+);
 
-            <th>Stock</th>
 
-            <th>Estado</th>
+}
 
-            <th>Acciones</th>
 
 
-          </tr>
 
 
-        </thead>
+toast.success(
+"Artículo guardado correctamente"
+);
 
 
 
+refetch();
 
 
-        <tbody>
 
+}catch(error){
 
-        {
-          articulos?.map(
-            articulo=>(
 
+toast.error(
+error.message
+);
 
-              <tr key={articulo.id}>
 
+}
 
-                <td>
-                  {articulo.codigo}
-                </td>
 
+}
 
-                <td>
-                  {articulo.nombre}
-                </td>
 
 
-                <td>
-                  {articulo.categorias?.nombre}
-                </td>
 
 
-                <td>
-                  {articulo.tallas?.nombre}
-                </td>
 
 
-                <td>
-                  {articulo.propietarios?.nombre}
-                </td>
 
 
-                <td>
-                  {articulo.stock_actual}
-                </td>
+const columnas=[
 
 
-                <td>
+{
 
-                {
-                  articulo.stock_actual===0
+title:"Código",
 
-                  ?
+key:"codigo"
 
-                  "Agotado"
+},
 
-                  :
 
-                  articulo.stock_actual <= articulo.stock_min
 
-                  ?
+{
 
-                  "Stock Bajo"
+title:"Nombre",
 
-                  :
+key:"nombre"
 
-                  "Disponible"
+},
 
-                }
 
 
-                </td>
+{
 
+title:"Categoría",
 
+render:(articulo)=>(
 
+articulo.categorias?.nombre || "-"
 
-                <td>
+)
 
+},
 
-                  <button
-                    onClick={()=>
-                      setEditing(articulo)
-                    }
-                  >
 
-                    Editar
 
-                  </button>
+{
 
+title:"Talla",
 
+render:(articulo)=>(
 
+articulo.tallas?.nombre || "-"
 
+)
 
-                  {
-                    articulo.activo
+},
 
-                    ?
 
-                    <button
 
-                    onClick={async()=>{
 
-                      await desactivarArticulo(
-                        articulo.id
-                      );
+{
 
-                      refetch();
+title:"Propietario",
 
-                    }}
+render:(articulo)=>(
 
-                    >
+articulo.propietarios?.nombre || "-"
 
-                    Desactivar
+)
 
-                    </button>
+},
 
 
-                    :
 
-                    <button
 
-                    onClick={async()=>{
+{
 
-                      await activarArticulo(
-                        articulo.id
-                      );
+title:"Stock",
 
-                      refetch();
+key:"stock_actual"
 
-                    }}
-                    >
-                    Activar
-                    </button>
+},
 
-                  }
 
-                </td>
 
-              </tr>
-            )
-          )
-        }
-        </tbody>
-      </table>
-    </div>
-  );
+
+
+{
+
+title:"Estado",
+
+render:(articulo)=>(
+
+
+articulo.stock_actual===0
+
+?
+
+"Agotado"
+
+
+:
+
+articulo.stock_actual <= articulo.stock_min
+
+
+?
+
+"Stock Bajo"
+
+
+:
+
+"Disponible"
+
+
+)
+
+},
+
+
+
+
+{
+
+title:"Acciones",
+
+render:(articulo)=>(
+
+
+<div className="table-actions">
+
+
+<Button
+
+variant="secondary"
+
+onClick={()=>setEditing(articulo)}
+
+>
+
+Editar
+
+</Button>
+
+
+
+
+
+{
+
+articulo.activo
+
+?
+
+<Button
+
+variant="danger"
+
+onClick={async()=>{
+
+await desactivarArticulo(
+articulo.id
+);
+
+refetch();
+
+}}
+
+>
+
+Desactivar
+
+</Button>
+
+
+:
+
+
+<Button
+
+variant="success"
+
+onClick={async()=>{
+
+await activarArticulo(
+articulo.id
+);
+
+refetch();
+
+}}
+
+>
+
+Activar
+
+</Button>
+
+
+}
+
+
+
+</div>
+
+
+)
+
+
+}
+
+
+];
+
+
+
+
+
+
+
+
+
+return(
+
+
+<div className="inventario-page">
+
+
+
+<h1>
+Inventario
+</h1>
+
+
+
+
+
+<Card>
+
+
+<h3>
+
+{
+editing
+?
+"Editar artículo"
+:
+"Nuevo artículo"
+}
+
+</h3>
+
+
+
+<ArticuloForm
+
+onSubmit={guardarArticulo}
+
+initialValues={editing}
+
+
+onOpenCategoria={
+()=>setModalCategoria(true)
+}
+
+
+onOpenTalla={
+()=>setModalTalla(true)
+}
+
+
+onOpenPropietario={
+()=>setModalPropietario(true)
+}
+
+
+onOpenDanza={
+()=>setModalDanza(true)
+}
+
+
+/>
+
+
+
+</Card>
+
+
+
+
+
+
+
+<ArticuloModal
+
+
+modalCategoria={modalCategoria}
+
+setModalCategoria={setModalCategoria}
+
+
+modalTalla={modalTalla}
+
+setModalTalla={setModalTalla}
+
+
+
+modalPropietario={modalPropietario}
+
+setModalPropietario={setModalPropietario}
+
+
+
+modalDanza={modalDanza}
+
+setModalDanza={setModalDanza}
+
+
+
+crearCategoria={crearCategoria}
+
+crearTalla={crearTalla}
+
+crearPropietario={crearPropietario}
+
+crearDanza={crearDanza}
+
+
+/>
+
+
+
+
+
+
+
+<Card>
+
+
+<h3>
+
+Lista de inventario
+
+</h3>
+
+
+
+
+<Table
+
+
+columns={columnas}
+
+
+data={articulos || []}
+
+
+/>
+
+
+
+</Card>
+
+
+
+
+
+</div>
+
+
+);
+
+
 }

@@ -127,13 +127,11 @@
 
 
 
-    background:
-        var(--bg-input);
+background:
+var(--input-bg);
 
-
-
-    color:
-        var(--text-primary);
+color:
+var(--input-text);
 
 
 

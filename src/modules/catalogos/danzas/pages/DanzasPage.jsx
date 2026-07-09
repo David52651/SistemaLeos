@@ -1,9 +1,17 @@
 import { useState } from "react";
 import { toast } from "sonner";
 
+
+import Card from "@/components/ui/Card";
+import Button from "@/components/ui/Button";
+import Table from "@/components/ui/Table";
+
+
 import { useDanzas } from "../hooks/useDanzas";
 
+
 import DanzaForm from "../components/DanzaForm";
+
 
 import {
   createDanza,
@@ -12,210 +20,502 @@ import {
   activarDanza,
 } from "../services/danzas.service";
 
+
+
 export default function DanzasPage() {
 
+
+
   const {
+
     data: danzas,
+
     isLoading,
+
     refetch,
+
   } = useDanzas();
 
-  const [editing, setEditing] =
-    useState(null);
 
-  if (isLoading) {
-    return <p>Cargando...</p>;
+
+
+  const [
+
+    editing,
+
+    setEditing
+
+  ] = useState(null);
+
+
+
+
+
+
+
+  if(isLoading){
+
+    return (
+
+      <p>
+
+        Cargando danzas...
+
+      </p>
+
+    );
+
   }
 
-  async function crearDanza(values) {
 
-    try {
+
+
+
+
+
+
+  async function crearDanza(values){
+
+
+    try{
+
 
       await createDanza(values);
 
+
+
       toast.success(
+
         "Danza creada correctamente"
+
       );
+
+
 
       refetch();
 
-    } catch (error) {
 
-      toast.error(error.message);
+
+    }catch(error){
+
+
+      toast.error(
+        error.message
+      );
+
 
     }
 
+
   }
 
-  async function editarDanza(values) {
 
-    try {
+
+
+
+
+
+
+
+  async function editarDanza(values){
+
+
+    try{
+
 
       await updateDanza(
+
         editing.id,
+
         values
+
       );
 
+
+
       toast.success(
+
         "Danza actualizada correctamente"
+
       );
+
+
 
       setEditing(null);
 
+
+
       refetch();
 
-    } catch (error) {
 
-      toast.error(error.message);
+
+    }catch(error){
+
+
+      toast.error(
+
+        error.message
+
+      );
+
 
     }
 
+
   }
 
-  async function guardarDanza(values) {
 
-    if (editing) {
+
+
+
+
+
+
+
+  async function guardarDanza(values){
+
+
+    if(editing){
+
 
       await editarDanza(values);
 
+
       return;
+
 
     }
 
+
+
     await crearDanza(values);
+
+
 
   }
 
-  async function desactivarDanzaHandler(
-    id
-  ) {
+
+
+
+
+
+
+
+
+
+  async function desactivarDanzaHandler(id){
+
 
     const confirmar =
+
       window.confirm(
+
         "¿Desactivar danza?"
+
       );
 
-    if (!confirmar) return;
+
+
+    if(!confirmar)
+
+      return;
+
+
+
+
 
     await desactivarDanza(id);
 
+
+
     toast.success(
+
       "Danza desactivada"
+
     );
+
+
 
     refetch();
 
+
+
   }
 
-  async function activarDanzaHandler(
-    id
-  ) {
+
+
+
+
+
+
+
+
+  async function activarDanzaHandler(id){
+
+
 
     await activarDanza(id);
 
+
+
     toast.success(
+
       "Danza activada"
+
     );
+
+
 
     refetch();
 
+
+
   }
+
+
+
+
+
+
+
+
+
+
+
+  const columnas = [
+
+    {
+        key:"nombre",
+        title:"Nombre"
+    },
+
+
+    {
+        key:"ciudad",
+        title:"Ciudad"
+    },
+
+
+    {
+        key:"descripcion",
+        title:"Descripción"
+    },
+
+
+    {
+        key:"estado",
+        title:"Estado",
+
+        render:(danza)=>(
+
+            danza.activo
+
+            ?
+
+            <span>
+                Activa
+            </span>
+
+            :
+
+            <span>
+                Inactiva
+            </span>
+
+        )
+
+    },
+
+
+    {
+        key:"acciones",
+        title:"Acciones",
+
+        render:(danza)=>(
+
+
+            <div className="table-actions">
+
+
+                <Button
+
+                    variant="secondary"
+
+                    onClick={()=>
+                        setEditing(danza)
+                    }
+
+                >
+
+                    Editar
+
+                </Button>
+
+
+
+
+
+                {
+
+                danza.activo
+
+                ?
+
+                (
+
+                    <Button
+
+                        variant="danger"
+
+                        onClick={()=>
+                            desactivarDanzaHandler(
+                                danza.id
+                            )
+                        }
+
+                    >
+
+                        Desactivar
+
+                    </Button>
+
+                )
+
+
+                :
+
+
+                (
+
+                    <Button
+
+                        variant="success"
+
+                        onClick={()=>
+                            activarDanzaHandler(
+                                danza.id
+                            )
+                        }
+
+                    >
+
+                        Activar
+
+                    </Button>
+
+                )
+
+
+                }
+
+
+            </div>
+
+
+        )
+
+    }
+
+
+];
+
+
+
+
+
+
+
+
 
   return (
 
-    <div>
 
-      <h1>Danzas</h1>
+    <div className="page-container">
 
-      <DanzaForm
-        onSubmit={guardarDanza}
-        initialValues={editing}
-      />
 
-      <hr />
+      <h1>
 
-      <table border="1">
+        Danzas
 
-        <thead>
+      </h1>
 
-          <tr>
-            <th>Nombre</th>
-            <th>Ciudad</th>
-            <th>Descripción</th>
-            <th>Estado</th>
-            <th>Acciones</th>
-          </tr>
 
-        </thead>
 
-        <tbody>
 
-          {danzas?.map((danza) => (
 
-            <tr key={danza.id}>
+      <Card>
 
-              <td>{danza.nombre}</td>
 
-              <td>{danza.ciudad}</td>
+        <h3>
 
-              <td>
-                {danza.descripcion}
-              </td>
+          {
 
-              <td>
-                {danza.activo
-                  ? "Activa"
-                  : "Inactiva"}
-              </td>
+          editing
 
-              <td>
+          ?
 
-                <button
-                  onClick={() =>
-                    setEditing(danza)
-                  }
-                >
-                  Editar
-                </button>
+          "Editar danza"
 
-                {danza.activo ? (
+          :
 
-                  <button
-                    onClick={() =>
-                      desactivarDanzaHandler(
-                        danza.id
-                      )
-                    }
-                  >
-                    Desactivar
-                  </button>
+          "Nueva danza"
 
-                ) : (
+          }
 
-                  <button
-                    onClick={() =>
-                      activarDanzaHandler(
-                        danza.id
-                      )
-                    }
-                  >
-                    Activar
-                  </button>
 
-                )}
+        </h3>
 
-              </td>
 
-            </tr>
 
-          ))}
 
-        </tbody>
 
-      </table>
+        <DanzaForm
+
+          onSubmit={guardarDanza}
+
+          initialValues={editing}
+
+        />
+
+
+
+      </Card>
+
+
+
+
+
+
+
+      <Card>
+
+
+        <h3>
+
+          Lista de danzas
+
+        </h3>
+
+
+
+        <Table
+
+          columns={columnas}
+
+          data={danzas || []}
+
+        />
+
+
+      </Card>
+
+
+
 
     </div>
 
+
   );
+
 
 }
