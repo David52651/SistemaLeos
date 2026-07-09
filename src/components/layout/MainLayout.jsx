@@ -3,50 +3,58 @@ import { NavLink, Outlet } from "react-router-dom";
 import { logout } from "@/services/auth.service";
 import { useAuth } from "@/contexts/AuthContext";
 
+import { useState } from "react";
+
 
 export default function MainLayout() {
 
+
   const { perfil } = useAuth();
+
+
+  const [sidebarOpen,setSidebarOpen] = useState(false);
+
 
 
   const menu = [
 
     {
-      nombre: "Dashboard",
-      ruta: "/",
+      nombre:"Dashboard",
+      ruta:"/"
     },
 
     {
-      nombre: "Inventario",
-      ruta: "/inventario",
+      nombre:"Inventario",
+      ruta:"/inventario"
     },
 
     {
-      nombre: "Usuarios",
-      ruta: "/usuarios",
+      nombre:"Usuarios",
+      ruta:"/usuarios"
     },
 
     {
-      nombre: "Categorías",
-      ruta: "/categorias",
+      nombre:"Categorías",
+      ruta:"/categorias"
     },
 
     {
-      nombre: "Tallas",
-      ruta: "/tallas",
+      nombre:"Tallas",
+      ruta:"/tallas"
     },
 
     {
-      nombre: "Propietarios",
-      ruta: "/propietarios",
+      nombre:"Propietarios",
+      ruta:"/propietarios"
     },
 
     {
-      nombre: "Danzas",
-      ruta: "/danzas",
-    },
+      nombre:"Danzas",
+      ruta:"/danzas"
+    }
 
   ];
+
 
 
   return (
@@ -54,11 +62,44 @@ export default function MainLayout() {
     <div className="app-layout">
 
 
-      {/* ===========================
-          SIDEBAR
-      ============================ */}
 
-      <aside className="sidebar">
+      {/* OVERLAY MOBILE */}
+
+      {
+        sidebarOpen && (
+
+          <div
+
+            className="sidebar-overlay"
+
+            onClick={() =>
+              setSidebarOpen(false)
+            }
+
+          />
+
+        )
+      }
+
+
+
+
+
+
+      {/* SIDEBAR */}
+
+
+      <aside
+
+        className={
+          sidebarOpen
+          ?
+          "sidebar active"
+          :
+          "sidebar"
+        }
+
+      >
 
 
         <div className="sidebar-header">
@@ -78,33 +119,54 @@ export default function MainLayout() {
 
 
 
+
         <nav className="sidebar-menu">
 
 
           {
-            menu.map(
-              item => (
+            menu.map(item=>(
 
-                <NavLink
 
-                  key={item.ruta}
+              <NavLink
 
-                  to={item.ruta}
 
-                  className={({isActive}) =>
-                    isActive
-                    ? "menu-item active"
-                    : "menu-item"
-                  }
+                key={item.ruta}
 
-                >
 
-                  {item.nombre}
+                to={item.ruta}
 
-                </NavLink>
 
-              )
-            )
+
+                onClick={() =>
+                  setSidebarOpen(false)
+                }
+
+
+
+                className={({isActive})=>
+
+                  isActive
+
+                  ?
+
+                  "menu-item active"
+
+                  :
+
+                  "menu-item"
+
+                }
+
+
+              >
+
+                {item.nombre}
+
+
+              </NavLink>
+
+
+            ))
           }
 
 
@@ -116,18 +178,52 @@ export default function MainLayout() {
 
 
 
-      {/* ===========================
-          CONTENIDO PRINCIPAL
-      ============================ */}
+
+
+
+
+      {/* CONTENIDO PRINCIPAL */}
 
 
       <main className="main-content">
 
 
+
+
+
+        {/* NAVBAR */}
+
+
         <header className="navbar">
 
 
-          <div>
+
+
+
+          {/* BOTON MOBILE */}
+
+
+          <button
+
+            className="menu-toggle"
+
+            onClick={()=>setSidebarOpen(true)}
+
+          >
+
+            ☰
+
+          </button>
+
+
+
+
+
+
+          {/* TITULO */}
+
+
+          <div className="navbar-title">
 
 
             <h3>
@@ -139,6 +235,12 @@ export default function MainLayout() {
 
 
 
+
+
+
+          {/* USUARIO */}
+
+
           <div className="navbar-user">
 
 
@@ -147,6 +249,8 @@ export default function MainLayout() {
               {perfil?.nombre_completo}
 
             </span>
+
+
 
 
 
@@ -163,11 +267,23 @@ export default function MainLayout() {
             </button>
 
 
+
           </div>
+
+
+
 
 
         </header>
 
+
+
+
+
+
+
+
+        {/* CONTENIDO DE PAGINAS */}
 
 
         <section className="page-container">
@@ -180,7 +296,11 @@ export default function MainLayout() {
 
 
 
+
+
       </main>
+
+
 
 
     </div>

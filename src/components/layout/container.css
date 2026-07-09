@@ -1,7 +1,12 @@
 /* =====================================================
    SISTEMA LEOS
-   Layout principal
+   Layout principal Responsive
 ===================================================== */
+
+
+/* ==========================
+   LAYOUT GENERAL
+========================== */
 
 
 .app-layout {
@@ -9,10 +14,13 @@
 
     display:flex;
 
+
     min-height:100vh;
+
 
     background:
         var(--bg-body);
+
 
 }
 
@@ -34,21 +42,44 @@
         var(--bg-sidebar);
 
 
+
     border-right:
         1px solid var(--border-color);
+
 
 
     padding:
         var(--space-5);
 
 
+
     position:fixed;
 
 
-    height:100vh;
+    top:0;
+
+
+    left:0;
+
+
+    bottom:0;
+
+
+
+    overflow-y:auto;
+
+
+    z-index:
+        var(--z-sidebar);
+
+
+
+    transition:
+        var(--transition-normal);
 
 
 }
+
 
 
 
@@ -62,6 +93,7 @@
         var(--space-6);
 
 
+
 }
 
 
@@ -71,6 +103,7 @@
 
     color:
         var(--color-primary);
+
 
 
 }
@@ -88,7 +121,9 @@
 
 
 
-/* Menu */
+/* ==========================
+   MENU
+========================== */
 
 
 .sidebar-menu {
@@ -96,10 +131,11 @@
 
     display:flex;
 
+
     flex-direction:column;
 
-    gap:
-        .5rem;
+
+    gap:.5rem;
 
 
 }
@@ -109,16 +145,17 @@
 .menu-item {
 
 
-    padding:
-        .75rem 1rem;
+    padding:.75rem 1rem;
 
 
     border-radius:
         var(--radius-sm);
 
 
+
     color:
         var(--text-secondary);
+
 
 
     text-decoration:none;
@@ -126,6 +163,7 @@
 
     transition:
         var(--transition-normal);
+
 
 
 }
@@ -139,8 +177,10 @@
         var(--bg-hover);
 
 
+
     color:
         var(--color-primary);
+
 
 
 }
@@ -154,6 +194,7 @@
         var(--color-primary);
 
 
+
     color:
         white;
 
@@ -165,7 +206,7 @@
 
 
 /* ==========================
-   CONTENIDO
+   CONTENIDO PRINCIPAL
 ========================== */
 
 
@@ -176,44 +217,101 @@
         var(--sidebar-width);
 
 
+
     width:
-        calc(100% - var(--sidebar-width));
+        calc(
+            100% - var(--sidebar-width)
+        );
+
+
+
+    min-height:100vh;
+
+
+
+    display:flex;
+
+
+    flex-direction:column;
+
 
 
 }
 
 
 
-/* NAVBAR */
+
+
+
+/* ==========================
+   NAVBAR
+========================== */
 
 
 .navbar {
+
+
+    width:100%;
+
 
 
     height:
         var(--navbar-height);
 
 
+
     background:
         var(--bg-navbar);
+
 
 
     border-bottom:
         1px solid var(--border-color);
 
 
+
     display:flex;
-
-
-    justify-content:space-between;
 
 
     align-items:center;
 
 
-    padding:
-        0 var(--space-6);
+    justify-content:space-between;
 
+
+
+    padding:
+        0 clamp(
+            1rem,
+            3vw,
+            3rem
+        );
+
+
+
+    box-sizing:border-box;
+
+
+
+    position:sticky;
+
+
+    top:0;
+
+
+    z-index:
+        var(--z-navbar);
+
+
+
+}
+
+
+
+.navbar-title {
+
+
+    flex:1;
 
 
 }
@@ -225,8 +323,10 @@
 
     margin:0;
 
+
     color:
         var(--text-primary);
+
 
 }
 
@@ -241,8 +341,7 @@
     align-items:center;
 
 
-    gap:
-        1rem;
+    gap:1rem;
 
 
 }
@@ -251,17 +350,211 @@
 
 
 
-/* CONTENEDOR PAGINAS */
+/* ==========================
+   CONTENIDO PAGINAS
+========================== */
 
 
 .page-container {
 
 
+    flex:1;
+
+
+
+    width:100%;
+
+
+
     padding:
-        var(--space-6);
+
+        clamp(
+            1rem,
+            2vw,
+            2rem
+        );
+
+
+
+    box-sizing:border-box;
 
 
 }
 
 
 
+.page-container > * {
+
+
+    width:100%;
+
+
+}
+
+
+
+
+.section-container {
+
+
+    width:100%;
+
+
+
+    max-width:1200px;
+
+
+
+    margin:0 auto;
+
+
+}
+
+
+
+
+
+.responsive-grid {
+
+
+    display:grid;
+
+
+
+    grid-template-columns:
+
+        repeat(
+            auto-fit,
+            minmax(280px,1fr)
+        );
+
+
+
+    gap:
+
+        clamp(
+            1rem,
+            2vw,
+            2rem
+        );
+
+
+}
+
+
+
+
+
+
+/* =====================================================
+   TABLET
+===================================================== */
+
+
+@media(max-width:991px){
+
+
+    .sidebar {
+
+
+        transform:
+            translateX(-100%);
+
+
+    }
+
+
+
+    .sidebar.active {
+
+
+        transform:
+            translateX(0);
+
+
+    }
+
+
+
+
+    .main-content {
+
+
+        margin-left:0;
+
+
+
+        width:100%;
+
+
+    }
+
+
+
+    .navbar {
+
+
+        padding:
+            0 1rem;
+
+
+    }
+
+
+}
+
+
+
+
+
+
+
+/* =====================================================
+   CELULAR
+===================================================== */
+
+
+@media(max-width:600px){
+
+
+    .navbar {
+
+
+        height:60px;
+
+
+    }
+
+
+
+    .navbar h3 {
+
+
+        font-size:
+            .95rem;
+
+
+    }
+
+
+
+    .navbar-user {
+
+
+        gap:.5rem;
+
+
+    }
+
+
+
+    .page-container {
+
+
+        padding:.75rem;
+
+
+    }
+
+
+}

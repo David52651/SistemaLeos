@@ -1,0 +1,397 @@
+/* =====================================================
+   SISTEMA LEOS
+   Navbar Layout
+===================================================== */
+
+
+/* =====================================================
+   NAVBAR PRINCIPAL
+===================================================== */
+
+
+.navbar {
+
+    width:100%;
+
+    min-height:var(--navbar-height);
+
+    flex-shrink:0;
+    
+    background:var(--bg-navbar);
+
+    border-bottom:
+        1px solid var(--border-color);
+
+
+    display:flex;
+
+    align-items:center;
+
+
+    padding:
+        0 clamp(
+            1rem,
+            3vw,
+            3rem
+        );
+
+
+    box-sizing:border-box;
+
+}
+
+
+
+
+
+
+
+/* =====================================================
+   BOTON MENU MOBILE
+===================================================== */
+
+
+.menu-toggle {
+
+
+    display:none;
+
+
+
+    flex-shrink:0;
+
+
+
+    border:none;
+
+
+
+    background:transparent;
+
+
+
+    cursor:pointer;
+
+
+
+    color:
+        var(--text-primary);
+
+
+
+    font-size:
+
+
+        clamp(
+            1.3rem,
+            2vw,
+            1.8rem
+        );
+
+
+
+    padding:.25rem;
+
+
+
+}
+
+
+
+
+
+
+
+/* =====================================================
+   TITULO
+===================================================== */
+
+
+.navbar-title {
+
+    display:flex;
+
+    align-items:center;
+
+    flex:1;
+
+    min-width:0;
+
+}
+
+
+
+.navbar-title h3 {
+
+
+    margin:0;
+
+
+
+    color:
+        var(--text-primary);
+
+
+
+    font-size:
+
+
+        clamp(
+            1rem,
+            1.5vw,
+            1.25rem
+        );
+
+
+
+    font-weight:
+
+
+        var(--font-weight-semibold);
+
+
+
+    white-space:nowrap;
+
+
+
+}
+
+
+
+
+
+
+
+
+/* =====================================================
+   USUARIO
+===================================================== */
+
+
+.navbar-user {
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:flex-end;
+
+    gap:var(--space-3);
+
+    margin-left:auto;
+
+    flex-shrink:0;
+
+}
+
+
+
+.navbar-user span {
+
+
+    color:
+        var(--text-secondary);
+
+
+
+    font-weight:
+        var(--font-weight-medium);
+
+
+
+    white-space:nowrap;
+
+
+
+}
+
+
+
+
+
+
+
+
+/* =====================================================
+   TABLET
+===================================================== */
+
+
+@media(max-width:991px){
+
+
+
+    .navbar {
+
+
+        padding:
+            0 var(--space-4);
+
+
+
+    }
+
+
+
+    .menu-toggle {
+
+
+        display:block;
+
+
+
+    }
+
+
+
+    .navbar-title h3 {
+
+
+        font-size:
+            var(--font-size-md);
+
+
+
+    }
+
+
+
+    .navbar-user span {
+
+
+        display:none;
+
+
+
+    }
+
+
+
+}
+
+
+
+
+
+
+
+
+/* =====================================================
+   CELULAR
+===================================================== */
+
+
+@media(max-width:600px){
+
+
+
+    .navbar {
+
+
+        min-height:60px;
+
+
+
+        gap:
+
+
+            var(--space-2);
+
+
+
+    }
+
+
+
+
+
+
+    .navbar-title h3 {
+
+
+        font-size:
+
+
+            .95rem;
+
+
+
+        overflow:hidden;
+
+
+        text-overflow:ellipsis;
+
+
+
+    }
+
+
+
+
+
+
+    .navbar-user {
+
+
+        gap:.35rem;
+
+
+
+    }
+
+
+
+
+
+
+    .navbar-user .btn {
+
+
+        padding:
+
+
+            .4rem .7rem;
+
+
+
+        font-size:
+
+
+            .8rem;
+
+
+
+    }
+
+
+
+}
+
+
+
+
+
+
+
+/* =====================================================
+   CELULARES MUY PEQUEÑOS
+===================================================== */
+
+
+@media(max-width:380px){
+
+
+
+    .navbar-title h3 {
+
+
+        display:none;
+
+
+
+    }
+
+
+
+}

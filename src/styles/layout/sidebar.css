@@ -1,0 +1,331 @@
+/* =====================================================
+   SISTEMA LEOS
+   Sidebar Layout
+===================================================== */
+
+
+/* =====================================================
+   SIDEBAR PRINCIPAL
+===================================================== */
+
+
+.sidebar {
+
+    width: var(--sidebar-width);
+
+    height:100vh;
+
+    position:fixed;
+
+    top:0;
+
+    left:0;
+
+
+    background:var(--bg-sidebar);
+
+
+    border-right:
+        1px solid var(--border-color);
+
+
+    display:flex;
+
+    flex-direction:column;
+
+
+    z-index:var(--z-sidebar);
+
+
+    transition:
+        transform var(--transition-normal);
+
+}
+
+
+
+
+/* =====================================================
+   CABECERA SIDEBAR
+===================================================== */
+
+
+.sidebar-header {
+
+
+    height:
+        var(--navbar-height);
+
+
+
+    padding:
+        var(--space-4);
+
+
+
+    display:flex;
+
+
+    flex-direction:column;
+
+
+    justify-content:center;
+
+
+
+    border-bottom:
+        1px solid var(--border-color);
+
+
+}
+
+
+
+.sidebar-header h2 {
+
+
+    margin:0;
+
+
+    color:
+        var(--color-primary);
+
+
+    font-size:
+        var(--font-size-xl);
+
+
+    font-weight:
+        var(--font-weight-bold);
+
+
+}
+
+
+
+.sidebar-header small {
+
+
+    color:
+        var(--text-secondary);
+
+
+}
+
+
+
+
+
+
+/* =====================================================
+   MENU SIDEBAR
+===================================================== */
+
+
+.sidebar-menu {
+
+
+    padding:
+        var(--space-4);
+
+
+
+    display:flex;
+
+
+    flex-direction:column;
+
+
+
+    gap:.5rem;
+
+
+}
+
+
+
+
+
+/* =====================================================
+   ITEMS MENU
+===================================================== */
+
+
+.menu-item {
+
+
+    display:flex;
+
+
+    align-items:center;
+
+
+
+    padding:
+        .75rem 1rem;
+
+
+
+    border-radius:
+        var(--radius-md);
+
+
+
+    color:
+        var(--text-secondary);
+
+
+
+    text-decoration:none;
+
+
+
+    font-weight:
+        var(--font-weight-medium);
+
+
+
+    transition:
+        var(--transition-fast);
+
+
+}
+
+
+
+
+
+.menu-item:hover {
+
+
+    background:
+        var(--bg-hover);
+
+
+
+    color:
+        var(--color-primary);
+
+
+}
+
+
+
+
+
+
+.menu-item.active {
+
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--color-primary),
+            var(--color-primary-dark)
+        );
+
+
+    color:
+        var(--color-white);
+
+
+
+    box-shadow:
+        var(--shadow-md);
+
+
+}
+
+
+
+
+
+/* =====================================================
+   OVERLAY MOBILE
+===================================================== */
+
+
+.sidebar-overlay {
+
+
+    display:none;
+
+
+}
+
+
+
+
+
+
+
+/* =====================================================
+   TABLET Y MOVIL
+===================================================== */
+
+
+@media(max-width:991px){
+
+
+
+    .sidebar {
+
+
+        transform:
+            translateX(-100%);
+
+
+
+        box-shadow:
+            var(--shadow-lg);
+
+
+
+    }
+
+
+
+
+
+
+    .sidebar.active {
+
+
+        transform:
+            translateX(0);
+
+
+    }
+
+
+
+
+
+    .sidebar-overlay {
+
+
+        display:block;
+
+
+
+        position:fixed;
+
+
+
+        inset:0;
+
+
+
+        background:
+            rgba(0,0,0,.45);
+
+
+
+        z-index:
+            calc(var(--z-sidebar) - 1);
+
+
+    }
+
+
+}

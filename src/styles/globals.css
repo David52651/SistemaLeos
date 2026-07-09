@@ -8,6 +8,8 @@
 
 @import "./variables.css";
 
+@import "./layout/sidebar.css";
+@import "./layout/navbar.css";
 @import "./layout/container.css";
 
 
@@ -42,6 +44,8 @@ html{
 
 body{
 
+    margin:0;
+
     font-family:var(--font-family);
 
     background:var(--bg-body);
@@ -60,10 +64,16 @@ body{
 
 /* ---------- ROOT ---------- */
 
-#root{
-
-    min-height:100vh;
-
+#root {
+  width: 1126px;
+  max-width: 100%;
+  margin: 0 auto;
+  text-align: center;
+  border-inline: 1px solid var(--border);
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
 }
 
 /* ---------- ENLACES ---------- */
