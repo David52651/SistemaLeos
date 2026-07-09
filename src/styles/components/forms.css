@@ -12,40 +12,21 @@
 .form-container {
 
 
-    background:
-        var(--bg-card);
+    width:100%;
 
 
-    border:
-        1px solid var(--border-color);
+    display:flex;
 
 
-    border-radius:
-        var(--radius-lg);
+    flex-direction:column;
 
 
-    padding:
-        var(--space-6);
-
-
-    box-shadow:
-        var(--shadow-sm);
+    gap:var(--space-4);
 
 
 
 }
 
-
-
-
-.form-container:hover {
-
-
-    box-shadow:
-        var(--shadow-md);
-
-
-}
 
 
 
@@ -74,6 +55,9 @@
 
 
 }
+
+
+
 
 
 
@@ -117,6 +101,10 @@
 
 
 }
+
+
+
+
 
 
 
@@ -213,7 +201,6 @@
 
 
 
-
 .form-control:focus {
 
 
@@ -241,7 +228,7 @@
 
 
 /* =====================================================
-   SELECTS
+   SELECT
 ===================================================== */
 
 
@@ -260,6 +247,9 @@
 
 
 }
+
+
+
 
 
 
@@ -286,8 +276,10 @@ textarea.form-control {
 
 
 
+
+
 /* =====================================================
-   INPUT DESHABILITADO
+   DESHABILITADO
 ===================================================== */
 
 
@@ -295,8 +287,6 @@ textarea.form-control {
 
 
     background:
-
-
         var(--bg-hover);
 
 
@@ -316,10 +306,10 @@ textarea.form-control {
 
 
 
+
 /* =====================================================
    VALIDACIONES
 ===================================================== */
-
 
 
 .form-error {
@@ -335,13 +325,7 @@ textarea.form-control {
 
 
 
-    margin-top:
-        .25rem;
-
-
-
 }
-
 
 
 
@@ -355,8 +339,6 @@ textarea.form-control {
 
 
 }
-
-
 
 
 
@@ -383,9 +365,8 @@ textarea.form-control {
 
 
 /* =====================================================
-   GRID DE FORMULARIOS
+   GRID FORMULARIOS
 ===================================================== */
-
 
 
 .form-grid {
@@ -396,6 +377,7 @@ textarea.form-control {
 
 
     grid-template-columns:
+
         repeat(
             2,
             minmax(0,1fr)
@@ -422,6 +404,7 @@ textarea.form-control {
 
 
     grid-template-columns:
+
         repeat(
             3,
             minmax(0,1fr)
@@ -441,10 +424,11 @@ textarea.form-control {
 
 
 
-/* =====================================================
-   BOTONES DEL FORMULARIO
-===================================================== */
 
+
+/* =====================================================
+   ACCIONES
+===================================================== */
 
 
 .form-actions {
@@ -479,10 +463,11 @@ textarea.form-control {
 
 
 
+
+
 /* =====================================================
    CHECKBOX / RADIO
 ===================================================== */
-
 
 
 .form-check {
@@ -499,6 +484,7 @@ textarea.form-control {
 
 
 }
+
 
 
 
@@ -528,7 +514,6 @@ textarea.form-control {
 /* =====================================================
    BUSCADOR
 ===================================================== */
-
 
 
 .search-box {
@@ -571,6 +556,7 @@ textarea.form-control {
 
 
 }
+
 
 
 
@@ -632,15 +618,15 @@ textarea.form-control {
 
 
 
-@media(max-width:600px){
 
+@media(max-width:600px){
 
 
     .form-container {
 
 
-        padding:
-            var(--space-4);
+        gap:
+            var(--space-3);
 
 
 

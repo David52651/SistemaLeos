@@ -20,6 +20,10 @@
 @import "./components/alerts.css";
 @import "./components/loading.css";
 @import "./components/badges.css";
+@import "./components/inputs.css";
+@import "./components/selects.css";
+@import "./components/checkbox.css";
+@import "./components/multiselect.css";
 
 
 @import "./modules/login.css";

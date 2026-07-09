@@ -1,407 +1,865 @@
 import { useForm } from "react-hook-form";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 
-import { toast } from "sonner";
+import Card from "@/components/ui/Card";
+import Button from "@/components/ui/Button";
+import Input from "@/components/ui/Input";
+import Select from "@/components/ui/Select";
+import MultiSelectCheckbox from "@/components/ui/MultiSelectCheckbox";
 
-import CatalogoModal from "./CatalogoModal";
+
+import { useCatalogosInventario } 
+from "../hooks/useCatalogosInventario";
 
 
-import { createCategoria,} from "@/modules/catalogos/categorias/services/categorias.service";
-import { createTalla,} from "@/modules/catalogos/tallas/services/tallas.service";
-import { createPropietario,} from "@/modules/catalogos/propietarios/services/propietarios.service";
-import { createDanza,} from "@/modules/catalogos/danzas/services/danzas.service";
+import { generarCodigoArticulo }
+from "../utils/generarCodigoArticulo";
 
-import {  useCatalogosInventario,} from "../hooks/useCatalogosInventario";
-import {  generarCodigoArticulo,} from "../utils/generarCodigoArticulo";
 
 
 export default function ArticuloForm({
+
   onSubmit,
+
   initialValues,
+
   onOpenCategoria,
+
   onOpenTalla,
+
   onOpenPropietario,
+
   onOpenDanza,
+
 }) {
 
+
+const [open,setOpen] = useState(false);
+
+
+
+
+
 const {
+
   categorias,
+
   tallas,
+
   propietarios,
+
   danzas,
-} = useCatalogosInventario();
+
+}=useCatalogosInventario();
+
+
+
 
 
 const {
-  register,
-  handleSubmit,
-  reset,
-  watch,
-  setValue,
-} = useForm({
 
-    
-    defaultValues: {
+ register,
 
-  nombre: "",
+ handleSubmit,
 
-  descripcion: "",
+ reset,
 
-  categoria_id: "",
+ watch,
 
-  talla_id: "",
-
-  propietario_id: "",
-
-  genero: "unisex",
-
-  stock_actual: 0,
-
-  stock_min: 3,
-
-  observaciones: "",
-
-  activo: true,
-
-  danzas_ids: [],
-
-},
-
-  });
-  const nombre = watch("nombre");
-  const tallaId = watch("talla_id");
-
-  useEffect(() => {
-
-    if (initialValues) {
-      reset(initialValues);
-    }
-
-  }, [initialValues, reset]);
+ setValue,
 
 
-  
+}=useForm({
 
 
-  async function enviar(data) {
+defaultValues:{
 
-    console.log(
-  "DANZAS:",
-  data.danzas_ids
+
+nombre:"",
+
+descripcion:"",
+
+categoria_id:"",
+
+talla_id:"",
+
+propietario_id:"",
+
+genero:"unisex",
+
+stock_actual:0,
+
+stock_min:3,
+
+observaciones:"",
+
+activo:true,
+
+danzas_ids:[],
+
+
+}
+
+
+});
+
+
+
+
+
+const nombre =
+watch("nombre");
+
+
+const tallaId =
+watch("talla_id");
+
+
+
+
+const danzasSeleccionadas =
+watch("danzas_ids") || [];
+
+
+
+
+
+
+
+useEffect(()=>{
+
+
+ if(initialValues){
+
+    reset(initialValues);
+
+    setOpen(true);
+
+ }
+
+
+},[initialValues,reset]);
+
+
+
+
+
+
+
+
+async function enviar(data){
+
+
+ await onSubmit(data);
+
+
+
+ if(!initialValues){
+
+    reset();
+
+    setOpen(false);
+
+ }
+
+
+}
+
+
+
+
+
+
+
+
+if(
+
+categorias.isLoading ||
+
+tallas.isLoading ||
+
+propietarios.isLoading ||
+
+danzas.isLoading
+
+){
+
+return (
+
+<p>
+
+Cargando catálogos...
+
+</p>
+
+)
+
+}
+
+
+
+
+
+
+
+
+const tallaSeleccionada =
+
+tallas.data?.find(
+
+t=>t.id===tallaId
+
 );
 
 
-await onSubmit(data);
-    if (!initialValues) {
-      reset();
-    }
 
-  }
 
-  if (
-  categorias.isLoading ||
-  tallas.isLoading ||
-  propietarios.isLoading ||
-  danzas.isLoading
-) {
-  return <p>Cargando catálogos...</p>;
-}
-  const tallaSeleccionada =
-  tallas.data?.find(
-    t => t.id === tallaId
-  );
 
 const codigoGenerado =
-  generarCodigoArticulo(
-    nombre,
-    tallaSeleccionada?.nombre
-  );
-
-  return (
-
-    <form
-      onSubmit={handleSubmit(enviar)}
-    >
-
-      <h3>Datos generales</h3>
-
-      <input
-        {...register("nombre", {
-          required: true,
-        })}
-        placeholder="Nombre del artículo" />
-
-      <br />
-      <br />
-
-      <textarea
-        {...register("descripcion")}
-        placeholder="Descripción" />
-
-      <br />
-      <br />
-
-      <label>Categoría</label>
-
-      <select
-        {...register("categoria_id", {
-          required: true,
-        })}
-      >
-
-        <option value="">
-          Seleccione
-        </option>
-
-        {categorias.data?.map(
-          categoria => (
-            <option
-              key={categoria.id}
-              value={categoria.id}
-            >
-              {categoria.nombre}
-            </option>
-          )
-        )}
-
-      </select>
-      <button type="button" onClick={onOpenCategoria}>
-  + Nueva categoría
-</button>
-      <br />
-      <br />
-
-      <label>Talla</label>
-
-      <select
-        {...register("talla_id", {
-          required: true,
-        })}
-      >
-
-        <option value="">
-          Seleccione
-        </option>
-
-        {tallas.data?.map(
-          talla => (
-            <option
-              key={talla.id}
-              value={talla.id}
-            >
-              {talla.nombre}
-            </option>
-          )
-        )}
-
-      </select>
-      <button type="button" onClick={onOpenTalla}>
-  + Nueva talla
-</button>
-      <br />
-      <br />
-
-      <label>Propietario</label>
-
-      <select
-        {...register("propietario_id", {
-          required: true,
-        })}
-      >
-
-        <option value="">
-          Seleccione
-        </option>
-
-        {propietarios.data?.map(
-          propietario => (
-            <option
-              key={propietario.id}
-              value={propietario.id}
-            >
-              {propietario.nombre}
-            </option>
-          )
-        )}
 
-      </select>
-     <button type="button" onClick={onOpenPropietario}>
-  + Nuevo propietario
-</button>
-      <br />
-      <br />
+generarCodigoArticulo(
 
-      <label>Danzas</label>
+nombre,
 
-      <div>
+tallaSeleccionada?.nombre
 
-        {danzas.data?.map((danza) => {
+);
 
-          const seleccionadas = watch("danzas_ids") || [];
 
-          return (
 
-            <div key={danza.id}>
 
-              <label>
 
-                <input
-                  type="checkbox"
-                  checked={seleccionadas.includes(
-                    danza.id
-                  )}
-                  onChange={(e) => {
 
-                    if (e.target.checked) {
 
-                      setValue(
-                        "danzas_ids",
-                        [
-                          ...seleccionadas,
-                          danza.id,
-                        ],
-                        {
-                          shouldValidate: true,
-                        }
-                      );
 
-                    } else {
-
-                      setValue(
-                        "danzas_ids",
-                        seleccionadas.filter(
-                          id => id !== danza.id
-                        ),
-                        {
-                          shouldValidate: true,
-                        }
-                      );
 
-                    }
+return (
 
-                  } } />
 
-                {" "}
-                {danza.nombre}
+<div className="articulo-form-container">
 
-              </label>
 
-            </div>
 
-          );
+<Button
 
-        })}
+type="button"
 
-      </div>
+variant="primary"
 
-      <input
-        type="hidden"
-        {...register("danzas_ids")} />
-     <button type="button" onClick={onOpenDanza}>
-  + Nueva danza
-</button>
-      <br />
-      <br />
+onClick={()=>setOpen(!open)}
 
-      <label>Género</label>
+>
 
-      <select
-        {...register("genero", {
-          required: true,
-        })}
-      >
 
-        <option value="masculino">
-          Masculino
-        </option>
+{
 
-        <option value="femenino">
-          Femenino
-        </option>
+open
 
-        <option value="unisex">
-          Unisex
-        </option>
+?
 
-      </select>
+"Cancelar"
 
-      <br />
-      <br />
+:
 
-      <label>Stock actual</label>
+"+ Nuevo artículo"
 
-      <input
-        type="number"
-        min="0"
-        {...register(
-          "stock_actual",
-          {
-            valueAsNumber: true,
-          }
-        )} />
+}
 
-      <br />
-      <br />
 
-      <label>Stock mínimo</label>
+</Button>
 
-      <input
-        type="number"
-        min="1"
-        {...register(
-          "stock_min",
-          {
-            valueAsNumber: true,
 
-            validate: value => value <= watch("stock_actual")
-              || "El stock mínimo no puede ser mayor al stock actual",
-          }
-        )} />
 
-      <br />
-      <br />
 
-      <textarea
-        {...register(
-          "observaciones"
-        )}
-        placeholder="Observaciones" />
 
-      <br />
-      <br />
-      <hr />
+{
 
+open && (
 
 
 
-      <h3>
-        Código generado
-      </h3>
+<form
 
-      <p>
+onSubmit={handleSubmit(enviar)}
 
-        <strong>
+className="form-container"
 
-          {codigoGenerado || "—"}
+>
 
-        </strong>
 
-      </p>
 
-      <hr />
-      <button type="submit">
+<Card>
 
-        {initialValues
-          ? "Actualizar"
-          : "Guardar"}
-      </button>
 
+<h3>
 
+Datos generales
 
-    </form>
-  
-  );
-  
+</h3>
+
+
+
+
+
+<Input
+
+label="Nombre del artículo"
+
+placeholder="Ejemplo: Camisa Blanca"
+
+{
+
+...register(
+
+"nombre",
+
+{
+
+required:true
+
+}
+
+)
+
+}
+
+/>
+
+
+
+
+
+<Input
+
+label="Descripción"
+
+placeholder="Descripción del artículo"
+
+as="textarea"
+
+{
+
+...register("descripcion")
+
+}
+
+/>
+
+
+
+
+
+
+
+<Select
+
+label="Categoría"
+
+{
+
+...register(
+
+"categoria_id",
+
+{
+
+required:true
+
+}
+
+)
+
+}
+
+>
+
+
+<option value="">
+
+Seleccione
+
+</option>
+
+
+{
+
+categorias.data?.map(
+
+categoria=>(
+
+<option
+
+key={categoria.id}
+
+value={categoria.id}
+
+>
+
+{categoria.nombre}
+
+</option>
+
+)
+
+)
+
+}
+
+
+</Select>
+
+
+
+
+
+<Button
+
+type="button"
+
+variant="secondary"
+
+onClick={onOpenCategoria}
+
+>
+
++ Nueva categoría
+
+</Button>
+
+
+
+
+
+
+
+
+<Select
+
+label="Talla"
+
+{
+
+...register(
+
+"talla_id",
+
+{
+
+required:true
+
+}
+
+)
+
+}
+
+>
+
+
+<option value="">
+
+Seleccione
+
+</option>
+
+
+{
+
+tallas.data?.map(
+
+talla=>(
+
+
+<option
+
+key={talla.id}
+
+value={talla.id}
+
+>
+
+{talla.nombre}
+
+</option>
+
+
+)
+
+)
+
+}
+
+
+</Select>
+
+
+
+
+
+<Button
+
+type="button"
+
+variant="secondary"
+
+onClick={onOpenTalla}
+
+>
+
++ Nueva talla
+
+</Button>
+
+
+
+
+
+
+
+
+<Select
+
+label="Propietario"
+
+{
+
+...register(
+
+"propietario_id",
+
+{
+
+required:true
+
+}
+
+)
+
+}
+
+>
+
+
+<option value="">
+
+Seleccione
+
+</option>
+
+
+{
+
+propietarios.data?.map(
+
+propietario=>(
+
+
+<option
+
+key={propietario.id}
+
+value={propietario.id}
+
+>
+
+{propietario.nombre}
+
+</option>
+
+
+)
+
+)
+
+}
+
+
+</Select>
+
+
+
+
+
+
+<Button
+
+type="button"
+
+variant="secondary"
+
+onClick={onOpenPropietario}
+
+>
+
++ Nuevo propietario
+
+</Button>
+
+
+
+
+
+
+
+
+<MultiSelectCheckbox
+
+label="Danzas asociadas"
+
+options={danzas.data || []}
+
+value={danzasSeleccionadas}
+
+onChange={(values)=>{
+
+setValue(
+
+"danzas_ids",
+
+values,
+
+{
+
+shouldValidate:true
+
+}
+
+);
+
+}}
+
+/>
+
+
+
+
+
+
+<Button
+
+type="button"
+
+variant="secondary"
+
+onClick={onOpenDanza}
+
+>
+
++ Nueva danza
+
+</Button>
+
+
+
+
+
+
+
+
+
+<Select
+
+label="Género"
+
+{
+
+...register("genero")
+
+}
+
+>
+
+
+<option value="masculino">
+
+Masculino
+
+</option>
+
+
+<option value="femenino">
+
+Femenino
+
+</option>
+
+
+<option value="unisex">
+
+Unisex
+
+</option>
+
+
+</Select>
+
+
+
+
+
+
+
+
+
+
+<Input
+
+label="Stock actual"
+
+type="number"
+
+min="0"
+
+{
+
+...register(
+
+"stock_actual",
+
+{
+
+valueAsNumber:true
+
+}
+
+)
+
+}
+
+/>
+
+
+
+
+
+
+<Input
+
+label="Stock mínimo"
+
+type="number"
+
+min="1"
+
+{
+
+...register(
+
+"stock_min",
+
+{
+
+valueAsNumber:true
+
+}
+
+)
+
+}
+
+/>
+
+
+
+
+
+
+<Input
+
+label="Observaciones"
+
+as="textarea"
+
+{
+
+...register("observaciones")
+
+}
+
+/>
+
+
+
+
+
+
+
+<div className="codigo-generado">
+
+
+<h3>
+
+Código generado
+
+</h3>
+
+
+<strong>
+
+{codigoGenerado || "—"}
+
+</strong>
+
+
+</div>
+
+
+
+
+
+
+
+
+<Button
+
+type="submit"
+
+variant="primary"
+
+>
+
+
+{
+
+initialValues
+
+?
+
+"Actualizar"
+
+:
+
+"Guardar"
+
+}
+
+
+</Button>
+
+
+
+
+
+</Card>
+
+
+
+</form>
+
+
+)
+
+
+}
+
+
+
+</div>
+
+
+)
+
+
 
 }

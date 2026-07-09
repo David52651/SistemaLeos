@@ -1,0 +1,346 @@
+/* ==========================================================
+   SISTEMA LEOS
+   Multi Select Checkbox
+   ========================================================== */
+
+
+/* CONTENEDOR PRINCIPAL */
+
+.multi-select {
+
+
+    width:100%;
+
+
+    position:relative;
+
+
+    display:flex;
+
+
+    flex-direction:column;
+
+
+    gap:.5rem;
+
+
+}
+
+
+
+
+
+/* BOTON QUE ABRE EL DROPDOWN */
+
+
+.multi-select-button {
+
+
+    width:100%;
+
+
+    min-height:42px;
+
+
+    padding:.65rem 1rem;
+
+
+    display:flex;
+
+
+    align-items:center;
+
+
+    justify-content:space-between;
+
+
+    gap:1rem;
+
+
+    background:var(--bg-input);
+
+
+    color:var(--text-primary);
+
+
+    border:
+
+
+        1px solid var(--border-color);
+
+
+
+    border-radius:
+
+
+        var(--radius-sm);
+
+
+
+    font-family:
+
+        var(--font-family);
+
+
+
+    font-size:
+
+        var(--font-size-md);
+
+
+
+    cursor:pointer;
+
+
+
+    transition:
+
+        var(--transition-normal);
+
+
+
+}
+
+
+
+
+
+.multi-select-button:hover {
+
+
+    border-color:
+
+        var(--border-hover);
+
+
+}
+
+
+
+
+
+.multi-select-button:focus {
+
+
+    outline:none;
+
+
+    border-color:
+
+        var(--color-primary);
+
+
+
+    box-shadow:
+
+        0 0 0 3px rgba(0,71,171,.15);
+
+
+
+}
+
+
+
+
+
+
+
+/* TEXTO DEL BOTON */
+
+
+.multi-select-button span {
+
+
+    font-size:.8rem;
+
+
+    transition:
+
+        transform var(--transition-fast);
+
+
+
+}
+
+
+
+
+
+
+
+
+/* LISTA DESPLEGABLE */
+
+
+.multi-select-options {
+
+
+    position:absolute;
+
+
+    top:calc(100% + .5rem);
+
+
+    left:0;
+
+
+    width:100%;
+
+
+    max-height:250px;
+
+
+    overflow-y:auto;
+
+
+
+    background:
+
+        var(--bg-multiselect);
+
+
+
+    border:
+
+
+        1px solid var(--border-color);
+
+
+
+    border-radius:
+
+
+        var(--radius-sm);
+
+
+
+    padding:
+
+
+        .75rem;
+
+
+
+    box-shadow:
+
+
+        var(--shadow-lg);
+
+
+
+    z-index:
+
+
+        100;
+
+
+
+}
+
+
+
+
+
+
+
+/* CADA OPCION */
+
+
+.multi-select-options 
+.checkbox-container {
+
+
+    padding:.5rem;
+
+
+    border-radius:
+
+
+        var(--radius-xs);
+
+
+
+    transition:
+
+        var(--transition-fast);
+
+
+
+}
+
+
+
+
+
+.multi-select-options
+.checkbox-container:hover {
+
+
+    background:
+
+        var(--bg-hover);
+
+
+
+}
+
+
+
+
+
+
+
+
+/* CUANDO HAY MUCHAS DANZAS */
+
+
+.multi-select-options::-webkit-scrollbar {
+
+
+    width:8px;
+
+
+}
+
+
+.multi-select-options::-webkit-scrollbar-thumb {
+
+
+    background:
+
+        var(--border-color);
+
+
+
+    border-radius:
+
+        var(--radius-circle);
+
+
+
+}
+
+
+
+
+
+
+
+/* MOBILE */
+
+
+@media(max-width:600px){
+
+
+
+    .multi-select-options {
+
+
+        max-height:200px;
+
+
+    }
+
+
+
+}

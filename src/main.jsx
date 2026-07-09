@@ -21,8 +21,8 @@ import { AuthProvider } from "@/contexts/AuthContext";
 
 
 
-document.documentElement.setAttribute("data-theme", "dark");
 
+document.documentElement.setAttribute("data-theme", "dark");
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
 

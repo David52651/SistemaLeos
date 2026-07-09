@@ -1,0 +1,113 @@
+.form-group{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:.5rem;
+
+}
+
+
+
+.form-label{
+
+    color:var(--text-primary);
+
+    font-weight:
+    var(--font-weight-medium);
+
+}
+
+
+
+.form-select{
+
+
+    width:100%;
+
+
+    padding:.65rem 1rem;
+
+
+    border:
+
+    1px solid var(--border-color);
+
+
+
+    border-radius:
+
+    var(--radius-sm);
+
+
+
+    background:
+
+    var(--bg-input);
+
+
+
+    color:
+
+    var(--text-primary);
+
+
+
+    font-family:
+
+    var(--font-family);
+
+
+
+    transition:
+
+    var(--transition-normal);
+
+
+}
+
+
+
+.form-select:hover{
+
+
+    border-color:
+
+    var(--border-hover);
+
+
+}
+
+
+
+.form-select:focus{
+
+
+    border-color:
+
+    var(--color-primary);
+
+
+    box-shadow:
+
+    0 0 0 3px rgba(0,71,171,.15);
+
+
+}
+
+
+
+.form-error{
+
+
+    color:
+
+    var(--danger);
+
+
+    font-size:
+
+    var(--font-size-sm);
+
+}
