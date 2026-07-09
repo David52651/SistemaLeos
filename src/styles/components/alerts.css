@@ -1,0 +1,766 @@
+/* =====================================================
+   SISTEMA LEOS
+   Alert System
+===================================================== */
+
+
+/* =====================================================
+   ALERTA BASE
+===================================================== */
+
+
+.alert {
+
+
+    width:100%;
+
+
+
+    display:flex;
+
+
+
+    align-items:flex-start;
+
+
+
+    gap:
+
+
+        .75rem;
+
+
+
+    padding:
+
+
+        1rem 1.25rem;
+
+
+
+    border-radius:
+
+
+        var(--radius-md);
+
+
+
+    border:
+
+
+        1px solid transparent;
+
+
+
+    font-size:
+
+
+        var(--font-size-sm);
+
+
+
+    line-height:
+
+
+        1.5;
+
+
+
+    box-sizing:border-box;
+
+
+
+}
+
+
+
+
+
+
+
+/* =====================================================
+   ICONO
+===================================================== */
+
+
+.alert-icon {
+
+
+    width:
+
+
+        24px;
+
+
+
+    height:
+
+
+        24px;
+
+
+
+    flex-shrink:0;
+
+
+
+    display:flex;
+
+
+
+    align-items:center;
+
+
+
+    justify-content:center;
+
+
+
+    font-weight:
+
+
+        var(--font-weight-bold);
+
+
+
+}
+
+
+
+
+
+
+
+
+/* =====================================================
+   CONTENIDO
+===================================================== */
+
+
+.alert-content {
+
+
+    flex:1;
+
+
+
+}
+
+
+
+
+
+.alert-title {
+
+
+    margin-bottom:
+
+
+        .25rem;
+
+
+
+    font-weight:
+
+
+        var(--font-weight-semibold);
+
+
+
+    color:
+
+
+        var(--text-primary);
+
+
+
+}
+
+
+
+
+
+.alert-message {
+
+
+    color:
+
+
+        var(--text-secondary);
+
+
+
+}
+
+
+
+
+
+
+
+
+/* =====================================================
+   CERRAR ALERTA
+===================================================== */
+
+
+.alert-close {
+
+
+    border:none;
+
+
+
+    background:none;
+
+
+
+    cursor:pointer;
+
+
+
+    font-size:
+
+
+        1.1rem;
+
+
+
+    color:
+
+
+        var(--text-secondary);
+
+
+
+    opacity:.7;
+
+
+
+}
+
+
+
+.alert-close:hover {
+
+
+    opacity:1;
+
+
+
+}
+
+
+
+
+
+
+
+
+/* =====================================================
+   SUCCESS
+===================================================== */
+
+
+.alert-success {
+
+
+    background:
+
+
+        rgba(34,197,94,.12);
+
+
+
+    border-color:
+
+
+        rgba(34,197,94,.35);
+
+
+
+}
+
+
+
+
+
+.alert-success .alert-icon {
+
+
+    color:
+
+
+        var(--success);
+
+
+
+}
+
+
+
+
+
+
+
+
+/* =====================================================
+   ERROR / DANGER
+===================================================== */
+
+
+.alert-danger {
+
+
+    background:
+
+
+        rgba(237,33,0,.12);
+
+
+
+    border-color:
+
+
+        rgba(237,33,0,.35);
+
+
+
+}
+
+
+
+
+
+.alert-danger .alert-icon {
+
+
+    color:
+
+
+        var(--danger);
+
+
+
+}
+
+
+
+
+
+
+
+
+/* =====================================================
+   WARNING
+===================================================== */
+
+
+.alert-warning {
+
+
+    background:
+
+
+        rgba(239,184,16,.15);
+
+
+
+    border-color:
+
+
+        rgba(239,184,16,.35);
+
+
+
+}
+
+
+
+
+
+.alert-warning .alert-icon {
+
+
+    color:
+
+
+        var(--warning);
+
+
+
+}
+
+
+
+
+
+
+
+
+/* =====================================================
+   INFORMATION
+===================================================== */
+
+
+.alert-info {
+
+
+    background:
+
+
+        rgba(15,199,250,.12);
+
+
+
+    border-color:
+
+
+        rgba(15,199,250,.35);
+
+
+
+}
+
+
+
+
+
+.alert-info .alert-icon {
+
+
+    color:
+
+
+        var(--info);
+
+
+
+}
+
+
+
+
+
+
+
+
+/* =====================================================
+   ALERT INSTITUCIONAL
+===================================================== */
+
+
+.alert-primary {
+
+
+    background:
+
+
+        rgba(0,71,171,.12);
+
+
+
+    border-color:
+
+
+        rgba(0,71,171,.35);
+
+
+
+}
+
+
+
+
+
+.alert-primary .alert-icon {
+
+
+    color:
+
+
+        var(--color-primary);
+
+
+
+}
+
+
+
+
+
+
+
+
+/* =====================================================
+   ALERT FLOTANTE
+   Para mensajes tipo toast
+===================================================== */
+
+
+.alert-floating {
+
+
+    position:fixed;
+
+
+
+    right:
+
+
+        1.5rem;
+
+
+
+    bottom:
+
+
+        1.5rem;
+
+
+
+    max-width:
+
+
+        420px;
+
+
+
+    z-index:
+
+
+        var(--z-toast);
+
+
+
+    box-shadow:
+
+
+        var(--shadow-lg);
+
+
+
+    animation:
+
+
+        alertShow .25s ease;
+
+
+
+}
+
+
+
+
+
+
+
+@keyframes alertShow {
+
+
+    from {
+
+
+        opacity:0;
+
+
+        transform:
+
+
+            translateY(20px);
+
+
+
+    }
+
+
+
+    to {
+
+
+        opacity:1;
+
+
+        transform:
+
+
+            translateY(0);
+
+
+
+    }
+
+
+}
+
+
+
+
+
+
+
+
+/* =====================================================
+   ESTADO VACIO
+   Tablas sin registros
+===================================================== */
+
+
+.empty-state {
+
+
+    width:100%;
+
+
+
+    padding:
+
+
+        3rem 1rem;
+
+
+
+    text-align:center;
+
+
+
+    color:
+
+
+        var(--text-secondary);
+
+
+
+}
+
+
+
+
+
+.empty-state-icon {
+
+
+    font-size:
+
+
+        3rem;
+
+
+
+    margin-bottom:
+
+
+        1rem;
+
+
+
+    color:
+
+
+        var(--color-secondary);
+
+
+
+}
+
+
+
+
+
+.empty-state-title {
+
+
+    font-size:
+
+
+        var(--font-size-lg);
+
+
+
+    font-weight:
+
+
+        var(--font-weight-semibold);
+
+
+
+    color:
+
+
+        var(--text-primary);
+
+
+
+}
+
+
+
+
+
+
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+
+@media(max-width:768px){
+
+
+
+    .alert {
+
+
+        padding:
+
+
+            .85rem;
+
+
+
+        font-size:
+
+
+            var(--font-size-xs);
+
+
+
+    }
+
+
+
+
+
+    .alert-floating {
+
+
+        left:
+
+
+            1rem;
+
+
+
+        right:
+
+
+            1rem;
+
+
+
+        bottom:
+
+
+            1rem;
+
+
+
+        max-width:none;
+
+
+
+    }
+
+
+}

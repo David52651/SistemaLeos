@@ -1,46 +1,190 @@
-import { Link } from "react-router-dom";
-import { Outlet } from "react-router-dom";
+import { NavLink, Outlet } from "react-router-dom";
+
 import { logout } from "@/services/auth.service";
 import { useAuth } from "@/contexts/AuthContext";
+
 
 export default function MainLayout() {
 
   const { perfil } = useAuth();
 
+
+  const menu = [
+
+    {
+      nombre: "Dashboard",
+      ruta: "/",
+    },
+
+    {
+      nombre: "Inventario",
+      ruta: "/inventario",
+    },
+
+    {
+      nombre: "Usuarios",
+      ruta: "/usuarios",
+    },
+
+    {
+      nombre: "Categorías",
+      ruta: "/categorias",
+    },
+
+    {
+      nombre: "Tallas",
+      ruta: "/tallas",
+    },
+
+    {
+      nombre: "Propietarios",
+      ruta: "/propietarios",
+    },
+
+    {
+      nombre: "Danzas",
+      ruta: "/danzas",
+    },
+
+  ];
+
+
   return (
-    <div>
 
-      <nav>
+    <div className="app-layout">
 
-        <Link to="/">Dashboard</Link>
-        {" | "}
 
-        <Link to="/inventario">Inventario</Link>
-        {" | "}
+      {/* ===========================
+          SIDEBAR
+      ============================ */}
 
-        <Link to="/usuarios">Usuarios</Link>
-        {" | "}
-        <Link to="/categorias">Categorías</Link>
-        {" | "}
-        <Link to="/tallas">Tallas</Link>
-        {" | "}
-        <Link to="/propietarios">Propietarios</Link>
-        {" | "}
-        <Link to="/danzas">Danzas</Link>
-        {" | "}
-        <span>{perfil?.nombre_completo}</span>
-        {" | "}
+      <aside className="sidebar">
 
-        <button onClick={logout}>
-          Salir
-        </button>
 
-      </nav>
+        <div className="sidebar-header">
 
-      <hr />
 
-      <Outlet />
+          <h2>
+            SistemaLeos
+          </h2>
+
+
+          <small>
+            Gestión Folclórica
+          </small>
+
+
+        </div>
+
+
+
+        <nav className="sidebar-menu">
+
+
+          {
+            menu.map(
+              item => (
+
+                <NavLink
+
+                  key={item.ruta}
+
+                  to={item.ruta}
+
+                  className={({isActive}) =>
+                    isActive
+                    ? "menu-item active"
+                    : "menu-item"
+                  }
+
+                >
+
+                  {item.nombre}
+
+                </NavLink>
+
+              )
+            )
+          }
+
+
+        </nav>
+
+
+
+      </aside>
+
+
+
+      {/* ===========================
+          CONTENIDO PRINCIPAL
+      ============================ */}
+
+
+      <main className="main-content">
+
+
+        <header className="navbar">
+
+
+          <div>
+
+
+            <h3>
+              Panel administrativo
+            </h3>
+
+
+          </div>
+
+
+
+          <div className="navbar-user">
+
+
+            <span>
+
+              {perfil?.nombre_completo}
+
+            </span>
+
+
+
+            <button
+
+              className="btn btn-danger"
+
+              onClick={logout}
+
+            >
+
+              Salir
+
+            </button>
+
+
+          </div>
+
+
+        </header>
+
+
+
+        <section className="page-container">
+
+
+          <Outlet />
+
+
+        </section>
+
+
+
+      </main>
+
 
     </div>
+
   );
+
 }

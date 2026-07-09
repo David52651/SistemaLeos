@@ -1,0 +1,953 @@
+/* =====================================================
+   SISTEMA LEOS
+   Responsive System
+===================================================== */
+
+
+/*
+   BREAKPOINTS
+
+   Desktop:
+   >1200px
+
+   Laptop:
+   992px - 1199px
+
+   Tablet:
+   768px - 991px
+
+   Mobile:
+   <768px
+
+   Small Mobile:
+   <480px
+
+*/
+
+
+
+
+
+
+/* =====================================================
+   CONTENEDOR GENERAL
+===================================================== */
+
+
+.container-fluid {
+
+
+    width:100%;
+
+
+    padding-left:
+
+
+        var(--space-4);
+
+
+    padding-right:
+
+
+        var(--space-4);
+
+
+}
+
+
+
+
+
+
+
+
+/* =====================================================
+   DESKTOP GRANDE
+===================================================== */
+
+
+@media(min-width:1200px){
+
+
+
+    .container {
+
+
+        max-width:
+
+
+            1400px;
+
+
+        margin:auto;
+
+
+    }
+
+
+
+}
+
+
+
+
+
+
+
+
+/* =====================================================
+   LAPTOP
+===================================================== */
+
+
+@media(max-width:1199px){
+
+
+
+    :root {
+
+
+        --sidebar-width:
+
+
+            230px;
+
+
+    }
+
+
+
+
+
+    .page-content {
+
+
+        padding:
+
+
+            var(--space-5);
+
+
+    }
+
+
+
+
+
+    .table-container {
+
+
+        overflow-x:auto;
+
+
+    }
+
+
+
+}
+
+
+
+
+
+
+
+
+/* =====================================================
+   TABLET
+===================================================== */
+
+
+@media(max-width:991px){
+
+
+
+    /*
+       Layout
+    */
+
+
+    .main-layout {
+
+
+        flex-direction:
+
+
+            column;
+
+
+    }
+
+
+
+
+
+    /*
+       Sidebar
+    */
+
+
+    .sidebar {
+
+
+        position:
+
+
+            fixed;
+
+
+        left:
+
+
+            -100%;
+
+
+        width:
+
+
+            var(--sidebar-width);
+
+
+        transition:
+
+
+            var(--transition-normal);
+
+
+        z-index:
+
+
+            var(--z-sidebar);
+
+
+
+    }
+
+
+
+
+
+    .sidebar.active {
+
+
+        left:
+
+
+            0;
+
+
+    }
+
+
+
+
+
+
+
+    /*
+       Navbar
+    */
+
+
+    .navbar {
+
+
+        height:
+
+
+            64px;
+
+
+    }
+
+
+
+
+
+
+
+    /*
+       Cards
+    */
+
+
+    .card-grid {
+
+
+        grid-template-columns:
+
+
+            repeat(2,1fr);
+
+
+    }
+
+
+
+
+
+
+
+    /*
+       Formularios
+    */
+
+
+    .form-grid {
+
+
+        grid-template-columns:
+
+
+            repeat(1,1fr);
+
+
+    }
+
+
+
+
+
+
+
+    /*
+       Tablas
+    */
+
+
+    .table-wrapper {
+
+
+        overflow-x:auto;
+
+
+        width:100%;
+
+
+    }
+
+
+
+
+
+    table {
+
+
+        min-width:
+
+
+            700px;
+
+
+    }
+
+
+
+
+
+
+
+
+    /*
+       Botones
+    */
+
+
+    .btn-group {
+
+
+        flex-wrap:
+
+
+            wrap;
+
+
+    }
+
+
+
+}
+
+
+
+
+
+
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+
+@media(max-width:767px){
+
+
+
+    /*
+       Variables móviles
+    */
+
+
+    :root {
+
+
+        --navbar-height:
+
+
+            60px;
+
+
+
+        --sidebar-width:
+
+
+            260px;
+
+
+
+    }
+
+
+
+
+
+
+
+    /*
+       Body
+    */
+
+
+    body {
+
+
+        overflow-x:
+
+
+            hidden;
+
+
+    }
+
+
+
+
+
+
+
+    /*
+       Root
+    */
+
+
+    #root {
+
+
+        width:
+
+
+            100%;
+
+
+        border:
+
+
+            none;
+
+
+    }
+
+
+
+
+
+
+
+    /*
+       Contenido
+    */
+
+
+    .page-content {
+
+
+        padding:
+
+
+            var(--space-3);
+
+
+    }
+
+
+
+
+
+
+
+
+    /*
+       Cards
+    */
+
+
+    .card-grid {
+
+
+        grid-template-columns:
+
+
+            1fr;
+
+
+        gap:
+
+
+            var(--space-4);
+
+
+    }
+
+
+
+
+
+
+
+
+    /*
+       Botones
+    */
+
+
+    .btn {
+
+
+        width:
+
+
+            100%;
+
+
+        justify-content:
+
+
+            center;
+
+
+    }
+
+
+
+
+
+
+
+    .btn-group {
+
+
+        flex-direction:
+
+
+            column;
+
+
+        width:
+
+
+            100%;
+
+
+    }
+
+
+
+
+
+
+
+    /*
+       Formularios
+    */
+
+
+    .form-row {
+
+
+        flex-direction:
+
+
+            column;
+
+
+    }
+
+
+
+
+
+    .form-control {
+
+
+        width:
+
+
+            100%;
+
+
+    }
+
+
+
+
+
+
+
+
+    /*
+       Modales
+    */
+
+
+    .modal {
+
+
+        width:
+
+
+            95%;
+
+
+        max-height:
+
+
+            95vh;
+
+
+    }
+
+
+
+
+
+
+
+    .modal-footer {
+
+
+        flex-direction:
+
+
+            column;
+
+
+    }
+
+
+
+
+
+
+
+
+    /*
+       Tablas
+    */
+
+
+    .table-container {
+
+
+        margin:
+
+
+            0 -1rem;
+
+
+        width:
+
+
+            calc(100% + 2rem);
+
+
+
+    }
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+/* =====================================================
+   SMALL MOBILE
+===================================================== */
+
+
+@media(max-width:480px){
+
+
+
+    /*
+       Tipografia
+    */
+
+
+    h1 {
+
+
+        font-size:
+
+
+            1.6rem;
+
+
+    }
+
+
+
+
+
+    h2 {
+
+
+        font-size:
+
+
+            1.25rem;
+
+
+    }
+
+
+
+
+
+    p {
+
+
+        font-size:
+
+
+            .9rem;
+
+
+    }
+
+
+
+
+
+
+
+
+    /*
+       Espaciado
+    */
+
+
+    .page-header {
+
+
+        flex-direction:
+
+
+            column;
+
+
+        align-items:
+
+
+            flex-start;
+
+
+        gap:
+
+
+            .75rem;
+
+
+    }
+
+
+
+
+
+
+
+
+    /*
+       Alertas
+    */
+
+
+    .alert {
+
+
+        flex-direction:
+
+
+            column;
+
+
+    }
+
+
+
+
+
+
+
+
+    /*
+       Modal
+    */
+
+
+    .modal-header {
+
+
+        padding:
+
+
+            .9rem;
+
+
+    }
+
+
+
+
+
+    .modal-title {
+
+
+        font-size:
+
+
+            1rem;
+
+
+    }
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+/* =====================================================
+   UTILIDADES RESPONSIVE
+===================================================== */
+
+
+/*
+   Ocultar elementos
+*/
+
+
+.hide-mobile {
+
+
+    display:block;
+
+
+}
+
+
+
+@media(max-width:767px){
+
+
+    .hide-mobile {
+
+
+        display:none;
+
+
+    }
+
+
+}
+
+
+
+
+
+
+
+
+.hide-desktop {
+
+
+    display:none;
+
+
+}
+
+
+
+@media(max-width:767px){
+
+
+    .hide-desktop {
+
+
+        display:block;
+
+
+    }
+
+
+}
+
+
+
+
+
+
+
+
+/*
+   Texto responsive
+*/
+
+
+.text-center-mobile {
+
+
+    text-align:left;
+
+
+}
+
+
+
+@media(max-width:767px){
+
+
+    .text-center-mobile {
+
+
+        text-align:center;
+
+
+    }
+
+
+}

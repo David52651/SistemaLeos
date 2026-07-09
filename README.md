@@ -1,16 +1,156 @@
-# React + Vite
+# SistemaLeos
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+SistemaLeos es un sistema web desarrollado para la gestión del inventario de vestimentas folclóricas del **Grupo de Música y Danzas Folclóricas Cajamarca Fernando Serván Rocha**.
 
-Currently, two official plugins are available:
+El proyecto está desarrollado con **React + Vite + Supabase** y ha sido diseñado con una arquitectura modular que permitirá incorporar en el futuro nuevos módulos como alquileres, clientes, contratos, pagos y reportes.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+# Características
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+* Gestión de artículos de inventario.
+* Gestión de categorías.
+* Gestión de tallas.
+* Gestión de propietarios.
+* Gestión de danzas.
+* Asociación de un artículo con una o varias danzas.
+* Generación automática de códigos.
+* Control de stock.
+* Autenticación mediante Supabase.
+* Control de acceso por roles.
+* Arquitectura preparada para futuras ampliaciones.
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+# Tecnologías utilizadas
+
+* React
+* Vite
+* JavaScript
+* Supabase
+* PostgreSQL
+* React Router
+* React Hook Form
+* TanStack Query
+* Sonner
+
+---
+
+# Estructura del proyecto
+
+```
+src/
+├── components/
+├── config/
+├── contexts/
+├── hooks/
+├── lib/
+├── modules/
+├── routes/
+├── services/
+├── styles/
+├── types/
+└── utils/
+```
+
+---
+
+# Instalación
+
+Clonar el repositorio
+
+```bash
+git clone https://github.com/David52651/SistemaLeos.git
+```
+
+Ingresar a la carpeta
+
+```bash
+cd SistemaLeos
+```
+
+Instalar dependencias
+
+```bash
+npm install
+```
+
+Crear el archivo `.env`
+
+Copiar el archivo:
+
+```
+.env.example
+```
+
+como
+
+```
+.env
+```
+
+y completar las variables correspondientes de Supabase.
+
+Ejecutar el proyecto
+
+```bash
+npm run dev
+```
+
+---
+
+# Variables de entorno
+
+El proyecto utiliza las siguientes variables:
+
+```
+VITE_SUPABASE_URL=
+VITE_SUPABASE_ANON_KEY=
+```
+
+---
+
+# Estado del proyecto
+
+Actualmente se encuentra en desarrollo.
+
+Versión actual:
+
+**v0.1.0**
+
+Módulo implementado:
+
+* Inventario
+
+Próximos módulos:
+
+* Alquileres
+* Clientes
+* Contratos
+* Pagos
+* Reportes
+* Dashboard avanzado
+
+---
+
+# Documentación
+
+La documentación técnica se encuentra en la carpeta:
+
+```
+docs/
+```
+
+Incluye:
+
+* Arquitectura
+* Base de datos
+* Roadmap
+* Reglas de negocio
+* Instalación
+
+---
+
+# Licencia
+
+Este proyecto se desarrolla con fines académicos y de gestión para el Grupo de Música y Danzas Folclóricas Cajamarca Fernando Serván Rocha.

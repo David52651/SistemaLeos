@@ -1,0 +1,734 @@
+/* =====================================================
+   SISTEMA LEOS
+   Tables System
+===================================================== */
+
+
+/* =====================================================
+   CONTENEDOR TABLA
+===================================================== */
+
+
+.table-container {
+
+
+    width:100%;
+
+
+    background:
+        var(--bg-card);
+
+
+
+    border:
+        1px solid var(--border-color);
+
+
+
+    border-radius:
+        var(--radius-lg);
+
+
+
+    overflow:hidden;
+
+
+
+    box-shadow:
+        var(--shadow-sm);
+
+
+
+}
+
+
+
+
+
+.table-container:hover {
+
+
+    box-shadow:
+        var(--shadow-md);
+
+
+
+}
+
+
+
+
+
+
+/* =====================================================
+   TABLA PRINCIPAL
+===================================================== */
+
+
+.table {
+
+
+    width:100%;
+
+
+    border-collapse:collapse;
+
+
+    color:
+        var(--text-primary);
+
+
+
+    background:
+        var(--bg-card);
+
+
+
+}
+
+
+
+
+
+/* =====================================================
+   ENCABEZADO
+===================================================== */
+
+
+.table thead {
+
+
+    background:
+
+
+        linear-gradient(
+            135deg,
+            var(--color-primary),
+            var(--color-primary-dark)
+        );
+
+
+
+    color:
+        var(--text-light);
+
+
+
+}
+
+
+
+
+
+.table th {
+
+
+    padding:
+
+
+        .9rem 1rem;
+
+
+
+    text-align:left;
+
+
+
+    font-size:
+
+
+        var(--font-size-sm);
+
+
+
+    font-weight:
+
+
+        var(--font-weight-semibold);
+
+
+
+    letter-spacing:.3px;
+
+
+
+    white-space:nowrap;
+
+
+
+}
+
+
+
+
+
+
+/* =====================================================
+   CUERPO TABLA
+===================================================== */
+
+
+.table td {
+
+
+    padding:
+
+
+        .85rem 1rem;
+
+
+
+    border-bottom:
+
+
+        1px solid var(--border-color);
+
+
+
+    font-size:
+
+
+        var(--font-size-sm);
+
+
+
+    color:
+
+
+        var(--text-secondary);
+
+
+
+}
+
+
+
+
+
+.table tbody tr {
+
+
+    transition:
+
+
+        background var(--transition-fast);
+
+
+
+}
+
+
+
+
+
+.table tbody tr:hover {
+
+
+    background:
+
+
+        var(--bg-hover);
+
+
+
+}
+
+
+
+
+
+
+
+/* =====================================================
+   FILA SELECCIONADA
+===================================================== */
+
+
+.table tbody tr.selected {
+
+
+    background:
+
+
+        var(--bg-selected);
+
+
+
+}
+
+
+
+
+
+
+
+/* =====================================================
+   ESTADOS
+===================================================== */
+
+
+.table-status {
+
+
+    display:inline-flex;
+
+
+    align-items:center;
+
+
+    justify-content:center;
+
+
+
+    padding:
+
+
+        .25rem .7rem;
+
+
+
+    border-radius:
+
+
+        var(--radius-circle);
+
+
+
+    font-size:
+
+
+        var(--font-size-xs);
+
+
+
+    font-weight:
+
+
+        var(--font-weight-semibold);
+
+
+
+}
+
+
+
+
+
+.status-active {
+
+
+    background:
+
+
+        rgba(34,197,94,.15);
+
+
+
+    color:
+
+
+        var(--success);
+
+
+
+}
+
+
+
+
+
+.status-inactive {
+
+
+    background:
+
+
+        rgba(239,33,0,.15);
+
+
+
+    color:
+
+
+        var(--danger);
+
+
+
+}
+
+
+
+
+
+
+
+
+/* =====================================================
+   ACCIONES
+===================================================== */
+
+
+.table-actions {
+
+
+    display:flex;
+
+
+    justify-content:flex-end;
+
+
+    align-items:center;
+
+
+
+    gap:
+
+
+        .5rem;
+
+
+
+}
+
+
+
+
+.table-actions button {
+
+
+    width:34px;
+
+
+    height:34px;
+
+
+
+    border-radius:
+
+
+        var(--radius-sm);
+
+
+
+    border:none;
+
+
+    cursor:pointer;
+
+
+
+    display:flex;
+
+
+    align-items:center;
+
+
+    justify-content:center;
+
+
+
+    transition:
+
+
+        transform var(--transition-fast);
+
+
+
+}
+
+
+
+
+
+.table-actions button:hover {
+
+
+    transform:
+        translateY(-2px);
+
+
+
+}
+
+
+
+
+
+
+
+/* =====================================================
+   PAGINACION
+===================================================== */
+
+
+.table-pagination {
+
+
+    display:flex;
+
+
+
+    justify-content:flex-end;
+
+
+
+    align-items:center;
+
+
+
+    gap:.5rem;
+
+
+
+    padding:
+
+
+        1rem;
+
+
+
+    background:
+
+
+        var(--bg-card);
+
+
+
+    border-top:
+
+
+        1px solid var(--border-color);
+
+
+
+}
+
+
+
+
+
+.table-pagination button {
+
+
+    min-width:36px;
+
+
+    height:36px;
+
+
+
+    border-radius:
+
+
+        var(--radius-sm);
+
+
+
+    border:
+
+
+        1px solid var(--border-color);
+
+
+
+    background:
+
+
+        var(--bg-input);
+
+
+
+    color:
+
+
+        var(--text-primary);
+
+
+
+    cursor:pointer;
+
+
+
+}
+
+
+
+
+
+.table-pagination button:hover {
+
+
+    border-color:
+
+
+        var(--color-primary);
+
+
+
+}
+
+
+
+
+
+.table-pagination button.active {
+
+
+    background:
+
+
+        var(--color-primary);
+
+
+
+    color:white;
+
+
+    border-color:
+
+
+        var(--color-primary);
+
+
+
+}
+
+
+
+
+
+
+
+
+/* =====================================================
+   BUSQUEDA DE TABLAS
+===================================================== */
+
+
+.table-toolbar {
+
+
+    display:flex;
+
+
+    justify-content:space-between;
+
+
+    align-items:center;
+
+
+    gap:1rem;
+
+
+
+    margin-bottom:
+
+
+        var(--space-4);
+
+
+
+}
+
+
+
+
+
+
+.table-search {
+
+
+    max-width:350px;
+
+
+    width:100%;
+
+
+
+}
+
+
+
+
+
+
+
+
+/* =====================================================
+   TABLA RESPONSIVE
+===================================================== */
+
+
+.table-responsive {
+
+
+    width:100%;
+
+
+    overflow-x:auto;
+
+
+
+    -webkit-overflow-scrolling:
+        touch;
+
+
+
+}
+
+
+
+
+
+@media(max-width:768px){
+
+
+    .table th,
+
+
+    .table td {
+
+
+        padding:
+
+
+            .7rem .6rem;
+
+
+
+        font-size:
+
+
+            .8rem;
+
+
+
+    }
+
+
+
+    .table-toolbar {
+
+
+        flex-direction:column;
+
+
+        align-items:stretch;
+
+
+
+    }
+
+
+
+    .table-actions {
+
+
+        justify-content:flex-start;
+
+
+
+    }
+
+
+}

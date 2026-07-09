@@ -1,0 +1,666 @@
+/* =====================================================
+   SISTEMA LEOS
+   Forms System
+===================================================== */
+
+
+/* =====================================================
+   CONTENEDOR FORMULARIO
+===================================================== */
+
+
+.form-container {
+
+
+    background:
+        var(--bg-card);
+
+
+    border:
+        1px solid var(--border-color);
+
+
+    border-radius:
+        var(--radius-lg);
+
+
+    padding:
+        var(--space-6);
+
+
+    box-shadow:
+        var(--shadow-sm);
+
+
+
+}
+
+
+
+
+.form-container:hover {
+
+
+    box-shadow:
+        var(--shadow-md);
+
+
+}
+
+
+
+
+
+/* =====================================================
+   GRUPO DE CAMPO
+===================================================== */
+
+
+.form-group {
+
+
+    display:flex;
+
+
+    flex-direction:column;
+
+
+    gap:.45rem;
+
+
+    margin-bottom:
+        var(--space-4);
+
+
+
+}
+
+
+
+
+/* =====================================================
+   LABEL
+===================================================== */
+
+
+.form-label {
+
+
+    font-size:
+        var(--font-size-sm);
+
+
+
+    font-weight:
+        var(--font-weight-semibold);
+
+
+
+    color:
+        var(--text-primary);
+
+
+
+}
+
+
+
+.form-label.required::after {
+
+
+    content:" *";
+
+
+    color:
+        var(--danger);
+
+
+
+}
+
+
+
+
+/* =====================================================
+   INPUTS GENERALES
+===================================================== */
+
+
+.form-control {
+
+
+    width:100%;
+
+
+    padding:
+
+
+        .65rem 1rem;
+
+
+
+    background:
+        var(--bg-input);
+
+
+
+    color:
+        var(--text-primary);
+
+
+
+    border:
+
+
+        1px solid var(--border-color);
+
+
+
+    border-radius:
+
+
+        var(--radius-sm);
+
+
+
+    font-size:
+
+
+        var(--font-size-md);
+
+
+
+    transition:
+
+
+        border var(--transition-fast),
+        box-shadow var(--transition-fast);
+
+
+
+    outline:none;
+
+
+
+}
+
+
+
+
+
+.form-control::placeholder {
+
+
+    color:
+        var(--text-muted);
+
+
+}
+
+
+
+
+.form-control:hover {
+
+
+    border-color:
+        var(--border-hover);
+
+
+
+}
+
+
+
+
+
+.form-control:focus {
+
+
+    border-color:
+
+
+        var(--color-primary);
+
+
+
+    box-shadow:
+
+
+        0 0 0 3px
+        rgba(0,71,171,.15);
+
+
+
+}
+
+
+
+
+
+
+
+/* =====================================================
+   SELECTS
+===================================================== */
+
+
+.form-select {
+
+
+    appearance:none;
+
+
+    cursor:pointer;
+
+
+    background-color:
+        var(--bg-input);
+
+
+
+}
+
+
+
+
+/* =====================================================
+   TEXTAREA
+===================================================== */
+
+
+textarea.form-control {
+
+
+    resize:vertical;
+
+
+    min-height:120px;
+
+
+
+}
+
+
+
+
+
+
+/* =====================================================
+   INPUT DESHABILITADO
+===================================================== */
+
+
+.form-control:disabled {
+
+
+    background:
+
+
+        var(--bg-hover);
+
+
+
+    opacity:.7;
+
+
+    cursor:not-allowed;
+
+
+
+}
+
+
+
+
+
+
+
+/* =====================================================
+   VALIDACIONES
+===================================================== */
+
+
+
+.form-error {
+
+
+    font-size:
+        var(--font-size-sm);
+
+
+
+    color:
+        var(--danger);
+
+
+
+    margin-top:
+        .25rem;
+
+
+
+}
+
+
+
+
+
+.form-control.error {
+
+
+    border-color:
+        var(--danger);
+
+
+
+}
+
+
+
+
+
+
+
+.form-success {
+
+
+    color:
+        var(--success);
+
+
+    font-size:
+        var(--font-size-sm);
+
+
+
+}
+
+
+
+
+
+
+
+/* =====================================================
+   GRID DE FORMULARIOS
+===================================================== */
+
+
+
+.form-grid {
+
+
+    display:grid;
+
+
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0,1fr)
+        );
+
+
+
+    gap:
+        var(--space-5);
+
+
+
+}
+
+
+
+
+
+.form-grid-3 {
+
+
+    display:grid;
+
+
+
+    grid-template-columns:
+        repeat(
+            3,
+            minmax(0,1fr)
+        );
+
+
+
+    gap:
+        var(--space-5);
+
+
+
+}
+
+
+
+
+
+
+/* =====================================================
+   BOTONES DEL FORMULARIO
+===================================================== */
+
+
+
+.form-actions {
+
+
+    display:flex;
+
+
+
+    justify-content:flex-end;
+
+
+
+    align-items:center;
+
+
+
+    gap:
+        var(--space-3);
+
+
+
+    margin-top:
+        var(--space-6);
+
+
+
+}
+
+
+
+
+
+
+/* =====================================================
+   CHECKBOX / RADIO
+===================================================== */
+
+
+
+.form-check {
+
+
+    display:flex;
+
+
+    align-items:center;
+
+
+    gap:.5rem;
+
+
+
+}
+
+
+
+.form-check input {
+
+
+    width:18px;
+
+
+    height:18px;
+
+
+
+    accent-color:
+        var(--color-primary);
+
+
+
+}
+
+
+
+
+
+
+
+/* =====================================================
+   BUSCADOR
+===================================================== */
+
+
+
+.search-box {
+
+
+    display:flex;
+
+
+    align-items:center;
+
+
+    gap:.5rem;
+
+
+
+    background:
+        var(--bg-input);
+
+
+
+    border:
+
+
+        1px solid var(--border-color);
+
+
+
+    padding:
+
+
+        .5rem .8rem;
+
+
+
+    border-radius:
+
+
+        var(--radius-md);
+
+
+
+}
+
+
+
+
+.search-box input {
+
+
+    border:none;
+
+
+    outline:none;
+
+
+    background:transparent;
+
+
+    width:100%;
+
+
+    color:
+        var(--text-primary);
+
+
+
+}
+
+
+
+
+
+
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+
+@media(max-width:900px){
+
+
+    .form-grid,
+
+
+    .form-grid-3 {
+
+
+        grid-template-columns:
+            1fr;
+
+
+
+    }
+
+
+}
+
+
+
+
+
+@media(max-width:600px){
+
+
+
+    .form-container {
+
+
+        padding:
+            var(--space-4);
+
+
+
+    }
+
+
+
+
+    .form-actions {
+
+
+        flex-direction:column;
+
+
+        align-items:stretch;
+
+
+
+    }
+
+
+
+}

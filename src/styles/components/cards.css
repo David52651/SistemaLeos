@@ -1,0 +1,219 @@
+/* =====================================================
+   SISTEMA LEOS
+   Cards
+===================================================== */
+
+
+.card {
+
+
+    background:
+        var(--bg-card);
+
+
+    border:
+        1px solid var(--border-color);
+
+
+    border-radius:
+        var(--radius-lg);
+
+
+
+    padding:
+        var(--space-5);
+
+
+
+    box-shadow:
+        var(--shadow-sm);
+
+
+
+    transition:
+        var(--transition-normal);
+
+
+
+}
+
+
+
+.card:hover {
+
+
+    box-shadow:
+        var(--shadow-md);
+
+
+
+    transform:
+        translateY(-2px);
+
+
+
+}
+
+
+
+
+.card-header {
+
+
+    display:flex;
+
+
+    justify-content:space-between;
+
+
+    align-items:center;
+
+
+    margin-bottom:
+        var(--space-4);
+
+
+
+}
+
+
+
+
+.card-title {
+
+
+    font-size:
+        var(--font-size-lg);
+
+
+    font-weight:
+        var(--font-weight-semibold);
+
+
+    color:
+        var(--text-primary);
+
+
+
+}
+
+
+
+
+.card-body {
+
+
+    color:
+        var(--text-secondary);
+
+
+
+}
+
+
+
+.card-footer {
+
+
+    margin-top:
+        var(--space-5);
+
+
+    padding-top:
+        var(--space-4);
+
+
+    border-top:
+        1px solid var(--border-color);
+
+
+
+}
+
+
+
+
+/* ===============================
+   TARJETAS DESTACADAS
+================================ */
+
+
+.card-primary {
+
+
+    border-left:
+        5px solid var(--color-primary);
+
+
+
+}
+
+
+
+.card-accent {
+
+
+    border-left:
+        5px solid var(--color-accent);
+
+
+
+}
+
+
+
+.card-danger {
+
+
+    border-left:
+        5px solid var(--danger);
+
+
+
+}
+
+
+
+
+/* ===============================
+   GRID RESPONSIVE
+================================ */
+
+
+.card-grid {
+
+
+    display:grid;
+
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(260px,1fr)
+        );
+
+
+    gap:
+        var(--space-5);
+
+
+
+}
+
+
+
+@media(max-width:768px){
+
+
+    .card {
+
+
+        padding:
+            var(--space-4);
+
+
+    }
+
+
+
+}

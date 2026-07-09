@@ -1,0 +1,267 @@
+/* =====================================================
+   SISTEMA LEOS
+   Layout principal
+===================================================== */
+
+
+.app-layout {
+
+
+    display:flex;
+
+    min-height:100vh;
+
+    background:
+        var(--bg-body);
+
+}
+
+
+
+/* ==========================
+   SIDEBAR
+========================== */
+
+
+.sidebar {
+
+
+    width:
+        var(--sidebar-width);
+
+
+    background:
+        var(--bg-sidebar);
+
+
+    border-right:
+        1px solid var(--border-color);
+
+
+    padding:
+        var(--space-5);
+
+
+    position:fixed;
+
+
+    height:100vh;
+
+
+}
+
+
+
+.sidebar-header {
+
+
+    text-align:center;
+
+
+    margin-bottom:
+        var(--space-6);
+
+
+}
+
+
+
+.sidebar-header h2 {
+
+
+    color:
+        var(--color-primary);
+
+
+}
+
+
+
+.sidebar-header small {
+
+
+    color:
+        var(--text-secondary);
+
+
+}
+
+
+
+/* Menu */
+
+
+.sidebar-menu {
+
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:
+        .5rem;
+
+
+}
+
+
+
+.menu-item {
+
+
+    padding:
+        .75rem 1rem;
+
+
+    border-radius:
+        var(--radius-sm);
+
+
+    color:
+        var(--text-secondary);
+
+
+    text-decoration:none;
+
+
+    transition:
+        var(--transition-normal);
+
+
+}
+
+
+
+.menu-item:hover {
+
+
+    background:
+        var(--bg-hover);
+
+
+    color:
+        var(--color-primary);
+
+
+}
+
+
+
+.menu-item.active {
+
+
+    background:
+        var(--color-primary);
+
+
+    color:
+        white;
+
+
+}
+
+
+
+
+
+/* ==========================
+   CONTENIDO
+========================== */
+
+
+.main-content {
+
+
+    margin-left:
+        var(--sidebar-width);
+
+
+    width:
+        calc(100% - var(--sidebar-width));
+
+
+}
+
+
+
+/* NAVBAR */
+
+
+.navbar {
+
+
+    height:
+        var(--navbar-height);
+
+
+    background:
+        var(--bg-navbar);
+
+
+    border-bottom:
+        1px solid var(--border-color);
+
+
+    display:flex;
+
+
+    justify-content:space-between;
+
+
+    align-items:center;
+
+
+    padding:
+        0 var(--space-6);
+
+
+
+}
+
+
+
+.navbar h3 {
+
+
+    margin:0;
+
+    color:
+        var(--text-primary);
+
+}
+
+
+
+.navbar-user {
+
+
+    display:flex;
+
+
+    align-items:center;
+
+
+    gap:
+        1rem;
+
+
+}
+
+
+
+
+
+/* CONTENEDOR PAGINAS */
+
+
+.page-container {
+
+
+    padding:
+        var(--space-6);
+
+
+}
+
+
+
