@@ -177,3 +177,17 @@ table{
     background:var(--color-primary);
 
 }
+/* =====================================================
+   RESET BOOTSTRAP CONFLICTOS
+   SISTEMA LEOS
+===================================================== */
+
+
+button,
+input,
+textarea,
+select {
+
+    font-family: var(--font-family);
+
+}

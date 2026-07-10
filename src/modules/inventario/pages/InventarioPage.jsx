@@ -425,210 +425,144 @@ error.message
 
 
 
-const columnas=[
+const columnas = [
+
+  {
+    key: "codigo",
+    title: "Código",
+  },
+
+  {
+    key: "nombre",
+    title: "Nombre",
+  },
 
+  {
+    key: "categoria",
+    title: "Categoría",
 
-{
+    render: (articulo) => (
+      articulo.categorias?.nombre || "-"
+    ),
+  },
 
-title:"Código",
+  {
+    key: "talla",
+    title: "Talla",
 
-key:"codigo"
+    render: (articulo) => (
+      articulo.tallas?.nombre || "-"
+    ),
+  },
 
-},
+  {
+    key: "propietario",
+    title: "Propietario",
 
+    render: (articulo) => (
+      articulo.propietarios?.nombre || "-"
+    ),
+  },
 
+  {
+    key: "stock",
+    title: "Stock",
+    render: (articulo) => articulo.stock_actual,
+  },
 
-{
+  {
+    key: "estado",
+    title: "Estado",
 
-title:"Nombre",
+    render: (articulo) => {
 
-key:"nombre"
+      if (articulo.stock_actual === 0) {
 
-},
+        return (
+          <span className="status-inactive">
+            Agotado
+          </span>
+        );
 
+      }
 
+      if (articulo.stock_actual <= articulo.stock_min) {
 
-{
+        return (
+          <span className="status-warning">
+            Stock Bajo
+          </span>
+        );
 
-title:"Categoría",
+      }
 
-render:(articulo)=>(
+      return (
+        <span className="status-active">
+          Disponible
+        </span>
+      );
 
-articulo.categorias?.nombre || "-"
+    },
+  },
 
-)
+  {
+    key: "acciones",
+    title: "Acciones",
 
-},
+    render: (articulo) => (
 
+      <div className="table-actions">
 
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={() => setEditing(articulo)}
+        >
+          Editar
+        </Button>
 
-{
+        {articulo.activo ? (
 
-title:"Talla",
+          <Button
+            type="button"
+            variant="danger"
+            onClick={async () => {
 
-render:(articulo)=>(
+              await desactivarArticulo(
+                articulo.id
+              );
 
-articulo.tallas?.nombre || "-"
+              refetch();
 
-)
+            }}
+          >
+            Desactivar
+          </Button>
 
-},
+        ) : (
 
+          <Button
+            type="button"
+            variant="success"
+            onClick={async () => {
 
+              await activarArticulo(
+                articulo.id
+              );
 
+              refetch();
 
-{
+            }}
+          >
+            Activar
+          </Button>
 
-title:"Propietario",
+        )}
 
-render:(articulo)=>(
+      </div>
 
-articulo.propietarios?.nombre || "-"
-
-)
-
-},
-
-
-
-
-{
-
-title:"Stock",
-
-key:"stock_actual"
-
-},
-
-
-
-
-
-{
-
-title:"Estado",
-
-render:(articulo)=>(
-
-
-articulo.stock_actual===0
-
-?
-
-"Agotado"
-
-
-:
-
-articulo.stock_actual <= articulo.stock_min
-
-
-?
-
-"Stock Bajo"
-
-
-:
-
-"Disponible"
-
-
-)
-
-},
-
-
-
-
-{
-
-title:"Acciones",
-
-render:(articulo)=>(
-
-
-<div className="table-actions">
-
-
-<Button
-
-variant="secondary"
-
-onClick={()=>setEditing(articulo)}
-
->
-
-Editar
-
-</Button>
-
-
-
-
-
-{
-
-articulo.activo
-
-?
-
-<Button
-
-variant="danger"
-
-onClick={async()=>{
-
-await desactivarArticulo(
-articulo.id
-);
-
-refetch();
-
-}}
-
->
-
-Desactivar
-
-</Button>
-
-
-:
-
-
-<Button
-
-variant="success"
-
-onClick={async()=>{
-
-await activarArticulo(
-articulo.id
-);
-
-refetch();
-
-}}
-
->
-
-Activar
-
-</Button>
-
-
-}
-
-
-
-</div>
-
-
-)
-
-
-}
-
+    ),
+  },
 
 ];
 

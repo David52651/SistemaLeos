@@ -1,61 +1,148 @@
 import { useForm } from "react-hook-form";
 import { useEffect } from "react";
 
-export default function CategoriaForm({ onSubmit, initialValues }) {
+import Input from "@/components/ui/Input";
+import Button from "@/components/ui/Button";
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-  } = useForm({
-    defaultValues: {
-      nombre: "",
-      descripcion: "",
-      activo: true,
-    },
-  });
-  useEffect(() => {
+export default function CategoriaForm({
+    onSubmit,
+    initialValues,
+}) {
 
-  if (initialValues) {
-    reset(initialValues);
-  }
+    const {
+        register,
+        handleSubmit,
+        reset,
+    } = useForm({
 
-}, [initialValues, reset]);
+        defaultValues: {
 
-  async function enviar(data) {
+            nombre: "",
+            descripcion: "",
+            activo: true,
 
-    await onSubmit(data);
+        }
 
-    reset();
-  }
+    });
 
-  return (
-    <form onSubmit={handleSubmit(enviar)}>
+    /* ==========================================
+       CARGAR DATOS AL EDITAR
+    ========================================== */
 
-      <div>
+    useEffect(() => {
 
-        <label>Nombre</label>
+        if (initialValues) {
 
-        <input
-          {...register("nombre")}
-        />
+            reset({
 
-      </div>
+                nombre: initialValues.nombre,
 
-      <div>
+                descripcion: initialValues.descripcion,
 
-        <label>Descripción</label>
+                activo: initialValues.activo,
 
-        <textarea
-          {...register("descripcion")}
-        />
+            });
 
-      </div>
+        } else {
 
-      <button type="submit">
-        Guardar
-      </button>
+            reset({
 
-    </form>
-  );
+                nombre: "",
+
+                descripcion: "",
+
+                activo: true,
+
+            });
+
+        }
+
+    }, [initialValues, reset]);
+
+    /* ==========================================
+       ENVIAR FORMULARIO
+    ========================================== */
+
+    async function enviar(data) {
+
+        await onSubmit(data);
+
+        if (!initialValues) {
+
+            reset({
+
+                nombre: "",
+
+                descripcion: "",
+
+                activo: true,
+
+            });
+
+        }
+
+    }
+
+    /* ==========================================
+       RENDER
+    ========================================== */
+
+    return (
+
+        <form
+            onSubmit={handleSubmit(enviar)}
+            className="form-container"
+        >
+
+            <Input
+
+                label="Nombre de la categoría"
+
+                placeholder="Ejemplo: Camisa"
+
+                {...register("nombre", {
+
+                    required: true,
+
+                })}
+
+            />
+
+            <Input
+
+                label="Descripción"
+
+                as="textarea"
+
+                placeholder="Descripción de la categoría"
+
+                {...register("descripcion")}
+
+            />
+
+            <div className="form-actions">
+
+                <Button
+                    type="submit"
+                    variant="primary"
+                >
+
+                    {
+
+                        initialValues
+
+                            ? "Actualizar"
+
+                            : "Guardar"
+
+                    }
+
+                </Button>
+
+            </div>
+
+        </form>
+
+    );
+
 }

@@ -145,7 +145,7 @@
 
 .btn-danger{
 
-    background:var(--danger);
+    background:var(--color-danger);
 
     color:white;
 
@@ -340,5 +340,143 @@
         min-height:44px;
 
     }
+
+}
+
+/* ==========================================================
+   OVERRIDE BOOTSTRAP BUTTON VARIABLES
+   SISTEMA LEOS
+========================================================== */
+
+
+.btn {
+
+
+    --bs-btn-border-width:0;
+
+
+    --bs-btn-border-radius:
+        var(--radius-sm);
+
+
+
+}
+
+
+
+/* PRIMARY */
+
+.btn-primary {
+
+
+    --bs-btn-bg:
+        var(--color-primary);
+
+
+    --bs-btn-border-color:
+        var(--color-primary);
+
+
+    --bs-btn-hover-bg:
+        var(--color-primary-dark);
+
+
+    --bs-btn-hover-border-color:
+        var(--color-primary-dark);
+
+
+
+    color:white;
+
+
+
+}
+
+
+
+
+/* SECONDARY */
+
+.btn-secondary {
+
+
+    --bs-btn-bg:
+        var(--color-secondary);
+
+
+    --bs-btn-border-color:
+        var(--color-secondary);
+
+
+    --bs-btn-hover-bg:
+        var(--color-primary-hover);
+
+
+    --bs-btn-hover-border-color:
+        var(--color-primary-hover);
+
+
+
+    color:
+        var(--color-black);
+
+
+
+}
+
+
+
+
+
+/* SUCCESS */
+
+.btn-success {
+
+
+    --bs-btn-bg:
+        var(--color-success);
+
+
+    --bs-btn-border-color:
+        var(--color-success);
+
+
+    --bs-btn-hover-bg:
+        #16a34a;
+
+
+    color:white;
+
+
+
+}
+
+
+
+
+/* DANGER */
+
+.btn-danger {
+
+
+    --bs-btn-bg:
+        var(--color-danger);
+
+
+    --bs-btn-border-color:
+        var(--color-danger);
+
+
+    --bs-btn-hover-bg:
+        #c91b00;
+
+
+    --bs-btn-hover-border-color:
+        #c91b00;
+
+
+    color:white;
+
+
 
 }

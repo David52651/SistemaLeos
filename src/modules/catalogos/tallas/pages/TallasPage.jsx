@@ -1,231 +1,328 @@
 import { useState } from "react";
 import { toast } from "sonner";
 
+import Card from "@/components/ui/Card";
+import Button from "@/components/ui/Button";
+import Table from "@/components/ui/Table";
+
 import { useTallas } from "../hooks/useTallas";
 
 import TallaForm from "../components/TallaForm";
 
 import {
-createTalla,
-updateTalla,
-desactivarTalla,
-activarTalla,
+    createTalla,
+    updateTalla,
+    desactivarTalla,
+    activarTalla,
 } from "../services/tallas.service";
 
 export default function TallasPage() {
 
-const {
-data: tallas,
-isLoading,
-refetch,
-} = useTallas();
+    /* ==========================================
+       CONSULTA DE DATOS
+    ========================================== */
 
-const [editing, setEditing] = useState(null);
+    const {
 
-if (isLoading) {
-return <p>Cargando...</p>;
-}
+        data: tallas,
 
-async function crearTalla(values) {
+        isLoading,
 
+        refetch,
 
-try {
+    } = useTallas();
 
-  await createTalla(values);
+    /* ==========================================
+       ESTADO DE EDICIÓN
+    ========================================== */
 
-  toast.success(
-    "Talla creada correctamente"
-  );
+    const [
 
-  refetch();
+        editing,
 
-} catch (error) {
+        setEditing,
 
-  toast.error(error.message);
+    ] = useState(null);
 
-}
+    if (isLoading) {
 
+        return <p>Cargando tallas...</p>;
 
-}
+    }
 
-async function editarTalla(values) {
+    /* ==========================================
+       CREAR
+    ========================================== */
 
+    async function crearTalla(values) {
 
-try {
+        try {
 
-  await updateTalla(
-    editing.id,
-    values
-  );
+            await createTalla(values);
 
-  toast.success(
-    "Talla actualizada correctamente"
-  );
+            toast.success(
+                "Talla creada correctamente"
+            );
 
-  setEditing(null);
+            refetch();
 
-  refetch();
+        } catch (error) {
 
-} catch (error) {
+            toast.error(error.message);
 
-  toast.error(error.message);
+        }
 
-}
+    }
 
+    /* ==========================================
+       EDITAR
+    ========================================== */
 
-}
+    async function editarTalla(values) {
 
-async function desactivarTallaHandler(id) {
+        try {
 
+            await updateTalla(
+                editing.id,
+                values
+            );
 
-try {
+            toast.success(
+                "Talla actualizada correctamente"
+            );
 
-  const confirmar = window.confirm(
-    "¿Deseas desactivar esta talla?"
-  );
+            setEditing(null);
 
-  if (!confirmar) return;
+            refetch();
 
-  await desactivarTalla(id);
+        } catch (error) {
 
-  toast.success(
-    "Talla desactivada"
-  );
+            toast.error(error.message);
 
-  refetch();
+        }
 
-} catch (error) {
+    }
 
-  toast.error(error.message);
+    /* ==========================================
+       GUARDAR
+    ========================================== */
 
-}
+    async function guardarTalla(values) {
 
+        if (editing) {
 
-}
+            await editarTalla(values);
 
-async function activarTallaHandler(id) {
+            return;
 
+        }
 
-try {
+        await crearTalla(values);
 
-  await activarTalla(id);
+    }
 
-  toast.success(
-    "Talla activada"
-  );
+    /* ==========================================
+       DESACTIVAR
+    ========================================== */
 
-  refetch();
+    async function desactivarTallaHandler(id) {
 
-} catch (error) {
+        try {
 
-  toast.error(error.message);
+            const confirmar = window.confirm(
+                "¿Deseas desactivar esta talla?"
+            );
 
-}
+            if (!confirmar) return;
 
+            await desactivarTalla(id);
 
-}
+            toast.success(
+                "Talla desactivada"
+            );
 
-async function guardarTalla(values) {
+            refetch();
 
+        } catch (error) {
 
-if (editing) {
+            toast.error(error.message);
 
-  await editarTalla(values);
-  return;
+        }
 
-}
+    }
 
-await crearTalla(values);
+    /* ==========================================
+       ACTIVAR
+    ========================================== */
 
+    async function activarTallaHandler(id) {
 
-}
+        try {
 
-return ( <div>
+            await activarTalla(id);
 
- 
-  <h1>Tallas</h1>
+            toast.success(
+                "Talla activada"
+            );
 
-  <TallaForm
-    onSubmit={guardarTalla}
-    initialValues={editing}
-  />
+            refetch();
 
-  <hr />
+        } catch (error) {
 
-  <table border="1">
+            toast.error(error.message);
 
-    <thead>
+        }
 
-      <tr>
-        <th>Talla</th>
-        <th>Estado</th>
-        <th>Acciones</th>
-      </tr>
+    }
 
-    </thead>
+    /* ==========================================
+       COLUMNAS DE LA TABLA
+    ========================================== */
 
-    <tbody>
+    const columnas = [
 
-      {tallas?.map((talla) => (
+        {
+            key: "nombre",
+            title: "Talla",
+        },
 
-        <tr key={talla.id}>
+        {
+            key: "estado",
+            title: "Estado",
 
-          <td>
-            {talla.nombre}
-          </td>
+            render: (talla) => (
 
-          <td>
-            {talla.activo
-              ? "Activa"
-              : "Inactiva"}
-          </td>
+                talla.activo
 
-          <td>
+                    ? <span>Activa</span>
 
-            <button
-              onClick={() =>
-                setEditing(talla)
-              }
-            >
-              Editar
-            </button>
+                    : <span>Inactiva</span>
 
-            {talla.activo ? (
+            ),
 
-              <button
-                onClick={() =>
-                  desactivarTallaHandler(
-                    talla.id
-                  )
-                }
-              >
-                Desactivar
-              </button>
+        },
 
-            ) : (
+        {
+            key: "acciones",
+            title: "Acciones",
 
-              <button
-                onClick={() =>
-                  activarTallaHandler(
-                    talla.id
-                  )
-                }
-              >
-                Activar
-              </button>
+            render: (talla) => (
 
-            )}
+                <div className="table-actions">
 
-          </td>
+                    <Button
+                        variant="secondary"
+                        onClick={() =>
+                            setEditing(talla)
+                        }
+                    >
+                        Editar
+                    </Button>
 
-        </tr>
+                    {
 
-      ))}
+                        talla.activo
 
-    </tbody>
+                            ?
 
-  </table>
+                            (
 
-</div>
-);
+                                <Button
+                                    variant="danger"
+                                    onClick={() =>
+                                        desactivarTallaHandler(
+                                            talla.id
+                                        )
+                                    }
+                                >
+                                    Desactivar
+                                </Button>
+
+                            )
+
+                            :
+
+                            (
+
+                                <Button
+                                    variant="success"
+                                    onClick={() =>
+                                        activarTallaHandler(
+                                            talla.id
+                                        )
+                                    }
+                                >
+                                    Activar
+                                </Button>
+
+                            )
+
+                    }
+
+                </div>
+
+            )
+
+        }
+
+    ];
+
+    /* ==========================================
+       RENDER
+    ========================================== */
+
+    return (
+
+        <div className="page-container">
+
+            <h1>Tallas</h1>
+
+            <Card>
+
+                <h3>
+
+                    {
+
+                        editing
+
+                            ? "Editar talla"
+
+                            : "Nueva talla"
+
+                    }
+
+                </h3>
+
+                <TallaForm
+
+                    onSubmit={guardarTalla}
+
+                    initialValues={editing}
+
+                />
+
+            </Card>
+
+            <Card>
+
+                <h3>
+
+                    Lista de tallas
+
+                </h3>
+
+                <Table
+
+                    columns={columnas}
+
+                    data={tallas || []}
+
+                />
+
+            </Card>
+
+        </div>
+
+    );
+
 }

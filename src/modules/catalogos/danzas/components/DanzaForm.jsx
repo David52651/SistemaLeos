@@ -1,15 +1,18 @@
 import { useForm } from "react-hook-form";
 import { useEffect } from "react";
 
-export default function DanzaForm({
-  onSubmit,
-  initialValues,
-}) {
+import Input from "@/components/ui/Input";
+import Button from "@/components/ui/Button";
 
+export default function DanzaForm({ onSubmit, initialValues }) {
   const {
     register,
+
     handleSubmit,
+
     reset,
+
+    formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: {
       nombre: "",
@@ -20,101 +23,88 @@ export default function DanzaForm({
   });
 
   useEffect(() => {
-
     if (initialValues) {
-
       reset({
         nombre: initialValues.nombre,
+
         ciudad: initialValues.ciudad,
-        descripcion:
-          initialValues.descripcion,
+
+        descripcion: initialValues.descripcion,
+
         activo: initialValues.activo,
       });
-
     } else {
-
       reset({
         nombre: "",
+
         ciudad: "",
+
         descripcion: "",
+
         activo: true,
       });
-
     }
-
   }, [initialValues, reset]);
 
   async function enviar(data) {
-
     await onSubmit(data);
 
     if (!initialValues) {
-
       reset({
         nombre: "",
+
         ciudad: "",
+
         descripcion: "",
+
         activo: true,
       });
-
     }
-
   }
 
   return (
+    <form onSubmit={handleSubmit(enviar)} className="form-container">
+      <Input
+        label="Nombre de la danza"
 
-    <form
-      onSubmit={handleSubmit(enviar)}
-    >
+        placeholder="Ejemplo: Cashua"
 
-      <div>
+        {...register("nombre", {
+          required: "El nombre es obligatorio",
+          minLength: {
+            value: 3,
+            message: "Debe tener al menos 3 caracteres",
+          },
+          maxLength: {
+            value: 100,
+            message: "Máximo 100 caracteres",
+          },
+        })}
+      />
 
-        <label>
-          Nombre
-        </label>
+      <Input
+        label="Ciudad"
 
-        <input
-          {...register("nombre")}
-        />
+        placeholder="Ejemplo: Cajamarca"
 
+        {...register("ciudad")}
+      />
+
+      <Input
+        label="Descripción"
+
+        as="textarea"
+
+        placeholder="Descripción de la danza"
+
+        {...register("descripcion")}
+      />
+
+      <div className="form-actions">
+        <Button type="submit" variant="primary" loading={isSubmitting}>
+          {initialValues ? "Actualizar" : "Guardar"}
+        </Button>
       </div>
-
-      <div>
-
-        <label>
-          Ciudad
-        </label>
-
-        <input
-          {...register("ciudad")}
-        />
-
-      </div>
-
-      <div>
-
-        <label>
-          Descripción
-        </label>
-
-        <textarea
-          {...register("descripcion")}
-        />
-
-      </div>
-
-      <br />
-
-      <button type="submit">
-
-        {initialValues
-          ? "Actualizar"
-          : "Guardar"}
-
-      </button>
-
     </form>
-
   );
-
 }

@@ -282,141 +282,81 @@ export default function DanzasPage() {
 
 
 
-  const columnas = [
+ const columnas = [
+  {
+    key: "nombre",
+    title: "Nombre",
+  },
 
-    {
-        key:"nombre",
-        title:"Nombre"
-    },
+  {
+    key: "ciudad",
+    title: "Ciudad",
+  },
 
+  {
+    key: "descripcion",
+    title: "Descripción",
+  },
 
-    {
-        key:"ciudad",
-        title:"Ciudad"
-    },
+  {
+    key: "estado",
+    title: "Estado",
+    render: (danza) => (
+      <span
+        className={
+          danza.activo
+            ? "status-active"
+            : "status-inactive"
+        }
+      >
+        {danza.activo ? "Activa" : "Inactiva"}
+      </span>
+    ),
+  },
 
+  {
+    key: "acciones",
+    title: "Acciones",
+    render: (danza) => (
+      <div className="table-actions">
 
-    {
-        key:"descripcion",
-        title:"Descripción"
-    },
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={() => setEditing(danza)}
+        >
+          Editar
+        </Button>
 
+        {danza.activo ? (
 
-    {
-        key:"estado",
-        title:"Estado",
+          <Button
+            type="button"
+            variant="danger"
+            onClick={() =>
+              desactivarDanzaHandler(danza.id)
+            }
+          >
+            Desactivar
+          </Button>
 
-        render:(danza)=>(
+        ) : (
 
-            danza.activo
+          <Button
+            type="button"
+            variant="success"
+            onClick={() =>
+              activarDanzaHandler(danza.id)
+            }
+          >
+            Activar
+          </Button>
 
-            ?
+        )}
 
-            <span>
-                Activa
-            </span>
-
-            :
-
-            <span>
-                Inactiva
-            </span>
-
-        )
-
-    },
-
-
-    {
-        key:"acciones",
-        title:"Acciones",
-
-        render:(danza)=>(
-
-
-            <div className="table-actions">
-
-
-                <Button
-
-                    variant="secondary"
-
-                    onClick={()=>
-                        setEditing(danza)
-                    }
-
-                >
-
-                    Editar
-
-                </Button>
-
-
-
-
-
-                {
-
-                danza.activo
-
-                ?
-
-                (
-
-                    <Button
-
-                        variant="danger"
-
-                        onClick={()=>
-                            desactivarDanzaHandler(
-                                danza.id
-                            )
-                        }
-
-                    >
-
-                        Desactivar
-
-                    </Button>
-
-                )
-
-
-                :
-
-
-                (
-
-                    <Button
-
-                        variant="success"
-
-                        onClick={()=>
-                            activarDanzaHandler(
-                                danza.id
-                            )
-                        }
-
-                    >
-
-                        Activar
-
-                    </Button>
-
-                )
-
-
-                }
-
-
-            </div>
-
-
-        )
-
-    }
-
-
+      </div>
+    ),
+  },
 ];
 
 

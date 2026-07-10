@@ -362,9 +362,8 @@
 
 
 
-
 /* =====================================================
-   ACCIONES
+   ACCIONES TABLA
 ===================================================== */
 
 
@@ -374,18 +373,16 @@
     display:flex;
 
 
-    justify-content:flex-end;
+    justify-content:center;
 
 
     align-items:center;
 
 
+    gap:.75rem;
 
-    gap:
 
-
-        .5rem;
-
+    flex-wrap:wrap;
 
 
 }
@@ -396,11 +393,13 @@
 .table-actions button {
 
 
-    width:34px;
+    min-width:90px;
 
 
     height:34px;
 
+
+    padding:.4rem .8rem;
 
 
     border-radius:

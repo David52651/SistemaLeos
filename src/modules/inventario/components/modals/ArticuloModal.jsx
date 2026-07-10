@@ -5,53 +5,146 @@ import TallaForm from "@/modules/catalogos/tallas/components/TallaForm";
 import PropietarioForm from "@/modules/catalogos/propietarios/components/PropietarioForm";
 import DanzaForm from "@/modules/catalogos/danzas/components/DanzaForm";
 
+
 export default function ArticuloModals({
+
   modalCategoria,
   setModalCategoria,
+
   modalTalla,
   setModalTalla,
+
   modalPropietario,
   setModalPropietario,
+
   modalDanza,
   setModalDanza,
+
+
   crearCategoria,
   crearTalla,
   crearPropietario,
   crearDanza,
+
 }) {
+
+
   return (
+
     <>
+
+
+      {/* ===============================
+          MODAL CATEGORIA
+      =============================== */}
+
       <CatalogoModal
+
         open={modalCategoria}
+
         title="Nueva categoría"
-        onClose={() => setModalCategoria(false)}
+
+        onClose={() =>
+          setModalCategoria(false)
+        }
+
       >
-        <CategoriaForm onSubmit={crearCategoria} />
+
+        <CategoriaForm
+
+          onSubmit={crearCategoria}
+
+        />
+
       </CatalogoModal>
 
+
+
+
+
+      {/* ===============================
+          MODAL TALLA
+      =============================== */}
+
       <CatalogoModal
+
         open={modalTalla}
+
         title="Nueva talla"
-        onClose={() => setModalTalla(false)}
+
+        onClose={() =>
+          setModalTalla(false)
+        }
+
       >
-        <TallaForm onSubmit={crearTalla} />
+
+        <TallaForm
+
+          onSubmit={crearTalla}
+
+        />
+
       </CatalogoModal>
 
+
+
+
+
+      {/* ===============================
+          MODAL PROPIETARIO
+      =============================== */}
+
       <CatalogoModal
+
         open={modalPropietario}
+
         title="Nuevo propietario"
-        onClose={() => setModalPropietario(false)}
+
+        onClose={() =>
+          setModalPropietario(false)
+        }
+
       >
-        <PropietarioForm onSubmit={crearPropietario} />
+
+        <PropietarioForm
+
+          onSubmit={crearPropietario}
+
+        />
+
       </CatalogoModal>
 
+
+
+
+
+      {/* ===============================
+          MODAL DANZA
+      =============================== */}
+
       <CatalogoModal
+
         open={modalDanza}
+
         title="Nueva danza"
-        onClose={() => setModalDanza(false)}
+
+        onClose={() =>
+          setModalDanza(false)
+        }
+
       >
-        <DanzaForm onSubmit={crearDanza} />
+
+        <DanzaForm
+
+          onSubmit={crearDanza}
+
+        />
+
       </CatalogoModal>
+
+
     </>
+
   );
+
 }

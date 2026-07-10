@@ -1,239 +1,354 @@
 import { useState } from "react";
 import { toast } from "sonner";
 
+import Card from "@/components/ui/Card";
+import Button from "@/components/ui/Button";
+import Table from "@/components/ui/Table";
+
 import { usePropietarios } from "../hooks/usePropietarios";
 
 import PropietarioForm from "../components/PropietarioForm";
 
 import {
-  createPropietario,
-  updatePropietario,
-  desactivarPropietario,
-  activarPropietario,
+    createPropietario,
+    updatePropietario,
+    desactivarPropietario,
+    activarPropietario,
 } from "../services/propietarios.service";
 
 export default function PropietariosPage() {
 
-  const {
-    data: propietarios,
-    isLoading,
-    refetch,
-  } = usePropietarios();
+    const {
 
-  const [editing, setEditing] = useState(null);
+        data: propietarios,
 
-  if (isLoading) {
-    return <p>Cargando...</p>;
-  }
+        isLoading,
 
-  async function crearPropietario(values) {
+        refetch,
 
-    try {
+    } = usePropietarios();
 
-      await createPropietario(values);
+    const [
 
-      toast.success(
-        "Propietario creado correctamente"
-      );
+        editing,
 
-      refetch();
+        setEditing
 
-    } catch (error) {
+    ] = useState(null);
 
-      toast.error(error.message);
+    if (isLoading) {
 
-    }
+        return (
 
-  }
+            <p>
 
-  async function editarPropietario(values) {
+                Cargando propietarios...
 
-    try {
+            </p>
 
-      await updatePropietario(
-        editing.id,
-        values
-      );
-
-      toast.success(
-        "Propietario actualizado correctamente"
-      );
-
-      setEditing(null);
-
-      refetch();
-
-    } catch (error) {
-
-      toast.error(error.message);
+        );
 
     }
 
-  }
+    async function crearPropietario(values) {
 
-  async function desactivarPropietarioHandler(id) {
+        try {
 
-    try {
+            await createPropietario(values);
 
-      const confirmar = window.confirm(
-        "¿Deseas desactivar este propietario?"
-      );
+            toast.success(
+                "Propietario creado correctamente"
+            );
 
-      if (!confirmar) return;
+            refetch();
 
-      await desactivarPropietario(id);
+        } catch (error) {
 
-      toast.success(
-        "Propietario desactivado"
-      );
+            toast.error(error.message);
 
-      refetch();
-
-    } catch (error) {
-
-      toast.error(error.message);
+        }
 
     }
 
-  }
+    async function editarPropietario(values) {
 
-  async function activarPropietarioHandler(id) {
+        try {
 
-    try {
+            await updatePropietario(
+                editing.id,
+                values
+            );
 
-      await activarPropietario(id);
+            toast.success(
+                "Propietario actualizado correctamente"
+            );
 
-      toast.success(
-        "Propietario activado"
-      );
+            setEditing(null);
 
-      refetch();
+            refetch();
 
-    } catch (error) {
+        } catch (error) {
 
-      toast.error(error.message);
+            toast.error(error.message);
 
-    }
-
-  }
-
-  async function guardarPropietario(values) {
-
-    if (editing) {
-
-      await editarPropietario(values);
-      return;
+        }
 
     }
 
-    await crearPropietario(values);
+    async function desactivarPropietarioHandler(id) {
 
-  }
+        try {
 
-  return (
+            const confirmar = window.confirm(
+                "¿Deseas desactivar este propietario?"
+            );
 
-    <div>
+            if (!confirmar) return;
 
-      <h1>Propietarios</h1>
+            await desactivarPropietario(id);
 
-      <PropietarioForm
-        onSubmit={guardarPropietario}
-        initialValues={editing}
-      />
+            toast.success(
+                "Propietario desactivado"
+            );
 
-      <hr />
+            refetch();
 
-      <table border="1">
+        } catch (error) {
 
-        <thead>
+            toast.error(error.message);
 
-          <tr>
-            <th>Nombre</th>
-            <th>Tipo</th>
-            <th>Teléfono</th>
-            <th>Correo</th>
-            <th>Estado</th>
-            <th>Acciones</th>
-          </tr>
+        }
 
-        </thead>
+    }
 
-        <tbody>
+    async function activarPropietarioHandler(id) {
 
-          {propietarios?.map((propietario) => (
+        try {
 
-            <tr key={propietario.id}>
+            await activarPropietario(id);
 
-              <td>
-                {propietario.nombre}
-              </td>
+            toast.success(
+                "Propietario activado"
+            );
 
-              <td>
-                {propietario.tipo}
-              </td>
+            refetch();
 
-              <td>
-                {propietario.telefono}
-              </td>
+        } catch (error) {
 
-              <td>
-                {propietario.correo}
-              </td>
+            toast.error(error.message);
 
-              <td>
-                {propietario.activo
-                  ? "Activo"
-                  : "Inactivo"}
-              </td>
+        }
 
-              <td>
+    }
 
-                <button
-                  onClick={() =>
-                    setEditing(propietario)
-                  }
-                >
-                  Editar
-                </button>
+    async function guardarPropietario(values) {
 
-                {propietario.activo ? (
+        if (editing) {
 
-                  <button
-                    onClick={() =>
-                      desactivarPropietarioHandler(
-                        propietario.id
-                      )
+            await editarPropietario(values);
+
+            return;
+
+        }
+
+        await crearPropietario(values);
+
+    }
+
+    const columnas = [
+
+        {
+
+            key: "nombre",
+
+            title: "Nombre",
+
+        },
+
+        {
+
+            key: "tipo",
+
+            title: "Tipo",
+
+        },
+
+        {
+
+            key: "telefono",
+
+            title: "Teléfono",
+
+        },
+
+        {
+
+            key: "correo",
+
+            title: "Correo",
+
+        },
+
+        {
+
+            key: "estado",
+
+            title: "Estado",
+
+            render: (propietario) => (
+
+                propietario.activo
+
+                    ? <span>Activo</span>
+
+                    : <span>Inactivo</span>
+
+            ),
+
+        },
+
+        {
+
+            key: "acciones",
+
+            title: "Acciones",
+
+            render: (propietario) => (
+
+                <div className="table-actions">
+
+                    <Button
+
+                        variant="secondary"
+
+                        onClick={() =>
+                            setEditing(propietario)
+                        }
+
+                    >
+
+                        Editar
+
+                    </Button>
+
+                    {
+
+                        propietario.activo
+
+                            ?
+
+                            (
+
+                                <Button
+
+                                    variant="danger"
+
+                                    onClick={() =>
+                                        desactivarPropietarioHandler(
+                                            propietario.id
+                                        )
+                                    }
+
+                                >
+
+                                    Desactivar
+
+                                </Button>
+
+                            )
+
+                            :
+
+                            (
+
+                                <Button
+
+                                    variant="success"
+
+                                    onClick={() =>
+                                        activarPropietarioHandler(
+                                            propietario.id
+                                        )
+                                    }
+
+                                >
+
+                                    Activar
+
+                                </Button>
+
+                            )
+
                     }
-                  >
-                    Desactivar
-                  </button>
 
-                ) : (
+                </div>
 
-                  <button
-                    onClick={() =>
-                      activarPropietarioHandler(
-                        propietario.id
-                      )
+            )
+
+        }
+
+    ];
+
+    return (
+
+        <div className="page-container">
+
+            <h1>
+
+                Propietarios
+
+            </h1>
+
+            <Card>
+
+                <h3>
+
+                    {
+
+                        editing
+
+                            ?
+
+                            "Editar propietario"
+
+                            :
+
+                            "Nuevo propietario"
+
                     }
-                  >
-                    Activar
-                  </button>
 
-                )}
+                </h3>
 
-              </td>
+                <PropietarioForm
 
-            </tr>
+                    onSubmit={guardarPropietario}
 
-          ))}
+                    initialValues={editing}
 
-        </tbody>
+                />
 
-      </table>
+            </Card>
 
-    </div>
+            <Card>
 
-  );
+                <h3>
+
+                    Lista de propietarios
+
+                </h3>
+
+                <Table
+
+                    columns={columnas}
+
+                    data={propietarios || []}
+
+                />
+
+            </Card>
+
+        </div>
+
+    );
 
 }

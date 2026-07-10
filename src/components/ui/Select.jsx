@@ -1,25 +1,47 @@
 import React from "react";
 
 
-export default function Select({
+const Select = React.forwardRef(({
+
     label,
+
     error,
+
     children,
+
     className = "",
+
+    required = false,
+
     ...props
-}) {
+
+
+}, ref) => {
 
 
     return (
 
-        <div className={`form-group ${className}`}>
+        <div
 
+            className={`
+                form-group
+                ${className}
+            `}
+
+        >
 
 
             {
                 label && (
 
-                    <label className="form-label">
+                    <label
+
+                        className={`
+                            form-label
+                            ${required ? "required" : ""}
+                        `}
+
+                    >
 
                         {label}
 
@@ -32,7 +54,12 @@ export default function Select({
 
             <select
 
-                className="form-select"
+                ref={ref}
+
+                className={`
+                    form-select
+                    ${error ? "error" : ""}
+                `}
 
                 {...props}
 
@@ -44,10 +71,15 @@ export default function Select({
 
 
 
+
             {
                 error && (
 
-                    <span className="form-error">
+                    <span
+
+                        className="form-error"
+
+                    >
 
                         {error}
 
@@ -57,9 +89,14 @@ export default function Select({
             }
 
 
-
         </div>
 
     );
 
-}
+});
+
+
+Select.displayName = "Select";
+
+
+export default Select;

@@ -1,68 +1,134 @@
 import { supabase } from "@/lib/supabase";
 
+/* =====================================================
+   SISTEMA LEOS
+   Servicio de Danzas
+===================================================== */
+
+const TABLA = "danzas";
+
+/* =====================================================
+   OBTENER TODAS LAS DANZAS
+===================================================== */
+
 export async function getDanzas() {
 
-  const { data, error } =
-    await supabase
-      .from("danzas")
-      .select("*")
-      .order("nombre");
+    const { data, error } = await supabase
+        .from(TABLA)
+        .select("*")
+        .order("nombre", { ascending: true });
 
-  if (error) throw error;
+    if (error) {
 
-  return data;
+        throw new Error(
+            "No se pudieron obtener las danzas."
+        );
+
+    }
+
+    return data;
+
 }
+
+/* =====================================================
+   CREAR DANZA
+===================================================== */
 
 export async function createDanza(values) {
 
-  const { error } =
-    await supabase
-      .from("danzas")
-      .insert(values);
+    const { data, error } = await supabase
+        .from(TABLA)
+        .insert(values)
+        .select()
+        .single();
 
-  if (error) throw error;
+    if (error) {
+
+        throw new Error(
+            "No se pudo crear la danza."
+        );
+
+    }
+
+    return data;
+
 }
 
-export async function updateDanza(
-  id,
-  values
-) {
+/* =====================================================
+   ACTUALIZAR DANZA
+===================================================== */
 
-  const { error } =
-    await supabase
-      .from("danzas")
-      .update(values)
-      .eq("id", id);
+export async function updateDanza(id, values) {
 
-  if (error) throw error;
+    const { data, error } = await supabase
+        .from(TABLA)
+        .update(values)
+        .eq("id", id)
+        .select()
+        .single();
+
+    if (error) {
+
+        throw new Error(
+            "No se pudo actualizar la danza."
+        );
+
+    }
+
+    return data;
+
 }
 
-export async function desactivarDanza(
-  id
-) {
+/* =====================================================
+   DESACTIVAR DANZA
+===================================================== */
 
-  const { error } =
-    await supabase
-      .from("danzas")
-      .update({
-        activo: false,
-      })
-      .eq("id", id);
+export async function desactivarDanza(id) {
 
-  if (error) throw error;
+    const { data, error } = await supabase
+        .from(TABLA)
+        .update({
+            activo: false,
+        })
+        .eq("id", id)
+        .select()
+        .single();
+
+    if (error) {
+
+        throw new Error(
+            "No se pudo desactivar la danza."
+        );
+
+    }
+
+    return data;
+
 }
 
-export async function activarDanza(
-  id
-) {
+/* =====================================================
+   ACTIVAR DANZA
+===================================================== */
 
-  const { error } =
-    await supabase
-      .from("danzas")
-      .update({
-        activo: true,
-      })
-      .eq("id", id);
+export async function activarDanza(id) {
 
-  if (error) throw error;
+    const { data, error } = await supabase
+        .from(TABLA)
+        .update({
+            activo: true,
+        })
+        .eq("id", id)
+        .select()
+        .single();
+
+    if (error) {
+
+        throw new Error(
+            "No se pudo activar la danza."
+        );
+
+    }
+
+    return data;
+
 }

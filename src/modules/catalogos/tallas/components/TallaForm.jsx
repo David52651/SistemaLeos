@@ -1,93 +1,125 @@
 import { useForm } from "react-hook-form";
 import { useEffect } from "react";
 
+import Input from "@/components/ui/Input";
+import Button from "@/components/ui/Button";
+
 export default function TallaForm({
-onSubmit,
-initialValues,
+    onSubmit,
+    initialValues,
 }) {
 
-const {
-register,
-handleSubmit,
-reset,
-} = useForm({
-defaultValues: {
-nombre: "",
-activo: true,
-},
-});
+    const {
 
-useEffect(() => {
+        register,
 
-if (initialValues) {
+        handleSubmit,
 
-  reset({
-    nombre: initialValues.nombre,
-    activo: initialValues.activo,
-  });
+        reset,
 
-} else {
+    } = useForm({
 
-  reset({
-    nombre: "",
-    activo: true,
-  });
+        defaultValues: {
 
-}
+            nombre: "",
 
+            activo: true,
 
-}, [initialValues, reset]);
+        },
 
-async function enviar(data) {
+    });
 
+    useEffect(() => {
 
-await onSubmit(data);
+        if (initialValues) {
 
-if (!initialValues) {
+            reset({
 
-  reset({
-    nombre: "",
-    activo: true,
-  });
+                nombre: initialValues.nombre,
 
-}
+                activo: initialValues.activo,
 
+            });
 
-}
+        } else {
 
-return (
+            reset({
 
+                nombre: "",
 
-<form
-  onSubmit={handleSubmit(enviar)}
->
+                activo: true,
 
-  <div>
+            });
 
-    <label>
-      Nombre de la talla
-    </label>
+        }
 
-    <input
-      {...register("nombre")}
-      placeholder="Ej: S, M, L, XL, 12..."
-    />
+    }, [initialValues, reset]);
 
-  </div>
+    async function enviar(data) {
 
-  <br />
+        await onSubmit(data);
 
-  <button type="submit">
+        if (!initialValues) {
 
-    {initialValues
-      ? "Actualizar"
-      : "Guardar"}
+            reset({
 
-  </button>
+                nombre: "",
 
-</form>
+                activo: true,
 
+            });
 
-);
+        }
+
+    }
+
+    return (
+
+        <form
+            onSubmit={handleSubmit(enviar)}
+            className="form-container"
+        >
+
+            <Input
+
+                label="Nombre de la talla"
+
+                placeholder="Ejemplo: S, M, L, XL, 12..."
+
+                {...register("nombre", {
+
+                    required: true,
+
+                })}
+
+            />
+
+            <div className="form-actions">
+
+                <Button
+
+                    type="submit"
+
+                    variant="primary"
+
+                >
+
+                    {
+
+                        initialValues
+
+                            ? "Actualizar"
+
+                            : "Guardar"
+
+                    }
+
+                </Button>
+
+            </div>
+
+        </form>
+
+    );
 
 }
