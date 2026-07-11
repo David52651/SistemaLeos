@@ -24,7 +24,7 @@
 @import "./components/selects.css";
 @import "./components/checkbox.css";
 @import "./components/multiselect.css";
-
+@import "./components/confirmDialog.css";
 
 @import "./modules/login.css";
 
@@ -175,19 +175,5 @@ table{
 ::-webkit-scrollbar-thumb:hover{
 
     background:var(--color-primary);
-
-}
-/* =====================================================
-   RESET BOOTSTRAP CONFLICTOS
-   SISTEMA LEOS
-===================================================== */
-
-
-button,
-input,
-textarea,
-select {
-
-    font-family: var(--font-family);
 
 }

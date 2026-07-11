@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import Table from "@/components/ui/Table";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 
 import { useTallas } from "../hooks/useTallas";
 
@@ -16,11 +17,9 @@ import {
     activarTalla,
 } from "../services/tallas.service";
 
+
 export default function TallasPage() {
 
-    /* ==========================================
-       CONSULTA DE DATOS
-    ========================================== */
 
     const {
 
@@ -32,9 +31,8 @@ export default function TallasPage() {
 
     } = useTallas();
 
-    /* ==========================================
-       ESTADO DE EDICIÓN
-    ========================================== */
+
+
 
     const [
 
@@ -44,266 +42,524 @@ export default function TallasPage() {
 
     ] = useState(null);
 
+
+
+    /*
+        CONTROL DEL DIALOGO
+    */
+
+    const [
+
+        confirmOpen,
+
+        setConfirmOpen
+
+    ] = useState(false);
+
+
+
+    const [
+
+        tallaSeleccionada,
+
+        setTallaSeleccionada
+
+    ] = useState(null);
+
+
+
+
+
+
     if (isLoading) {
 
-        return <p>Cargando tallas...</p>;
+        return (
+
+            <p>
+                Cargando tallas...
+            </p>
+
+        );
 
     }
 
-    /* ==========================================
-       CREAR
-    ========================================== */
+
+
+
+
+
 
     async function crearTalla(values) {
 
+
         try {
 
+
             await createTalla(values);
+
+
 
             toast.success(
                 "Talla creada correctamente"
             );
 
+
+
             refetch();
 
-        } catch (error) {
 
-            toast.error(error.message);
+
+        } catch(error){
+
+
+            toast.error(
+                error.message
+            );
+
 
         }
 
+
     }
 
-    /* ==========================================
-       EDITAR
-    ========================================== */
+
+
+
+
+
+
+
 
     async function editarTalla(values) {
 
+
         try {
 
+
             await updateTalla(
+
                 editing.id,
+
                 values
+
             );
+
+
 
             toast.success(
                 "Talla actualizada correctamente"
             );
 
+
+
             setEditing(null);
+
+
 
             refetch();
 
-        } catch (error) {
 
-            toast.error(error.message);
+
+        }catch(error){
+
+
+            toast.error(
+                error.message
+            );
+
 
         }
 
+
     }
 
-    /* ==========================================
-       GUARDAR
-    ========================================== */
 
-    async function guardarTalla(values) {
 
-        if (editing) {
+
+
+
+
+
+
+
+    async function guardarTalla(values){
+
+
+        if(editing){
+
 
             await editarTalla(values);
 
+
             return;
+
 
         }
 
+
+
         await crearTalla(values);
+
 
     }
 
-    /* ==========================================
-       DESACTIVAR
-    ========================================== */
 
-    async function desactivarTallaHandler(id) {
+
+
+
+
+
+
+
+    function abrirConfirmacion(talla){
+
+
+        setTallaSeleccionada(talla);
+
+        setConfirmOpen(true);
+
+
+    }
+
+
+
+
+
+
+
+
+
+    async function confirmarDesactivar(){
+
+
 
         try {
 
-            const confirmar = window.confirm(
-                "¿Deseas desactivar esta talla?"
+
+
+            await desactivarTalla(
+
+                tallaSeleccionada.id
+
             );
 
-            if (!confirmar) return;
 
-            await desactivarTalla(id);
 
             toast.success(
                 "Talla desactivada"
             );
 
+
+
+            setConfirmOpen(false);
+
+            setTallaSeleccionada(null);
+
+
+
             refetch();
 
-        } catch (error) {
 
-            toast.error(error.message);
+
+        }catch(error){
+
+
+            toast.error(
+                error.message
+            );
+
 
         }
 
+
     }
 
-    /* ==========================================
-       ACTIVAR
-    ========================================== */
 
-    async function activarTallaHandler(id) {
+
+
+
+
+
+
+
+    async function activarTallaHandler(id){
+
+
 
         try {
 
+
+
             await activarTalla(id);
+
+
 
             toast.success(
                 "Talla activada"
             );
 
+
+
             refetch();
 
-        } catch (error) {
 
-            toast.error(error.message);
+
+        }catch(error){
+
+
+            toast.error(
+                error.message
+            );
+
 
         }
+
 
     }
 
-    /* ==========================================
-       COLUMNAS DE LA TABLA
-    ========================================== */
+
+
+
+
+
+
+
 
     const columnas = [
 
+
+
         {
-            key: "nombre",
-            title: "Talla",
+
+            key:"nombre",
+
+            title:"Talla",
+
         },
 
-        {
-            key: "estado",
-            title: "Estado",
 
-            render: (talla) => (
+
+        {
+
+            key:"estado",
+
+            title:"Estado",
+
+
+            render:(talla)=>(
+
 
                 talla.activo
 
-                    ? <span>Activa</span>
+                ?
 
-                    : <span>Inactiva</span>
+                (
 
-            ),
+                    <span className="status-active">
 
-        },
+                        Activa
 
-        {
-            key: "acciones",
-            title: "Acciones",
+                    </span>
 
-            render: (talla) => (
+                )
 
-                <div className="table-actions">
 
-                    <Button
-                        variant="secondary"
-                        onClick={() =>
-                            setEditing(talla)
-                        }
-                    >
-                        Editar
-                    </Button>
+                :
 
-                    {
 
-                        talla.activo
+                (
 
-                            ?
+                    <span className="status-inactive">
 
-                            (
+                        Inactiva
 
-                                <Button
-                                    variant="danger"
-                                    onClick={() =>
-                                        desactivarTallaHandler(
-                                            talla.id
-                                        )
-                                    }
-                                >
-                                    Desactivar
-                                </Button>
+                    </span>
 
-                            )
+                )
 
-                            :
-
-                            (
-
-                                <Button
-                                    variant="success"
-                                    onClick={() =>
-                                        activarTallaHandler(
-                                            talla.id
-                                        )
-                                    }
-                                >
-                                    Activar
-                                </Button>
-
-                            )
-
-                    }
-
-                </div>
 
             )
 
-        }
 
-    ];
+        },
 
-    /* ==========================================
-       RENDER
-    ========================================== */
 
-    return (
 
-        <div className="page-container">
+        {
 
-            <h1>Tallas</h1>
 
-            <Card>
+            key:"acciones",
 
-                <h3>
+            title:"Acciones",
+
+
+            render:(talla)=>(
+
+
+
+                <div className="table-actions">
+
+
+
+                    <Button
+
+                        variant="secondary"
+
+                        onClick={()=>setEditing(talla)}
+
+                    >
+
+                        Editar
+
+                    </Button>
+
+
+
+
 
                     {
 
-                        editing
 
-                            ? "Editar talla"
+                        talla.activo
 
-                            : "Nueva talla"
+
+                        ?
+
+
+                        (
+
+                            <Button
+
+                                variant="danger"
+
+                                onClick={()=>abrirConfirmacion(talla)}
+
+                            >
+
+                                Desactivar
+
+                            </Button>
+
+                        )
+
+
+                        :
+
+
+                        (
+
+                            <Button
+
+                                variant="success"
+
+                                onClick={()=>activarTallaHandler(talla.id)}
+
+                            >
+
+                                Activar
+
+                            </Button>
+
+
+                        )
+
 
                     }
 
+
+
+                </div>
+
+
+            )
+
+
+        }
+
+
+    ];
+
+
+
+
+
+
+
+
+
+    return (
+
+
+
+        <div className="page-container">
+
+
+
+            <h1>
+
+                Tallas
+
+            </h1>
+
+
+
+
+
+            <Card>
+
+
+                <h3>
+
+
+                    {
+
+
+                        editing
+
+                        ?
+
+                        "Editar talla"
+
+                        :
+
+                        "Nueva talla"
+
+
+                    }
+
+
                 </h3>
+
+
+
+
 
                 <TallaForm
 
+
                     onSubmit={guardarTalla}
+
 
                     initialValues={editing}
 
+
                 />
+
+
 
             </Card>
 
+
+
+
+
+
+
+
+
             <Card>
+
+
 
                 <h3>
 
@@ -311,18 +567,74 @@ export default function TallasPage() {
 
                 </h3>
 
+
+
+
+
                 <Table
+
 
                     columns={columnas}
 
+
                     data={tallas || []}
+
 
                 />
 
+
+
             </Card>
+
+
+
+
+
+
+
+
+            <ConfirmDialog
+
+
+                open={confirmOpen}
+
+
+                title="Desactivar talla"
+
+
+                message={
+                    `¿Seguro que deseas desactivar la talla "${tallaSeleccionada?.nombre}"?`
+                }
+
+
+                confirmText="Desactivar"
+
+
+                cancelText="Cancelar"
+
+
+                onCancel={()=>{
+
+                    setConfirmOpen(false);
+
+                    setTallaSeleccionada(null);
+
+                }}
+
+
+                onConfirm={confirmarDesactivar}
+
+
+            />
+
+
+
 
         </div>
 
+
+
     );
+
 
 }

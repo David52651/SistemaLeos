@@ -133,7 +133,7 @@
 
 .btn-success{
 
-    background:var(--success);
+    background:var(--color-success);
 
     color:white;
 
@@ -343,25 +343,6 @@
 
 }
 
-/* ==========================================================
-   OVERRIDE BOOTSTRAP BUTTON VARIABLES
-   SISTEMA LEOS
-========================================================== */
-
-
-.btn {
-
-
-    --bs-btn-border-width:0;
-
-
-    --bs-btn-border-radius:
-        var(--radius-sm);
-
-
-
-}
-
 
 
 /* PRIMARY */
@@ -480,3 +461,4 @@
 
 
 }
+

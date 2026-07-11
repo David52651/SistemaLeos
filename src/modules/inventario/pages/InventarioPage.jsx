@@ -9,7 +9,7 @@ import { useCatalogosInventario } from "../hooks/useCatalogosInventario";
 import ArticuloForm from "../components/ArticuloForm";
 import ArticuloModal from "../components/modals/ArticuloModal";
 
-
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import Card from "@/components/ui/Card";
 import Table from "@/components/ui/Table";
 import Button from "@/components/ui/Button";
@@ -111,7 +111,15 @@ const [
 
 ]=useState(null);
 
+/* ==========================================
+   CONFIRMACION DE ACCIONES
+========================================== */
 
+
+const [
+ confirmAction,
+ setConfirmAction
+]=useState(null);
 
 
 
@@ -238,7 +246,80 @@ toast.error(error.message);
 }
 
 
+/* ==========================================
+   ABRIR CONFIRMACION
+========================================== */
 
+
+function abrirConfirmacion(action){
+
+    setConfirmAction(action);
+
+}
+
+
+
+
+/* ==========================================
+   CERRAR CONFIRMACION
+========================================== */
+
+
+function cerrarConfirmacion(){
+
+    setConfirmAction(null);
+
+}
+
+
+
+
+/* ==========================================
+   EJECUTAR CONFIRMACION
+========================================== */
+
+
+async function ejecutarConfirmacion(){
+
+
+    if(!confirmAction)
+        return;
+
+
+
+    try{
+
+
+        await confirmAction.execute();
+
+
+
+        toast.success(
+            confirmAction.successMessage
+        );
+
+
+
+        refetch();
+
+
+
+    }catch(error){
+
+
+        toast.error(
+            error.message
+        );
+
+
+    }
+
+
+
+    cerrarConfirmacion();
+
+
+}
 
 
 
@@ -526,15 +607,31 @@ const columnas = [
           <Button
             type="button"
             variant="danger"
-            onClick={async () => {
+            onClick={() =>
 
-              await desactivarArticulo(
+    abrirConfirmacion({
+
+        title:"Desactivar artículo",
+
+        message:
+        "¿Seguro que deseas desactivar este artículo?",
+
+
+        execute:()=>
+
+
+            desactivarArticulo(
                 articulo.id
-              );
+            ),
 
-              refetch();
 
-            }}
+        successMessage:
+        "Artículo desactivado correctamente"
+
+
+    })
+
+}
           >
             Desactivar
           </Button>
@@ -544,20 +641,65 @@ const columnas = [
           <Button
             type="button"
             variant="success"
-            onClick={async () => {
+            onClick={() =>
 
-              await activarArticulo(
+    abrirConfirmacion({
+
+        title:"Activar artículo",
+
+        message:
+        "¿Seguro que deseas activar este artículo?",
+
+
+        execute:()=>
+
+
+            activarArticulo(
                 articulo.id
-              );
+            ),
 
-              refetch();
 
-            }}
+        successMessage:
+        "Artículo activado correctamente"
+
+
+    })
+
+}
           >
             Activar
           </Button>
 
         )}
+
+<ConfirmDialog
+
+    open={
+        !!confirmAction
+    }
+
+
+    title={
+        confirmAction?.title
+    }
+
+
+    message={
+        confirmAction?.message
+    }
+
+
+    onConfirm={
+        ejecutarConfirmacion
+    }
+
+
+    onCancel={
+        cerrarConfirmacion
+    }
+
+/>
+
 
       </div>
 

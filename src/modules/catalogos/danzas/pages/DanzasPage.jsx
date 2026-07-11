@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import Table from "@/components/ui/Table";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 
 
 import { useDanzas } from "../hooks/useDanzas";
@@ -46,6 +47,95 @@ export default function DanzasPage() {
     setEditing
 
   ] = useState(null);
+
+
+
+
+  /* =====================================================
+     CONFIRMACION DE ACCIONES
+  ===================================================== */
+
+
+  const [
+
+    confirmAction,
+
+    setConfirmAction
+
+  ] = useState(null);
+
+
+
+
+
+
+
+  function abrirConfirmacion(action){
+
+    setConfirmAction(action);
+
+  }
+
+
+
+
+
+  function cerrarConfirmacion(){
+
+    setConfirmAction(null);
+
+  }
+
+
+
+
+
+  async function ejecutarConfirmacion(){
+
+
+    if(!confirmAction)
+
+      return;
+
+
+
+    try{
+
+
+      await confirmAction.execute();
+
+
+
+      toast.success(
+
+        confirmAction.successMessage
+
+      );
+
+
+
+      refetch();
+
+
+
+    }catch(error){
+
+
+      toast.error(
+
+        error.message
+
+      );
+
+
+    }
+
+
+
+    cerrarConfirmacion();
+
+
+  }
 
 
 
@@ -203,41 +293,31 @@ export default function DanzasPage() {
 
 
 
-  async function desactivarDanzaHandler(id){
+  function desactivarDanzaHandler(id){
 
 
-    const confirmar =
+    abrirConfirmacion({
 
-      window.confirm(
-
-        "¿Desactivar danza?"
-
-      );
+      title:
+      "Desactivar danza",
 
 
-
-    if(!confirmar)
-
-      return;
+      message:
+      "¿Seguro que deseas desactivar esta danza?",
 
 
+      execute:()=>
 
 
-
-    await desactivarDanza(id);
+        desactivarDanza(id),
 
 
 
-    toast.success(
-
-      "Danza desactivada"
-
-    );
+      successMessage:
+      "Danza desactivada correctamente"
 
 
-
-    refetch();
-
+    });
 
 
   }
@@ -250,23 +330,32 @@ export default function DanzasPage() {
 
 
 
-  async function activarDanzaHandler(id){
+  function activarDanzaHandler(id){
 
 
 
-    await activarDanza(id);
+    abrirConfirmacion({
+
+      title:
+      "Activar danza",
+
+
+      message:
+      "¿Seguro que deseas activar esta danza?",
+
+
+      execute:()=>
+
+
+        activarDanza(id),
 
 
 
-    toast.success(
-
-      "Danza activada"
-
-    );
+      successMessage:
+      "Danza activada correctamente"
 
 
-
-    refetch();
+    });
 
 
 
@@ -283,80 +372,191 @@ export default function DanzasPage() {
 
 
  const columnas = [
+
   {
+
     key: "nombre",
+
     title: "Nombre",
+
   },
 
+
+
   {
+
     key: "ciudad",
+
     title: "Ciudad",
+
   },
 
+
+
   {
+
     key: "descripcion",
+
     title: "Descripción",
+
   },
 
+
+
   {
+
     key: "estado",
+
     title: "Estado",
+
+
     render: (danza) => (
+
       <span
+
         className={
+
           danza.activo
+
             ? "status-active"
+
             : "status-inactive"
+
         }
+
       >
-        {danza.activo ? "Activa" : "Inactiva"}
+
+        {
+
+          danza.activo
+
+            ? "Activa"
+
+            : "Inactiva"
+
+        }
+
+
       </span>
+
     ),
+
   },
 
+
+
   {
+
     key: "acciones",
+
     title: "Acciones",
+
+
     render: (danza) => (
+
       <div className="table-actions">
 
+
+
         <Button
+
           type="button"
+
           variant="secondary"
-          onClick={() => setEditing(danza)}
+
+          onClick={() => 
+
+            setEditing(danza)
+
+          }
+
         >
+
           Editar
+
         </Button>
 
-        {danza.activo ? (
 
-          <Button
-            type="button"
-            variant="danger"
-            onClick={() =>
-              desactivarDanzaHandler(danza.id)
-            }
-          >
-            Desactivar
-          </Button>
 
-        ) : (
 
-          <Button
-            type="button"
-            variant="success"
-            onClick={() =>
-              activarDanzaHandler(danza.id)
-            }
-          >
-            Activar
-          </Button>
 
-        )}
+        {
+
+          danza.activo
+
+          ?
+
+
+
+          (
+
+            <Button
+
+              type="button"
+
+              variant="danger"
+
+              onClick={() =>
+
+                desactivarDanzaHandler(
+
+                  danza.id
+
+                )
+
+              }
+
+            >
+
+              Desactivar
+
+            </Button>
+
+          )
+
+
+
+          :
+
+
+
+          (
+
+            <Button
+
+              type="button"
+
+              variant="success"
+
+              onClick={() =>
+
+                activarDanzaHandler(
+
+                  danza.id
+
+                )
+
+              }
+
+            >
+
+              Activar
+
+            </Button>
+
+          )
+
+
+        }
+
+
 
       </div>
+
     ),
+
   },
+
 ];
 
 
@@ -373,6 +573,7 @@ export default function DanzasPage() {
     <div className="page-container">
 
 
+
       <h1>
 
         Danzas
@@ -383,27 +584,33 @@ export default function DanzasPage() {
 
 
 
+
+
       <Card>
+
 
 
         <h3>
 
           {
 
-          editing
+            editing
 
-          ?
+              ?
 
-          "Editar danza"
+            "Editar danza"
 
-          :
+              :
 
-          "Nueva danza"
+            "Nueva danza"
 
           }
 
 
+
         </h3>
+
+
 
 
 
@@ -427,7 +634,10 @@ export default function DanzasPage() {
 
 
 
+
+
       <Card>
+
 
 
         <h3>
@@ -435,6 +645,10 @@ export default function DanzasPage() {
           Lista de danzas
 
         </h3>
+
+
+
+
 
 
 
@@ -447,7 +661,39 @@ export default function DanzasPage() {
         />
 
 
+
       </Card>
+
+
+
+
+
+
+
+      <ConfirmDialog
+
+
+        open={!!confirmAction}
+
+
+
+        title={confirmAction?.title}
+
+
+
+        message={confirmAction?.message}
+
+
+
+        onConfirm={ejecutarConfirmacion}
+
+
+
+        onCancel={cerrarConfirmacion}
+
+
+
+      />
 
 
 

@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import Table from "@/components/ui/Table";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 
 import { useCategorias } from "../hooks/useCategorias";
 import CategoriaForm from "../components/CategoriaForm";
@@ -24,6 +25,75 @@ export default function CategoriasPage() {
     } = useCategorias();
 
     const [editing, setEditing] = useState(null);
+
+    /* =====================================================
+   CONFIRMACION DE ACCIONES
+===================================================== */
+
+const [
+    confirmAction,
+    setConfirmAction
+] = useState(null);
+
+/* =====================================================
+   CONFIRM DIALOG
+===================================================== */
+
+function abrirConfirmacion(action){
+
+    setConfirmAction(action);
+
+}
+
+
+function cerrarConfirmacion(){
+
+    setConfirmAction(null);
+
+}
+
+
+
+async function ejecutarConfirmacion(){
+
+
+    if(!confirmAction)
+        return;
+
+
+
+    try{
+
+
+        await confirmAction.execute();
+
+
+
+        toast.success(
+            confirmAction.successMessage
+        );
+
+
+        refetch();
+
+
+
+    }catch(error){
+
+
+        toast.error(
+            error.message
+        );
+
+
+    }
+
+
+
+    cerrarConfirmacion();
+
+
+}
 
     if (isLoading) {
 
@@ -108,55 +178,65 @@ export default function CategoriasPage() {
        DESACTIVAR
     ===================================================== */
 
-    async function desactivarCategoriaHandler(id) {
+    function desactivarCategoriaHandler(id){
 
-        try {
 
-            const confirmar = window.confirm(
-                "¿Deseas desactivar esta categoría?"
-            );
+    abrirConfirmacion({
 
-            if (!confirmar) return;
+        title:
+        "Desactivar categoría",
 
-            await desactivarCategoria(id);
 
-            toast.success(
-                "Categoría desactivada"
-            );
+        message:
+        "¿Seguro que deseas desactivar esta categoría?",
 
-            refetch();
 
-        } catch (error) {
+        execute:()=>
 
-            toast.error(error.message);
 
-        }
+            desactivarCategoria(id),
 
-    }
+
+        successMessage:
+        "Categoría desactivada correctamente"
+
+
+    });
+
+
+}
 
     /* =====================================================
        ACTIVAR
     ===================================================== */
 
-    async function activarCategoriaHandler(id) {
+function activarCategoriaHandler(id){
 
-        try {
 
-            await activarCategoria(id);
+    abrirConfirmacion({
 
-            toast.success(
-                "Categoría activada"
-            );
+        title:
+        "Activar categoría",
 
-            refetch();
 
-        } catch (error) {
+        message:
+        "¿Seguro que deseas activar esta categoría?",
 
-            toast.error(error.message);
 
-        }
+        execute:()=>
 
-    }
+
+            activarCategoria(id),
+
+
+        successMessage:
+        "Categoría activada correctamente"
+
+
+    });
+
+
+}
 
     /* =====================================================
        COLUMNAS
@@ -237,6 +317,8 @@ export default function CategoriasPage() {
 
                     }
 
+
+
                 </div>
 
             )
@@ -303,6 +385,34 @@ export default function CategoriasPage() {
 
             </Card>
 
+
+<ConfirmDialog
+
+    open={
+        !!confirmAction
+    }
+
+
+    title={
+        confirmAction?.title
+    }
+
+
+    message={
+        confirmAction?.message
+    }
+
+
+    onConfirm={
+        ejecutarConfirmacion
+    }
+
+
+    onCancel={
+        cerrarConfirmacion
+    }
+
+/>
         </div>
 
     );

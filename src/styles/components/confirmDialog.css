@@ -1,0 +1,44 @@
+/* ==========================================
+   CONFIRM DIALOG
+========================================== */
+
+.confirm-dialog{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:1.5rem;
+
+}
+
+
+.confirm-header h3{
+
+    margin:0;
+
+    font-size:var(--font-size-xl);
+
+    color:var(--text-primary);
+
+}
+
+
+.confirm-body{
+
+    color:var(--text-secondary);
+
+    line-height:1.6;
+
+}
+
+
+.confirm-actions{
+
+    display:flex;
+
+    justify-content:flex-end;
+
+    gap:1rem;
+
+}
