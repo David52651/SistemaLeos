@@ -1,59 +1,64 @@
 import { NavLink, Outlet } from "react-router-dom";
+import { useState } from "react";
 
 import { logout } from "@/services/auth.service";
 import { useAuth } from "@/contexts/AuthContext";
 
-import { useState } from "react";
-
 
 export default function MainLayout() {
 
-
   const { perfil } = useAuth();
 
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const [sidebarOpen,setSidebarOpen] = useState(false);
-
-
-
-  const menu = [
-
+  // Definimos el menú con los roles permitidos
+  const menuCompleto = [
     {
-      nombre:"Dashboard",
-      ruta:"/"
+      nombre: "Dashboard",
+      ruta: "/",
+      roles: ["administrador", "visitante"],
     },
-
     {
-      nombre:"Inventario",
-      ruta:"/inventario"
+      nombre: "Inventario",
+      ruta: "/inventario",
+      roles: ["administrador", "visitante"],
     },
-
     {
-      nombre:"Usuarios",
-      ruta:"/usuarios"
+      nombre: "Movimientos",         
+      ruta: "/movimientos",          
+      roles: ["administrador"],      
     },
-
     {
-      nombre:"Categorías",
-      ruta:"/categorias"
+      nombre: "Usuarios",
+      ruta: "/usuarios",
+      roles: ["administrador"],
     },
-
     {
-      nombre:"Tallas",
-      ruta:"/tallas"
+      nombre: "Categorías",
+      ruta: "/categorias",
+      roles: ["administrador"],
     },
-
     {
-      nombre:"Propietarios",
-      ruta:"/propietarios"
+      nombre: "Tallas",
+      ruta: "/tallas",
+      roles: ["administrador"],
     },
-
     {
-      nombre:"Danzas",
-      ruta:"/danzas"
-    }
-
+      nombre: "Propietarios",
+      ruta: "/propietarios",
+      roles: ["administrador"],
+    },
+    {
+      nombre: "Danzas",
+      ruta: "/danzas",
+      roles: ["administrador", "visitante"],
+    },
   ];
+
+  // Filtramos el menú según el rol del perfil
+  const menu = menuCompleto.filter((item) =>
+    item.roles.includes(perfil?.rol)
+  );
 
 
 
@@ -61,247 +66,78 @@ export default function MainLayout() {
 
     <div className="app-layout">
 
-
-
       {/* OVERLAY MOBILE */}
-
       {
         sidebarOpen && (
-
           <div
-
             className="sidebar-overlay"
-
-            onClick={() =>
-              setSidebarOpen(false)
-            }
-
+            onClick={() => setSidebarOpen(false)}
           />
-
         )
       }
 
-
-
-
-
-
       {/* SIDEBAR */}
-
-
-      <aside
-
-        className={
-          sidebarOpen
-          ?
-          "sidebar active"
-          :
-          "sidebar"
-        }
-
-      >
-
+      <aside className={sidebarOpen ? "sidebar active" : "sidebar"}>
 
         <div className="sidebar-header">
-
-
-          <h2>
-            SistemaLeos
-          </h2>
-
-
-          <small>
-            Gestión Folclórica
-          </small>
-
-
+          <h2>SistemaLeos</h2>
+          <small>Gestión Folclórica</small>
         </div>
 
-
-
-
         <nav className="sidebar-menu">
-
-
           {
-            menu.map(item=>(
-
-
+            menu.map((item) => (
               <NavLink
-
-
                 key={item.ruta}
-
-
                 to={item.ruta}
-
-
-
-                onClick={() =>
-                  setSidebarOpen(false)
+                onClick={() => setSidebarOpen(false)}
+                className={({ isActive }) =>
+                  isActive ? "menu-item active" : "menu-item"
                 }
-
-
-
-                className={({isActive})=>
-
-                  isActive
-
-                  ?
-
-                  "menu-item active"
-
-                  :
-
-                  "menu-item"
-
-                }
-
-
               >
-
                 {item.nombre}
-
-
               </NavLink>
-
-
             ))
           }
-
-
         </nav>
-
-
 
       </aside>
 
-
-
-
-
-
-
       {/* CONTENIDO PRINCIPAL */}
-
-
       <main className="main-content">
 
-
-
-
-
         {/* NAVBAR */}
-
-
         <header className="navbar">
 
-
-
-
-
           {/* BOTON MOBILE */}
-
-
           <button
-
             className="menu-toggle"
-
-            onClick={()=>setSidebarOpen(true)}
-
+            onClick={() => setSidebarOpen(true)}
           >
-
             ☰
-
           </button>
 
-
-
-
-
-
           {/* TITULO */}
-
-
           <div className="navbar-title">
-
-
-            <h3>
-              Panel administrativo
-            </h3>
-
-
+            <h3>Panel administrativo</h3>
           </div>
-
-
-
-
-
 
           {/* USUARIO */}
-
-
           <div className="navbar-user">
-
-
-            <span>
-
-              {perfil?.nombre_completo}
-
-            </span>
-
-
-
-
-
-            <button
-
-              className="btn btn-danger"
-
-              onClick={logout}
-
-            >
-
+            <span>{perfil?.nombre_completo}</span>
+            <button className="btn btn-danger" onClick={logout}>
               Salir
-
             </button>
-
-
-
           </div>
-
-
-
-
 
         </header>
 
-
-
-
-
-
-
-
         {/* CONTENIDO DE PAGINAS */}
-
-
         <section className="page-container">
-
-
           <Outlet />
-
-
         </section>
 
-
-
-
-
       </main>
-
-
-
 
     </div>
 
