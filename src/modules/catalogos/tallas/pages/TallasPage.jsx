@@ -8,11 +8,7 @@ import ConfirmDialog from "@/components/ui/ConfirmDialog";
 
 import { useTallas } from "../hooks/useTallas";
 
-import TallaForm from "../components/TallaForm";
-
 import {
-    createTalla,
-    updateTalla,
     desactivarTalla,
     activarTalla,
 } from "../services/tallas.service";
@@ -20,621 +16,175 @@ import {
 
 export default function TallasPage() {
 
-
     const {
-
         data: tallas,
-
         isLoading,
-
         refetch,
-
     } = useTallas();
 
-
-
+    /* =====================================================
+       CONFIRMACION DE ACCIONES
+    ===================================================== */
 
     const [
-
-        editing,
-
-        setEditing,
-
+        confirmAction,
+        setConfirmAction
     ] = useState(null);
 
 
-
-    /*
-        CONTROL DEL DIALOGO
-    */
-
-    const [
-
-        confirmOpen,
-
-        setConfirmOpen
-
-    ] = useState(false);
+    function abrirConfirmacion(action) {
+        setConfirmAction(action);
+    }
 
 
-
-    const [
-
-        tallaSeleccionada,
-
-        setTallaSeleccionada
-
-    ] = useState(null);
+    function cerrarConfirmacion() {
+        setConfirmAction(null);
+    }
 
 
+    async function ejecutarConfirmacion() {
 
+        if (!confirmAction) return;
 
+        try {
+
+            await confirmAction.execute();
+
+            toast.success(confirmAction.successMessage);
+
+            refetch();
+
+        } catch (error) {
+
+            toast.error(error.message);
+
+        }
+
+        cerrarConfirmacion();
+
+    }
 
 
     if (isLoading) {
+        return <p>Cargando tallas...</p>;
+    }
 
-        return (
 
-            <p>
-                Cargando tallas...
-            </p>
+    /* =====================================================
+       DESACTIVAR / ACTIVAR
+    ===================================================== */
 
-        );
+    function desactivarTallaHandler(talla) {
+
+        abrirConfirmacion({
+            title: "Desactivar talla",
+            message: `¿Seguro que deseas desactivar la talla "${talla.nombre}"?`,
+            execute: () => desactivarTalla(talla.id),
+            successMessage: "Talla desactivada correctamente",
+        });
 
     }
 
 
+    function activarTallaHandler(talla) {
 
-
-
-
-
-    async function crearTalla(values) {
-
-
-        try {
-
-
-            await createTalla(values);
-
-
-
-            toast.success(
-                "Talla creada correctamente"
-            );
-
-
-
-            refetch();
-
-
-
-        } catch(error){
-
-
-            toast.error(
-                error.message
-            );
-
-
-        }
-
+        abrirConfirmacion({
+            title: "Activar talla",
+            message: `¿Seguro que deseas activar la talla "${talla.nombre}"?`,
+            execute: () => activarTalla(talla.id),
+            successMessage: "Talla activada correctamente",
+        });
 
     }
 
 
-
-
-
-
-
-
-
-    async function editarTalla(values) {
-
-
-        try {
-
-
-            await updateTalla(
-
-                editing.id,
-
-                values
-
-            );
-
-
-
-            toast.success(
-                "Talla actualizada correctamente"
-            );
-
-
-
-            setEditing(null);
-
-
-
-            refetch();
-
-
-
-        }catch(error){
-
-
-            toast.error(
-                error.message
-            );
-
-
-        }
-
-
-    }
-
-
-
-
-
-
-
-
-
-
-    async function guardarTalla(values){
-
-
-        if(editing){
-
-
-            await editarTalla(values);
-
-
-            return;
-
-
-        }
-
-
-
-        await crearTalla(values);
-
-
-    }
-
-
-
-
-
-
-
-
-
-    function abrirConfirmacion(talla){
-
-
-        setTallaSeleccionada(talla);
-
-        setConfirmOpen(true);
-
-
-    }
-
-
-
-
-
-
-
-
-
-    async function confirmarDesactivar(){
-
-
-
-        try {
-
-
-
-            await desactivarTalla(
-
-                tallaSeleccionada.id
-
-            );
-
-
-
-            toast.success(
-                "Talla desactivada"
-            );
-
-
-
-            setConfirmOpen(false);
-
-            setTallaSeleccionada(null);
-
-
-
-            refetch();
-
-
-
-        }catch(error){
-
-
-            toast.error(
-                error.message
-            );
-
-
-        }
-
-
-    }
-
-
-
-
-
-
-
-
-
-    async function activarTallaHandler(id){
-
-
-
-        try {
-
-
-
-            await activarTalla(id);
-
-
-
-            toast.success(
-                "Talla activada"
-            );
-
-
-
-            refetch();
-
-
-
-        }catch(error){
-
-
-            toast.error(
-                error.message
-            );
-
-
-        }
-
-
-    }
-
-
-
-
-
-
-
-
+    /* =====================================================
+       COLUMNAS
+    ===================================================== */
 
     const columnas = [
 
-
-
         {
-
-            key:"nombre",
-
-            title:"Talla",
-
+            key: "nombre",
+            title: "Talla",
         },
 
-
-
         {
-
-            key:"estado",
-
-            title:"Estado",
-
-
-            render:(talla)=>(
-
-
+            key: "estado",
+            title: "Estado",
+            render: (talla) => (
                 talla.activo
-
-                ?
-
-                (
-
-                    <span className="status-active">
-
-                        Activa
-
-                    </span>
-
-                )
-
-
-                :
-
-
-                (
-
-                    <span className="status-inactive">
-
-                        Inactiva
-
-                    </span>
-
-                )
-
-
-            )
-
-
+                    ? <span className="status-active">Activa</span>
+                    : <span className="status-inactive">Inactiva</span>
+            ),
         },
 
-
-
         {
-
-
-            key:"acciones",
-
-            title:"Acciones",
-
-
-            render:(talla)=>(
-
-
-
+            key: "acciones",
+            title: "Acciones",
+            render: (talla) => (
                 <div className="table-actions">
 
-
-
-                    <Button
-
-                        variant="secondary"
-
-                        onClick={()=>setEditing(talla)}
-
-                    >
-
-                        Editar
-
-                    </Button>
-
-
-
-
-
-                    {
-
-
-                        talla.activo
-
-
-                        ?
-
-
-                        (
-
-                            <Button
-
-                                variant="danger"
-
-                                onClick={()=>abrirConfirmacion(talla)}
-
-                            >
-
-                                Desactivar
-
-                            </Button>
-
-                        )
-
-
-                        :
-
-
-                        (
-
-                            <Button
-
-                                variant="success"
-
-                                onClick={()=>activarTallaHandler(talla.id)}
-
-                            >
-
-                                Activar
-
-                            </Button>
-
-
-                        )
-
-
-                    }
-
-
+                    {talla.activo ? (
+                        <Button
+                            variant="danger"
+                            onClick={() => desactivarTallaHandler(talla)}
+                        >
+                            Desactivar
+                        </Button>
+                    ) : (
+                        <Button
+                            variant="success"
+                            onClick={() => activarTallaHandler(talla)}
+                        >
+                            Activar
+                        </Button>
+                    )}
 
                 </div>
-
-
-            )
-
-
-        }
-
+            ),
+        },
 
     ];
 
 
-
-
-
-
-
-
+    /* =====================================================
+       RENDER
+    ===================================================== */
 
     return (
 
-
-
         <div className="page-container">
 
+            <h1>Tallas</h1>
 
-
-            <h1>
-
-                Tallas
-
-            </h1>
-
-
-
-
+            <p style={{ marginBottom: "1rem", opacity: 0.75 }}>
+                Para crear o modificar tallas, ve al módulo de <strong>Movimientos</strong> y usa
+                el botón <strong>"+ Nueva talla"</strong> dentro del formulario de nuevo artículo.
+                Aquí solo puedes activar o desactivar registros.
+            </p>
 
             <Card>
 
-
-                <h3>
-
-
-                    {
-
-
-                        editing
-
-                        ?
-
-                        "Editar talla"
-
-                        :
-
-                        "Nueva talla"
-
-
-                    }
-
-
-                </h3>
-
-
-
-
-
-                <TallaForm
-
-
-                    onSubmit={guardarTalla}
-
-
-                    initialValues={editing}
-
-
-                />
-
-
-
-            </Card>
-
-
-
-
-
-
-
-
-
-            <Card>
-
-
-
-                <h3>
-
-                    Lista de tallas
-
-                </h3>
-
-
-
-
+                <h3>Lista de tallas</h3>
 
                 <Table
-
-
                     columns={columnas}
-
-
                     data={tallas || []}
-
-
                 />
-
-
 
             </Card>
 
-
-
-
-
-
-
-
             <ConfirmDialog
-
-
-                open={confirmOpen}
-
-
-                title="Desactivar talla"
-
-
-                message={
-                    `¿Seguro que deseas desactivar la talla "${tallaSeleccionada?.nombre}"?`
-                }
-
-
-                confirmText="Desactivar"
-
-
-                cancelText="Cancelar"
-
-
-                onCancel={()=>{
-
-                    setConfirmOpen(false);
-
-                    setTallaSeleccionada(null);
-
-                }}
-
-
-                onConfirm={confirmarDesactivar}
-
-
+                open={!!confirmAction}
+                title={confirmAction?.title}
+                message={confirmAction?.message}
+                onConfirm={ejecutarConfirmacion}
+                onCancel={cerrarConfirmacion}
             />
-
-
-
 
         </div>
 
-
-
     );
-
 
 }

@@ -20,6 +20,8 @@ export default function Table({
 
     className = "",
 
+    onRowClick,            
+
 }) {
 
     return (
@@ -33,6 +35,7 @@ export default function Table({
                     ${hover ? "table-hover" : ""}
                     ${bordered ? "table-bordered" : ""}
                     ${compact ? "table-compact" : ""}
+                    ${onRowClick ? "table-clickable" : ""}  
                 `}
             >
 
@@ -100,6 +103,8 @@ export default function Table({
 
                                 <tr
                                     key={row.id ?? index}
+                                    onClick={onRowClick ? () => onRowClick(row) : undefined}
+                                    style={onRowClick ? { cursor: "pointer" } : undefined}
                                 >
 
                                     {
@@ -163,5 +168,7 @@ Table.propTypes = {
     compact: PropTypes.bool,
 
     className: PropTypes.string,
+
+    onRowClick: PropTypes.func,      
 
 };

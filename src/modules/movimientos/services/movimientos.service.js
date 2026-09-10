@@ -63,3 +63,22 @@ export async function obtenerArticulosActivos() {
 
     return data;
 }
+
+/**
+ * Modifica los datos de un artículo y registra el movimiento de auditoría.
+ */
+export async function modificarArticuloConMovimiento(data) {
+    const { error } = await supabase.rpc("modificar_articulo_con_movimiento", {
+        p_articulo_id: data.articulo_id,
+        p_usuario_id: data.usuario_id,
+        p_nuevos_datos: data.nuevos_datos,
+        p_motivo: data.motivo,
+        p_detalles: data.detalles,
+    });
+
+    if (error) {
+        throw new Error(error.message);
+    }
+
+    return true;
+}

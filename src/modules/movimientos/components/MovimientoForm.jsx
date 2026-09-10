@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import Input from "@/components/ui/Input";
 import Select from "@/components/ui/Select";
 import Button from "@/components/ui/Button";
+import Card from "@/components/ui/Card";
 
 import CatalogoModal from "@/modules/inventario/components/CatalogoModal";
 import ArticuloForm from "@/modules/inventario/components/ArticuloForm";
@@ -14,6 +15,7 @@ import ArticuloModal from "@/modules/inventario/components/modals/ArticuloModal"
 
 import { useAuth } from "@/contexts/AuthContext";
 import { useCatalogosInventario } from "@/modules/inventario/hooks/useCatalogosInventario";
+import { supabase } from "@/lib/supabase";
 
 import { generarCodigoArticulo } from "@/modules/inventario/utils/generarCodigoArticulo";
 import {
@@ -30,21 +32,23 @@ import { createDanza } from "@/modules/catalogos/danzas/services/danzas.service"
 import { movimientoSchema } from "../schemas/movimientos.schema";
 import { useMovimientos } from "../hooks/useMovimientos";
 import { TIPOS_MOVIMIENTO } from "../constants/tiposMovimiento";
+import { modificarArticuloConMovimiento } from "../services/movimientos.service";
 
 
 export default function MovimientoForm({ onSuccess }) {
     const { perfil } = useAuth();
     const queryClient = useQueryClient();
     const { articulos, registrar, isRegistrando } = useMovimientos();
-    const { tallas } = useCatalogosInventario();
+    const { categorias, tallas, propietarios, danzas } = useCatalogosInventario();
 
-    // Estados de los modales
+    // Modales
     const [modalNuevoArticulo, setModalNuevoArticulo] = useState(false);
     const [modalCategoria, setModalCategoria] = useState(false);
     const [modalTalla, setModalTalla] = useState(false);
     const [modalPropietario, setModalPropietario] = useState(false);
     const [modalDanza, setModalDanza] = useState(false);
 
+    // Formulario principal
     const {
         register,
         handleSubmit,
@@ -59,7 +63,15 @@ export default function MovimientoForm({ onSuccess }) {
             tipo_movimiento: "Agregar",
             cantidad: 0,
             motivo: "",
-            nuevo_nombre: "",
+            // Campos de "Modificar Datos"
+            nombre: "",
+            descripcion: "",
+            categoria_id: "",
+            talla_id: "",
+            propietario_id: "",
+            genero: "unisex",
+            stock_min: 3,
+            observaciones: "",
         },
     });
 
@@ -70,8 +82,22 @@ export default function MovimientoForm({ onSuccess }) {
     const esModificarDatos = tipoMovimiento === "Modificar Datos";
     const esActualizarStock = tipoMovimiento === "Actualizar Stock";
 
+    // Cuando cambia el artículo seleccionado, precargamos sus datos en el form
+    useEffect(() => {
+        if (esModificarDatos && articuloSeleccionado) {
+            setValue("nombre", articuloSeleccionado.nombre || "");
+            setValue("descripcion", articuloSeleccionado.descripcion || "");
+            setValue("categoria_id", articuloSeleccionado.categoria_id || "");
+            setValue("talla_id", articuloSeleccionado.talla_id || "");
+            setValue("propietario_id", articuloSeleccionado.propietario_id || "");
+            setValue("genero", articuloSeleccionado.genero || "unisex");
+            setValue("stock_min", articuloSeleccionado.stock_min || 3);
+            setValue("observaciones", articuloSeleccionado.observaciones || "");
+        }
+    }, [articuloSeleccionado, esModificarDatos, setValue]);
+
     // ============================================
-    // CREAR ARTÍCULO DESDE EL MODAL
+    // CREAR ARTÍCULO (desde el modal)
     // ============================================
     async function handleCrearArticulo(values) {
         try {
@@ -81,28 +107,17 @@ export default function MovimientoForm({ onSuccess }) {
                 return;
             }
 
-            const tallaSeleccionada = tallas.data?.find(
-                (t) => t.id === values.talla_id
-            );
-
-            const codigo = generarCodigoArticulo(
-                values.nombre,
-                tallaSeleccionada?.nombre
-            );
+            const tallaSeleccionada = tallas.data?.find((t) => t.id === values.talla_id);
+            const codigo = generarCodigoArticulo(values.nombre, tallaSeleccionada?.nombre);
 
             const { danzas_ids: _danzas_ids, ...restoValores } = values;
             const payload = { ...restoValores, codigo };
 
             const articuloGuardado = await createArticulo(payload);
-            await guardarDanzasArticulo(
-                articuloGuardado.id,
-                values.danzas_ids || []
-            );
+            await guardarDanzasArticulo(articuloGuardado.id, values.danzas_ids || []);
 
             toast.success("Artículo creado correctamente");
 
-            // Agregamos el nuevo artículo a la caché inmediatamente
-            // para que aparezca en el <Select> y podamos autoseleccionarlo.
             queryClient.setQueryData(["articulos-selector"], (old = []) => {
                 const nuevo = {
                     id: articuloGuardado.id,
@@ -110,15 +125,10 @@ export default function MovimientoForm({ onSuccess }) {
                     nombre: articuloGuardado.nombre,
                     stock_actual: articuloGuardado.stock_actual,
                 };
-                return [...old, nuevo].sort((a, b) =>
-                    a.nombre.localeCompare(b.nombre)
-                );
+                return [...old, nuevo].sort((a, b) => a.nombre.localeCompare(b.nombre));
             });
 
-            // Autoseleccionamos el artículo recién creado
             setValue("articulo_id", articuloGuardado.id);
-
-            // Cerramos el modal
             setModalNuevoArticulo(false);
         } catch (error) {
             toast.error(error.message);
@@ -126,7 +136,7 @@ export default function MovimientoForm({ onSuccess }) {
     }
 
     // ============================================
-    // CREAR CATÁLOGOS (reutilizado de InventarioPage)
+    // CREAR CATÁLOGOS
     // ============================================
     async function crearCategoria(values) {
         try {
@@ -134,9 +144,7 @@ export default function MovimientoForm({ onSuccess }) {
             toast.success("Categoría creada correctamente");
             queryClient.invalidateQueries({ queryKey: ["categorias-activo"] });
             setModalCategoria(false);
-        } catch (error) {
-            toast.error(error.message);
-        }
+        } catch (error) { toast.error(error.message); }
     }
 
     async function crearTalla(values) {
@@ -145,9 +153,7 @@ export default function MovimientoForm({ onSuccess }) {
             toast.success("Talla creada correctamente");
             queryClient.invalidateQueries({ queryKey: ["tallas-activo"] });
             setModalTalla(false);
-        } catch (error) {
-            toast.error(error.message);
-        }
+        } catch (error) { toast.error(error.message); }
     }
 
     async function crearPropietario(values) {
@@ -156,9 +162,7 @@ export default function MovimientoForm({ onSuccess }) {
             toast.success("Propietario creado correctamente");
             queryClient.invalidateQueries({ queryKey: ["propietarios-activo"] });
             setModalPropietario(false);
-        } catch (error) {
-            toast.error(error.message);
-        }
+        } catch (error) { toast.error(error.message); }
     }
 
     async function crearDanza(values) {
@@ -167,13 +171,40 @@ export default function MovimientoForm({ onSuccess }) {
             toast.success("Danza creada correctamente");
             queryClient.invalidateQueries({ queryKey: ["danzas"] });
             setModalDanza(false);
-        } catch (error) {
-            toast.error(error.message);
-        }
+        } catch (error) { toast.error(error.message); }
     }
 
     // ============================================
-    // REGISTRAR MOVIMIENTO
+    // CONSTRUIR DETALLES DE AUDITORÍA (diff)
+    // ============================================
+    function construirDetallesCambios(data) {
+        const campos = [
+            { key: "nombre", label: "Nombre" },
+            { key: "descripcion", label: "Descripción" },
+            { key: "categoria_id", label: "Categoría" },
+            { key: "talla_id", label: "Talla" },
+            { key: "propietario_id", label: "Propietario" },
+            { key: "genero", label: "Género" },
+            { key: "stock_min", label: "Stock Mínimo" },
+            { key: "observaciones", label: "Observaciones" },
+        ];
+
+        const cambios = {};
+
+        campos.forEach(({ key, label }) => {
+            const antes = articuloSeleccionado?.[key];
+            const despues = data[key];
+            // Comparamos como strings para evitar falsos positivos (ej: 3 vs "3")
+            if (String(antes ?? "") !== String(despues ?? "")) {
+                cambios[key] = { label, antes, despues };
+            }
+        });
+
+        return cambios;
+    }
+
+    // ============================================
+    // SUBMIT DEL FORMULARIO
     // ============================================
     async function onSubmit(data) {
         if (!perfil?.id) {
@@ -182,23 +213,53 @@ export default function MovimientoForm({ onSuccess }) {
         }
 
         try {
-            let detalles = null;
-
+            // --------------------------------------------------
+            // CASO 1: MODIFICAR DATOS (usa la nueva RPC)
+            // --------------------------------------------------
             if (esModificarDatos) {
-                detalles = {
-                    campo: "nombre",
-                    antes: articuloSeleccionado?.nombre,
-                    despues: data.nuevo_nombre,
-                };
+                const cambios = construirDetallesCambios(data);
+
+                if (Object.keys(cambios).length === 0) {
+                    toast.info("No se detectaron cambios en el artículo");
+                    return;
+                }
+
+                await modificarArticuloConMovimiento({
+                    articulo_id: data.articulo_id,
+                    usuario_id: perfil.id,
+                    nuevos_datos: {
+                        nombre: data.nombre,
+                        descripcion: data.descripcion,
+                        categoria_id: data.categoria_id,
+                        talla_id: data.talla_id,
+                        propietario_id: data.propietario_id,
+                        genero: data.genero,
+                        stock_min: Number(data.stock_min),
+                        observaciones: data.observaciones,
+                    },
+                    motivo: data.motivo,
+                    detalles: { cambios },
+                });
+
+                toast.success("Artículo modificado y movimiento registrado");
+                reset();
+                queryClient.invalidateQueries({ queryKey: ["articulos-selector"] });
+                queryClient.invalidateQueries({ queryKey: ["movimientos"] });
+                queryClient.invalidateQueries({ queryKey: ["articulos"] });
+                if (onSuccess) onSuccess();
+                return;
             }
 
+            // --------------------------------------------------
+            // CASO 2: MOVIMIENTOS DE STOCK (RPC original)
+            // --------------------------------------------------
             await registrar({
                 articulo_id: data.articulo_id,
                 usuario_id: perfil.id,
                 tipo_movimiento: data.tipo_movimiento,
-                cantidad: esModificarDatos ? 0 : Number(data.cantidad),
+                cantidad: Number(data.cantidad),
                 motivo: data.motivo,
-                detalles,
+                detalles: null,
             });
 
             toast.success("Movimiento registrado correctamente");
@@ -241,7 +302,7 @@ export default function MovimientoForm({ onSuccess }) {
                     </Button>
                 </div>
 
-                {articuloSeleccionado && (
+                {articuloSeleccionado && !esModificarDatos && (
                     <div className="info-box" style={{
                         padding: "8px 12px",
                         background: "var(--bg-secondary, #f3f4f6)",
@@ -268,16 +329,85 @@ export default function MovimientoForm({ onSuccess }) {
                     ))}
                 </Select>
 
-                {/* 3. Campo Dinámico */}
-                {esModificarDatos ? (
-                    <Input
-                        label="Nuevo nombre del artículo"
-                        placeholder="Ej: Camisa Blanca Manga Larga"
-                        {...register("nuevo_nombre")}
-                        error={errors.nuevo_nombre?.message}
-                        required
-                    />
-                ) : (
+                {/* ============================================
+                    BLOQUE A: MODIFICAR DATOS (form completo)
+                ============================================ */}
+                {esModificarDatos && articuloSeleccionado && (
+                    <Card>
+                        <h3>Datos del artículo</h3>
+
+                        <Input
+                            label="Nombre del artículo"
+                            {...register("nombre")}
+                            error={errors.nombre?.message}
+                            required
+                        />
+
+                        <Input
+                            label="Descripción"
+                            as="textarea"
+                            {...register("descripcion")}
+                        />
+
+                        <Select label="Categoría" {...register("categoria_id")}>
+                            <option value="">Seleccione</option>
+                            {categorias.data?.map((c) => (
+                                <option key={c.id} value={c.id}>{c.nombre}</option>
+                            ))}
+                        </Select>
+
+                        <Select label="Talla" {...register("talla_id")}>
+                            <option value="">Seleccione</option>
+                            {tallas.data?.map((t) => (
+                                <option key={t.id} value={t.id}>{t.nombre}</option>
+                            ))}
+                        </Select>
+
+                        <Select label="Propietario" {...register("propietario_id")}>
+                            <option value="">Seleccione</option>
+                            {propietarios.data?.map((p) => (
+                                <option key={p.id} value={p.id}>{p.nombre}</option>
+                            ))}
+                        </Select>
+
+                        <Select label="Género" {...register("genero")}>
+                            <option value="masculino">Masculino</option>
+                            <option value="femenino">Femenino</option>
+                            <option value="unisex">Unisex</option>
+                        </Select>
+
+                        <Input
+                            label="Stock mínimo"
+                            type="number"
+                            min="0"
+                            {...register("stock_min", { valueAsNumber: true })}
+                        />
+
+                        <Input
+                            label="Observaciones"
+                            as="textarea"
+                            {...register("observaciones")}
+                        />
+                    </Card>
+                )}
+
+                {esModificarDatos && !articuloSeleccionado && (
+                    <div className="info-box" style={{
+                        padding: "12px",
+                        background: "var(--bg-secondary, #f3f4f6)",
+                        borderRadius: "6px",
+                        marginBottom: "12px",
+                        fontSize: "14px",
+                        opacity: 0.75,
+                    }}>
+                        Selecciona un artículo para ver y modificar sus datos.
+                    </div>
+                )}
+
+                {/* ============================================
+                    BLOQUE B: MOVIMIENTOS DE STOCK (cantidad)
+                ============================================ */}
+                {!esModificarDatos && (
                     <Input
                         label={esActualizarStock ? "Nuevo stock exacto" : "Cantidad"}
                         type="number"
@@ -288,7 +418,7 @@ export default function MovimientoForm({ onSuccess }) {
                     />
                 )}
 
-                {/* 4. Motivo */}
+                {/* 3. Motivo (siempre visible) */}
                 <Input
                     label="Motivo"
                     placeholder="Ej: Compra a proveedor, Conteo físico, Prenda dañada..."
@@ -297,7 +427,7 @@ export default function MovimientoForm({ onSuccess }) {
                     required
                 />
 
-                {/* 5. Botón */}
+                {/* 4. Botón */}
                 <div className="form-actions">
                     <Button
                         type="submit"
@@ -305,12 +435,12 @@ export default function MovimientoForm({ onSuccess }) {
                         disabled={isRegistrando}
                         loading={isRegistrando}
                     >
-                        Registrar Movimiento
+                        {esModificarDatos ? "Guardar Cambios" : "Registrar Movimiento"}
                     </Button>
                 </div>
             </form>
 
-            {/* MODAL: Crear nuevo artículo (reutiliza ArticuloForm) */}
+            {/* MODAL: Crear nuevo artículo */}
             <CatalogoModal
                 open={modalNuevoArticulo}
                 title="Nuevo artículo"
@@ -327,7 +457,7 @@ export default function MovimientoForm({ onSuccess }) {
                 />
             </CatalogoModal>
 
-            {/* MODALES: Catálogos (categoría, talla, propietario, danza) */}
+            {/* MODALES: Catálogos */}
             <ArticuloModal
                 modalCategoria={modalCategoria}
                 setModalCategoria={setModalCategoria}

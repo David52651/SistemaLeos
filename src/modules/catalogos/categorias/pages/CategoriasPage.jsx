@@ -7,14 +7,12 @@ import Table from "@/components/ui/Table";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 
 import { useCategorias } from "../hooks/useCategorias";
-import CategoriaForm from "../components/CategoriaForm";
 
 import {
-    createCategoria,
-    updateCategoria,
     desactivarCategoria,
     activarCategoria,
 } from "../services/categorias.service";
+
 
 export default function CategoriasPage() {
 
@@ -24,219 +22,81 @@ export default function CategoriasPage() {
         refetch,
     } = useCategorias();
 
-    const [editing, setEditing] = useState(null);
-
     /* =====================================================
-   CONFIRMACION DE ACCIONES
-===================================================== */
+       CONFIRMACION DE ACCIONES
+    ===================================================== */
 
-const [
-    confirmAction,
-    setConfirmAction
-] = useState(null);
-
-/* =====================================================
-   CONFIRM DIALOG
-===================================================== */
-
-function abrirConfirmacion(action){
-
-    setConfirmAction(action);
-
-}
+    const [
+        confirmAction,
+        setConfirmAction
+    ] = useState(null);
 
 
-function cerrarConfirmacion(){
-
-    setConfirmAction(null);
-
-}
-
-
-
-async function ejecutarConfirmacion(){
-
-
-    if(!confirmAction)
-        return;
-
-
-
-    try{
-
-
-        await confirmAction.execute();
-
-
-
-        toast.success(
-            confirmAction.successMessage
-        );
-
-
-        refetch();
-
-
-
-    }catch(error){
-
-
-        toast.error(
-            error.message
-        );
-
-
+    function abrirConfirmacion(action) {
+        setConfirmAction(action);
     }
 
 
+    function cerrarConfirmacion() {
+        setConfirmAction(null);
+    }
 
-    cerrarConfirmacion();
 
+    async function ejecutarConfirmacion() {
 
-}
+        if (!confirmAction) return;
+
+        try {
+
+            await confirmAction.execute();
+
+            toast.success(confirmAction.successMessage);
+
+            refetch();
+
+        } catch (error) {
+
+            toast.error(error.message);
+
+        }
+
+        cerrarConfirmacion();
+
+    }
+
 
     if (isLoading) {
+        return <p>Cargando categorías...</p>;
+    }
 
-        return (
-            <p>Cargando categorías...</p>
-        );
+
+    /* =====================================================
+       DESACTIVAR / ACTIVAR
+    ===================================================== */
+
+    function desactivarCategoriaHandler(id) {
+
+        abrirConfirmacion({
+            title: "Desactivar categoría",
+            message: "¿Seguro que deseas desactivar esta categoría?",
+            execute: () => desactivarCategoria(id),
+            successMessage: "Categoría desactivada correctamente",
+        });
 
     }
 
-    /* =====================================================
-       CREAR
-    ===================================================== */
 
-    async function crearCategoria(values) {
+    function activarCategoriaHandler(id) {
 
-        try {
-
-            await createCategoria(values);
-
-            toast.success(
-                "Categoría creada correctamente"
-            );
-
-            refetch();
-
-        } catch (error) {
-
-            toast.error(error.message);
-
-        }
+        abrirConfirmacion({
+            title: "Activar categoría",
+            message: "¿Seguro que deseas activar esta categoría?",
+            execute: () => activarCategoria(id),
+            successMessage: "Categoría activada correctamente",
+        });
 
     }
 
-    /* =====================================================
-       EDITAR
-    ===================================================== */
-
-    async function editarCategoria(values) {
-
-        try {
-
-            await updateCategoria(
-                editing.id,
-                values
-            );
-
-            toast.success(
-                "Categoría actualizada correctamente"
-            );
-
-            setEditing(null);
-
-            refetch();
-
-        } catch (error) {
-
-            toast.error(error.message);
-
-        }
-
-    }
-
-    /* =====================================================
-       GUARDAR
-    ===================================================== */
-
-    async function guardarCategoria(values) {
-
-        if (editing) {
-
-            await editarCategoria(values);
-
-            return;
-
-        }
-
-        await crearCategoria(values);
-
-    }
-
-    /* =====================================================
-       DESACTIVAR
-    ===================================================== */
-
-    function desactivarCategoriaHandler(id){
-
-
-    abrirConfirmacion({
-
-        title:
-        "Desactivar categoría",
-
-
-        message:
-        "¿Seguro que deseas desactivar esta categoría?",
-
-
-        execute:()=>
-
-
-            desactivarCategoria(id),
-
-
-        successMessage:
-        "Categoría desactivada correctamente"
-
-
-    });
-
-
-}
-
-    /* =====================================================
-       ACTIVAR
-    ===================================================== */
-
-function activarCategoriaHandler(id){
-
-
-    abrirConfirmacion({
-
-        title:
-        "Activar categoría",
-
-
-        message:
-        "¿Seguro que deseas activar esta categoría?",
-
-
-        execute:()=>
-
-
-            activarCategoria(id),
-
-
-        successMessage:
-        "Categoría activada correctamente"
-
-
-    });
-
-
-}
 
     /* =====================================================
        COLUMNAS
@@ -257,75 +117,41 @@ function activarCategoriaHandler(id){
         {
             key: "estado",
             title: "Estado",
-
             render: (categoria) => (
-
                 categoria.activo
-
                     ? <span className="status-active">Activa</span>
-
                     : <span className="status-inactive">Inactiva</span>
-
-            )
-
+            ),
         },
 
         {
             key: "acciones",
             title: "Acciones",
-
             render: (categoria) => (
-
                 <div className="table-actions">
 
-                    <Button
-                        variant="secondary"
-                        onClick={() => setEditing(categoria)}
-                    >
-                        Editar
-                    </Button>
-
-                    {
-
-                        categoria.activo
-
-                            ?
-
-                            <Button
-                                variant="danger"
-                                onClick={() =>
-                                    desactivarCategoriaHandler(
-                                        categoria.id
-                                    )
-                                }
-                            >
-                                Desactivar
-                            </Button>
-
-                            :
-
-                            <Button
-                                variant="success"
-                                onClick={() =>
-                                    activarCategoriaHandler(
-                                        categoria.id
-                                    )
-                                }
-                            >
-                                Activar
-                            </Button>
-
-                    }
-
-
+                    {categoria.activo ? (
+                        <Button
+                            variant="danger"
+                            onClick={() => desactivarCategoriaHandler(categoria.id)}
+                        >
+                            Desactivar
+                        </Button>
+                    ) : (
+                        <Button
+                            variant="success"
+                            onClick={() => activarCategoriaHandler(categoria.id)}
+                        >
+                            Activar
+                        </Button>
+                    )}
 
                 </div>
-
-            )
-
-        }
+            ),
+        },
 
     ];
+
 
     /* =====================================================
        RENDER
@@ -335,84 +161,33 @@ function activarCategoriaHandler(id){
 
         <div className="page-container">
 
-            <h1>
+            <h1>Categorías</h1>
 
-                Categorías
-
-            </h1>
-
-            <Card>
-
-                <h3>
-
-                    {
-
-                        editing
-
-                            ? "Editar categoría"
-
-                            : "Nueva categoría"
-
-                    }
-
-                </h3>
-
-                <CategoriaForm
-
-                    onSubmit={guardarCategoria}
-
-                    initialValues={editing}
-
-                />
-
-            </Card>
+            <p style={{ marginBottom: "1rem", opacity: 0.75 }}>
+                Para crear o modificar categorías, ve al módulo de <strong>Movimientos</strong> y usa
+                el botón <strong>"+ Nueva categoría"</strong> dentro del formulario de nuevo artículo.
+                Aquí solo puedes activar o desactivar registros.
+            </p>
 
             <Card>
 
-                <h3>
-
-                    Lista de categorías
-
-                </h3>
+                <h3>Lista de categorías</h3>
 
                 <Table
-
                     columns={columnas}
-
                     data={categorias || []}
-
                 />
 
             </Card>
 
+            <ConfirmDialog
+                open={!!confirmAction}
+                title={confirmAction?.title}
+                message={confirmAction?.message}
+                onConfirm={ejecutarConfirmacion}
+                onCancel={cerrarConfirmacion}
+            />
 
-<ConfirmDialog
-
-    open={
-        !!confirmAction
-    }
-
-
-    title={
-        confirmAction?.title
-    }
-
-
-    message={
-        confirmAction?.message
-    }
-
-
-    onConfirm={
-        ejecutarConfirmacion
-    }
-
-
-    onCancel={
-        cerrarConfirmacion
-    }
-
-/>
         </div>
 
     );
