@@ -208,3 +208,36 @@ export function useCatalogosInventario() {
     danzas,
   };
 }
+
+/**
+ * Crea un artículo y registra el stock inicial como movimiento de inventario.
+ * Todo ocurre en una sola transacción atómica en el backend.
+ */
+export async function crearArticuloConStockInicial(payload, usuarioId) {
+    const { data, error } = await supabase.rpc("crear_articulo_con_stock_inicial", {
+        p_datos: payload,
+        p_usuario_id: usuarioId,
+    });
+
+    if (error) {
+        throw new Error(error.message);
+    }
+
+    // El RPC devuelve solo el UUID. Necesitamos consultar el artículo completo.
+    const { data: articulo, error: fetchError } = await supabase
+        .from("articulos")
+        .select(`
+            *,
+            categorias(nombre),
+            tallas(nombre),
+            propietarios(nombre)
+        `)
+        .eq("id", data)
+        .single();
+
+    if (fetchError) {
+        throw new Error(fetchError.message);
+    }
+
+    return articulo;
+}

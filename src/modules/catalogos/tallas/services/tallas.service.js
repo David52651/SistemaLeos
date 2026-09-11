@@ -16,20 +16,20 @@ return data;
 
 }
 
-export async function createTalla(
-values
-) {
-    
+export async function createTalla(values) {
 
-const { error } =
-await supabase
-.from("tallas")
-.insert([values]);
+    const { data, error } =
+        await supabase
+            .from("tallas")
+            .insert([values])
+            .select()
+            .single();
 
-if (error) {
-throw error;
-}
+    if (error) {
+        throw error;
+    }
 
+    return data;
 }
 
 export async function updateTalla(

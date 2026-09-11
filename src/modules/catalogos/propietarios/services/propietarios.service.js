@@ -15,16 +15,12 @@ export async function getPropietarios() {
 
 export async function createPropietario(values) {
 
-  console.log("VALUES:", values);
-
   const { data, error } =
     await supabase
       .from("propietarios")
       .insert(values)
-      .select();
-
-  console.log("DATA:", data);
-  console.log("ERROR:", error);
+      .select()
+      .single(); 
 
   if (error) {
     throw error;

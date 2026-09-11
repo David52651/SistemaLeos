@@ -62,15 +62,11 @@ export default function MovimientosPage() {
                 </Badge>
             ),
         },
-        {
-            key: "cantidad",
-            title: "Cantidad",
-            render: (row) => (
-                row.tipo_movimiento === "Modificar Datos" 
-                    ? "—" 
-                    : row.cantidad
-            ),
-        },
+{
+    key: "movimiento",
+    title: "Movimiento",
+    render: (row) => row.movimiento || row.tipo_movimiento,
+},
         {
             key: "usuario",
             title: "Usuario",
