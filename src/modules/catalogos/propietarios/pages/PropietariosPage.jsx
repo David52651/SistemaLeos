@@ -8,7 +8,7 @@ import ConfirmDialog from "@/components/ui/ConfirmDialog";
 
 import { usePropietarios } from "../hooks/usePropietarios";
 
-import PropietarioDetalle from "../components/PropietarioDetalle";  
+import PropietarioDetalle from "../components/PropietarioDetalle";
 
 import {
     desactivarPropietario,
@@ -18,32 +18,39 @@ import {
 
 export default function PropietariosPage() {
 
+    /* =====================================================
+       HOOKS (siempre al inicio, sin condiciones)
+    ===================================================== */
+
     const {
         data: propietarios,
         isLoading,
         refetch,
     } = usePropietarios();
 
-
-    /* =====================================================
-       CONFIRMACION DE ACCIONES
-    ===================================================== */
-
     const [
         confirmAction,
         setConfirmAction
     ] = useState(null);
 
+    // ⬅️ MOVIDO ARRIBA: estado del modal de detalle
+    const [
+        propietarioDetalle,
+        setPropietarioDetalle
+    ] = useState(null);
+
+
+    /* =====================================================
+       FUNCIONES (no son hooks, van después)
+    ===================================================== */
 
     function abrirConfirmacion(action) {
         setConfirmAction(action);
     }
 
-
     function cerrarConfirmacion() {
         setConfirmAction(null);
     }
-
 
     async function ejecutarConfirmacion() {
 
@@ -67,25 +74,6 @@ export default function PropietariosPage() {
 
     }
 
-
-    if (isLoading) {
-        return <p>Cargando propietarios...</p>;
-    }
-
-
-    /* =====================================================
-       DETALLE 
-    ===================================================== */
-
-    const [
-        propietarioDetalle,
-        setPropietarioDetalle
-    ] = useState(null);
-
-
-    /* =====================================================
-       DESACTIVAR / ACTIVAR
-    ===================================================== */
 
     function desactivarPropietarioHandler(id) {
 
@@ -112,30 +100,27 @@ export default function PropietariosPage() {
 
 
     /* =====================================================
+       EARLY RETURN (después de TODOS los hooks)
+    ===================================================== */
+
+    if (isLoading) {
+        return <p>Cargando propietarios...</p>;
+    }
+
+
+    /* =====================================================
        COLUMNAS
     ===================================================== */
 
     const columnas = [
 
-        {
-            key: "nombre",
-            title: "Nombre",
-        },
+        { key: "nombre", title: "Nombre" },
 
-        {
-            key: "tipo",
-            title: "Tipo",
-        },
+        { key: "tipo", title: "Tipo" },
 
-        {
-            key: "telefono",
-            title: "Teléfono",
-        },
+        { key: "telefono", title: "Teléfono" },
 
-        {
-            key: "correo",
-            title: "Correo",
-        },
+        { key: "correo", title: "Correo" },
 
         {
             key: "estado",
@@ -157,8 +142,6 @@ export default function PropietariosPage() {
             key: "acciones",
             title: "Acciones",
             render: (propietario) => (
-
-                /*  frenar propagación para no abrir el modal */
                 <div
                     className="table-actions"
                     onClick={(e) => e.stopPropagation()}
@@ -227,7 +210,6 @@ export default function PropietariosPage() {
                 onCancel={cerrarConfirmacion}
             />
 
-            {/* Modal de detalle */}
             <PropietarioDetalle
                 open={!!propietarioDetalle}
                 propietario={propietarioDetalle}
