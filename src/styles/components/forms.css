@@ -8,643 +8,427 @@
    CONTENEDOR FORMULARIO
 ===================================================== */
 
-
 .form-container {
-
-
-    width:100%;
-
-
-    display:flex;
-
-
-    flex-direction:column;
-
-
-    gap:var(--space-4);
-
-
-
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
 }
-
-
-
-
 
 
 /* =====================================================
    GRUPO DE CAMPO
 ===================================================== */
 
-
 .form-group {
-
-
-    display:flex;
-
-
-    flex-direction:column;
-
-
-    gap:.45rem;
-
-
-    margin-bottom:
-        var(--space-4);
-
-
-
+    display: flex;
+    flex-direction: column;
+    gap: .45rem;
+    margin-bottom: var(--space-4);
 }
-
-
-
-
-
 
 
 /* =====================================================
    LABEL
 ===================================================== */
 
-
 .form-label {
-
-
-    font-size:
-        var(--font-size-sm);
-
-
-
-    font-weight:
-        var(--font-weight-semibold);
-
-
-
-    color:
-        var(--text-primary);
-
-
-
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
 }
-
-
 
 .form-label.required::after {
-
-
-    content:" *";
-
-
-    color:
-        var(--danger);
-
-
-
+    content: " *";
+    color: var(--danger);
 }
-
-
-
-
-
-
 
 
 /* =====================================================
    INPUTS GENERALES
 ===================================================== */
 
-
 .form-control {
-
-
-    width:100%;
-
-
-    padding:
-
-
-        .65rem 1rem;
-
-
-
-background:
-var(--input-bg);
-
-color:
-var(--input-text);
-
-
-
-    border:
-
-
-        1px solid var(--border-color);
-
-
-
-    border-radius:
-
-
-        var(--radius-sm);
-
-
-
-    font-size:
-
-
-        var(--font-size-md);
-
-
-
-    transition:
-
-
-        border var(--transition-fast),
-        box-shadow var(--transition-fast);
-
-
-
-    outline:none;
-
-
-
+    width: 100%;
+    padding: .65rem 1rem;
+    background: var(--input-bg);
+    color: var(--input-text);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-md);
+    transition: border var(--transition-fast), box-shadow var(--transition-fast);
+    outline: none;
 }
-
-
-
-
 
 .form-control::placeholder {
-
-
-    color:
-        var(--text-muted);
-
-
+    color: var(--text-muted);
 }
-
-
-
 
 .form-control:hover {
-
-
-    border-color:
-        var(--border-hover);
-
-
-
+    border-color: var(--border-hover);
 }
-
-
-
 
 .form-control:focus {
-
-
-    border-color:
-
-
-        var(--color-primary);
-
-
-
-    box-shadow:
-
-
-        0 0 0 3px
-        rgba(0,71,171,.15);
-
-
-
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(0, 71, 171, .15);
 }
-
-
-
-
-
 
 
 /* =====================================================
    SELECT
 ===================================================== */
 
-
 .form-select {
-
-
-    appearance:none;
-
-
-    cursor:pointer;
-
-
-    background-color:
-        var(--bg-input);
-
-
-
+    appearance: none;
+    cursor: pointer;
+    background-color: var(--bg-input);
 }
-
-
-
-
-
 
 
 /* =====================================================
    TEXTAREA
 ===================================================== */
 
-
 textarea.form-control {
-
-
-    resize:vertical;
-
-
-    min-height:120px;
-
-
-
+    resize: vertical;
+    min-height: 120px;
 }
-
-
-
-
-
-
 
 
 /* =====================================================
    DESHABILITADO
 ===================================================== */
 
-
 .form-control:disabled {
-
-
-    background:
-        var(--bg-hover);
-
-
-
-    opacity:.7;
-
-
-    cursor:not-allowed;
-
-
-
+    background: var(--bg-hover);
+    opacity: .7;
+    cursor: not-allowed;
 }
-
-
-
-
-
-
 
 
 /* =====================================================
    VALIDACIONES
 ===================================================== */
 
-
 .form-error {
-
-
-    font-size:
-        var(--font-size-sm);
-
-
-
-    color:
-        var(--danger);
-
-
-
+    font-size: var(--font-size-sm);
+    color: var(--danger);
 }
-
-
-
 
 .form-control.error {
-
-
-    border-color:
-        var(--danger);
-
-
-
+    border-color: var(--danger);
 }
-
-
-
-
 
 .form-success {
-
-
-    color:
-        var(--success);
-
-
-    font-size:
-        var(--font-size-sm);
-
-
-
+    color: var(--success);
+    font-size: var(--font-size-sm);
 }
-
-
-
-
-
 
 
 /* =====================================================
    GRID FORMULARIOS
 ===================================================== */
 
-
 .form-grid {
-
-
-    display:grid;
-
-
-
-    grid-template-columns:
-
-        repeat(
-            2,
-            minmax(0,1fr)
-        );
-
-
-
-    gap:
-        var(--space-5);
-
-
-
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-5);
 }
-
-
-
-
 
 .form-grid-3 {
-
-
-    display:grid;
-
-
-
-    grid-template-columns:
-
-        repeat(
-            3,
-            minmax(0,1fr)
-        );
-
-
-
-    gap:
-        var(--space-5);
-
-
-
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-5);
 }
-
-
-
-
-
-
 
 
 /* =====================================================
    ACCIONES
 ===================================================== */
 
-
 .form-actions {
-
-
-    display:flex;
-
-
-
-    justify-content:flex-end;
-
-
-
-    align-items:center;
-
-
-
-    gap:
-        var(--space-3);
-
-
-
-    margin-top:
-        var(--space-6);
-
-
-
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: var(--space-3);
+    margin-top: var(--space-6);
 }
-
-
-
-
-
-
 
 
 /* =====================================================
    CHECKBOX / RADIO
 ===================================================== */
 
-
 .form-check {
-
-
-    display:flex;
-
-
-    align-items:center;
-
-
-    gap:.5rem;
-
-
-
+    display: flex;
+    align-items: center;
+    gap: .5rem;
 }
-
-
-
 
 .form-check input {
-
-
-    width:18px;
-
-
-    height:18px;
-
-
-
-    accent-color:
-        var(--color-primary);
-
-
-
+    width: 18px;
+    height: 18px;
+    accent-color: var(--color-primary);
 }
-
-
-
-
-
 
 
 /* =====================================================
    BUSCADOR
 ===================================================== */
 
-
 .search-box {
-
-
-    display:flex;
-
-
-    align-items:center;
-
-
-    gap:.5rem;
-
-
-
-    background:
-        var(--bg-input);
-
-
-
-    border:
-
-
-        1px solid var(--border-color);
-
-
-
-    padding:
-
-
-        .5rem .8rem;
-
-
-
-    border-radius:
-
-
-        var(--radius-md);
-
-
-
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    padding: .5rem .8rem;
+    border-radius: var(--radius-md);
 }
-
-
-
-
 
 .search-box input {
-
-
-    border:none;
-
-
-    outline:none;
-
-
-    background:transparent;
-
-
-    width:100%;
-
-
-    color:
-        var(--text-primary);
-
-
-
+    border: none;
+    outline: none;
+    background: transparent;
+    width: 100%;
+    color: var(--text-primary);
 }
-
-
-
-
-
-
 
 
 /* =====================================================
    RESPONSIVE
 ===================================================== */
 
-
-@media(max-width:900px){
-
-
+@media(max-width:900px) {
     .form-grid,
-
-
     .form-grid-3 {
-
-
-        grid-template-columns:
-            1fr;
-
-
-
+        grid-template-columns: 1fr;
     }
+}
 
-
+@media(max-width:600px) {
+    .form-container {
+        gap: var(--space-3);
+    }
+    .form-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
 }
 
 
+/* =====================================================
+   RICH TEXT EDITOR (react-quill) - Theme Aware
+   Se adapta automáticamente a modo claro y oscuro
+===================================================== */
+
+/* ---------- TOOLBAR ---------- */
+.rich-text-editor .ql-toolbar {
+    background: var(--bg-hover);
+    border: 1px solid var(--border-color);
+    border-radius: 8px 8px 0 0;
+    border-bottom: none;
+    padding: 8px;
+}
+
+/* ---------- CONTENEDOR PRINCIPAL ---------- */
+.rich-text-editor .ql-container {
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: 0 0 8px 8px;
+    font-size: 0.95rem;
+    min-height: 180px;
+    color: var(--text-primary);
+    font-family: var(--font-family);
+}
+
+/* ---------- ÁREA DE EDICIÓN ---------- */
+.rich-text-editor .ql-editor {
+    min-height: 180px;
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+.rich-text-editor .ql-editor.ql-blank::before {
+    color: var(--text-muted);
+    font-style: normal;
+}
+
+.rich-text-editor .ql-editor p {
+    margin-bottom: 0.5em;
+}
+
+.rich-text-editor .ql-editor ul,
+.rich-text-editor .ql-editor ol {
+    padding-left: 1.5em;
+    margin-bottom: 0.5em;
+}
+
+.rich-text-editor .ql-editor blockquote {
+    border-left: 4px solid var(--color-primary);
+    padding-left: 12px;
+    margin-left: 0;
+    opacity: 0.85;
+}
 
 
+/* =====================================================
+   TOOLBAR: ICONOS Y BOTONES
+   Forzamos el color en TODOS los SVGs internos
+===================================================== */
+
+/* Botones base (bold, italic, underline, listas, blockquote, clean) */
+.rich-text-editor .ql-toolbar button svg,
+.rich-text-editor .ql-toolbar button svg path,
+.rich-text-editor .ql-toolbar button svg line,
+.rich-text-editor .ql-toolbar button svg polyline,
+.rich-text-editor .ql-toolbar button svg polygon,
+.rich-text-editor .ql-toolbar button svg rect {
+    stroke: var(--text-primary) !important;
+}
+
+.rich-text-editor .ql-toolbar button:hover svg,
+.rich-text-editor .ql-toolbar button:hover svg path,
+.rich-text-editor .ql-toolbar button:hover svg line,
+.rich-text-editor .ql-toolbar button:hover svg polyline,
+.rich-text-editor .ql-toolbar button:hover svg polygon,
+.rich-text-editor .ql-toolbar button:hover svg rect {
+    stroke: var(--color-primary-hover) !important;
+}
+
+.rich-text-editor .ql-toolbar button.ql-active svg,
+.rich-text-editor .ql-toolbar button.ql-active svg path,
+.rich-text-editor .ql-toolbar button.ql-active svg line,
+.rich-text-editor .ql-toolbar button.ql-active svg polyline,
+.rich-text-editor .ql-toolbar button.ql-active svg polygon,
+.rich-text-editor .ql-toolbar button.ql-active svg rect {
+    stroke: var(--color-primary-hover) !important;
+}
 
 
-@media(max-width:600px){
+/* =====================================================
+   PICKERS (tamaño, color, fondo)
+===================================================== */
+
+.rich-text-editor .ql-toolbar .ql-picker {
+    color: var(--text-primary);
+}
+
+.rich-text-editor .ql-toolbar .ql-picker-label {
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 0 8px;
+}
+
+.rich-text-editor .ql-toolbar .ql-picker-label:hover {
+    color: var(--color-primary-hover) !important;
+    border-color: var(--color-primary-hover);
+}
+
+/* Iconos (flecha) dentro del label del picker */
+.rich-text-editor .ql-toolbar .ql-picker-label svg,
+.rich-text-editor .ql-toolbar .ql-picker-label svg * {
+    stroke: currentColor !important;
+}
+
+/* Panel desplegable */
+.rich-text-editor .ql-toolbar .ql-picker-options {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 6px;
+    box-shadow: var(--shadow-md);
+    padding: 6px;
+}
+
+/* Items del panel desplegable */
+.rich-text-editor .ql-toolbar .ql-picker-item {
+    color: var(--text-primary) !important;
+    border-radius: 4px;
+}
+
+.rich-text-editor .ql-toolbar .ql-picker-item:hover,
+.rich-text-editor .ql-toolbar .ql-picker-item.ql-selected {
+    color: var(--color-primary-hover) !important;
+    background: var(--bg-hover);
+}
 
 
-    .form-container {
+/* =====================================================
+   PICKER DE COLOR (A con barrita)
+===================================================== */
+
+.rich-text-editor .ql-toolbar .ql-color .ql-picker-label,
+.rich-text-editor .ql-toolbar .ql-background .ql-picker-label {
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 2px 6px;
+}
+
+/* El SVG del picker de color: contorno visible */
+.rich-text-editor .ql-toolbar .ql-color .ql-picker-label svg line,
+.rich-text-editor .ql-toolbar .ql-color .ql-picker-label svg polyline,
+.rich-text-editor .ql-toolbar .ql-background .ql-picker-label svg line,
+.rich-text-editor .ql-toolbar .ql-background .ql-picker-label svg polyline {
+    stroke: var(--text-primary) !important;
+}
+
+/* Cada muestra de color */
+.rich-text-editor .ql-toolbar .ql-color .ql-picker-item,
+.rich-text-editor .ql-toolbar .ql-background .ql-picker-item {
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    transition: transform 0.15s ease;
+}
+
+.rich-text-editor .ql-toolbar .ql-color .ql-picker-item:hover,
+.rich-text-editor .ql-toolbar .ql-background .ql-picker-item:hover {
+    transform: scale(1.15);
+    border-color: var(--color-primary-hover);
+}
 
 
-        gap:
-            var(--space-3);
+/* =====================================================
+   PREVIEW EN TABLA
+===================================================== */
+
+.rich-text-preview {
+    max-width: 400px;
+    max-height: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 0.85rem;
+    opacity: 0.85;
+    color: var(--text-primary);
+}
+
+.rich-text-preview p {
+    margin: 0;
+    display: inline;
+}
+
+.rich-text-preview ul,
+.rich-text-preview ol {
+    margin: 0;
+    padding-left: 1rem;
+}
 
 
+/* =====================================================
+   TAMAÑOS DE LETRA
+===================================================== */
 
-    }
+.rich-text-editor .ql-editor .ql-size-small,
+.rich-text-preview .ql-size-small {
+    font-size: 0.75em;
+}
 
+.rich-text-editor .ql-editor .ql-size-large,
+.rich-text-preview .ql-size-large {
+    font-size: 1.5em;
+}
 
-
-
-    .form-actions {
-
-
-        flex-direction:column;
-
-
-        align-items:stretch;
-
-
-
-    }
-
-
-
+.rich-text-editor .ql-editor .ql-size-huge,
+.rich-text-preview .ql-size-huge {
+    font-size: 2.25em;
 }
