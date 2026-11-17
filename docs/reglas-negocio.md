@@ -2,7 +2,7 @@
 
 ## SistemaLeos
 
-Versión: 1.1
+Versión: 1.2
 
 ---
 
@@ -15,9 +15,9 @@ El sistema tiene como finalidad:
 * Organizar el inventario existente.
 * Facilitar la búsqueda de artículos.
 * Controlar existencias.
-* Registrar movimientos importantes.
-* Mantener trazabilidad de los cambios realizados.
-* Preparar la infraestructura para un futuro sistema de alquiler.
+* Registrar movimientos importantes de forma centralizada.
+* Mantener trazabilidad y auditoría de los cambios.
+* **Gestionar el alquiler de vestuario a personas y agrupaciones.**
 
 ---
 
@@ -25,26 +25,21 @@ El sistema tiene como finalidad:
 
 Existen únicamente dos tipos de usuarios.
 
-## Administrador
+## 2.1 Administrador
 
 Tiene acceso completo al sistema.
 
 Puede:
 
-* Crear registros.
-* Editar registros.
-* Registrar movimientos.
-* Gestionar inventario.
-* Visualizar auditoría.
-* Gestionar catálogos.
+* Crear, editar y desactivar registros.
+* Registrar movimientos de inventario.
+* Registrar alquileres y devoluciones.
+* Gestionar el inventario y los catálogos.
+* Visualizar la auditoría completa.
 
-Los administradores son creados exclusivamente desde Supabase.
+*Nota: Los administradores son creados exclusivamente desde Supabase. No existe funcionalidad dentro de la aplicación para crear administradores.*
 
-No existe funcionalidad dentro de la aplicación para crear administradores.
-
----
-
-## Visitante
+## 2.2 Visitante
 
 Tiene acceso limitado.
 
@@ -57,328 +52,120 @@ Puede:
 
 No puede:
 
-* Crear registros.
-* Editar registros.
-* Eliminar registros.
-* Registrar movimientos.
+* Crear, editar o eliminar registros.
+* Registrar movimientos ni alquileres.
 
 ---
 
-# 3. Centralización de Movimientos (NUEVO)
+# 3. Centralización de Movimientos
 
-Todo cambio significativo en el sistema se registra en el módulo de **Movimientos**.
+Toda acción que modifique el sistema se registra en el módulo de **Movimientos**, el cual unifica dos fuentes de datos:
 
-Esto aplica a dos categorías:
+## 3.1 Movimientos de Inventario (`movimientos_inventario`)
+Se registran aquí:
+* **Agregar:** Ingreso de stock.
+* **Desechar:** Pérdida o baja.
+* **Actualizar Stock:** Ajuste por conteo físico.
+* **Modificar Datos:** Cambios en los datos del artículo (nombre, categoría, talla, etc.).
+* **Alquileres:** Salidas y devoluciones de prendas (generados automáticamente por el módulo de alquileres).
 
-## 3.1 Movimientos de Inventario
-
-Se registran en la tabla `movimientos_inventario`:
-
-* Agregar stock (ingresos).
-* Desechar artículo (pérdidas/bajas).
-* Actualizar stock (conteo físico/ajuste).
-* Modificar datos del artículo (nombre, categoría, talla, propietario, género, stock mínimo, observaciones).
-
-## 3.2 Movimientos de Catálogos
-
-Se registran en la tabla `movimientos_catalogos`:
-
-* Creación de Categoría.
-* Creación de Talla.
-* Creación de Propietario.
-* Creación de Danza.
+## 3.2 Movimientos de Catálogos (`movimientos_catalogos`)
+Se registran aquí:
+* Creación de Categoría, Talla, Propietario o Danza.
 
 ## 3.3 Registro de Stock Inicial
-
-Cuando se crea un artículo con stock inicial mayor a cero, se registra automáticamente un movimiento de tipo `"Agregar"` con motivo `"Stock inicial al crear artículo"`.
-
----
-
-# 4. Gestión de Categorías
-
-Las categorías representan la clasificación principal de los artículos.
-
-Ejemplos:
-
-* Sombreros
-* Camisas
-* Pantalones
-* Polleras
-* Fajas
-* Zapatos
-
-Reglas:
-
-* **Solo lectura en su módulo.** Se crean desde el flujo de Movimientos → Nuevo artículo.
-* No se editan desde su módulo dedicado.
-* No se eliminan desde la aplicación.
-* Se pueden activar o desactivar.
-* La creación queda registrada en `movimientos_catalogos`.
+Cuando se crea un artículo con `stock_actual > 0`, el sistema genera automáticamente un movimiento tipo `"Agregar"` con motivo `"Stock inicial al crear artículo"`.
 
 ---
 
-# 5. Gestión de Tallas
+# 4. Gestión de Catálogos
 
-Las tallas permiten clasificar los artículos según sus dimensiones.
+Los catálogos básicos (Categorías, Tallas y Propietarios) funcionan bajo la política de **solo lectura en sus módulos dedicados**.
 
-Ejemplos:
+* **Creación:** Se realizan desde el flujo de `Movimientos → + Nuevo artículo` (abriendo los modales correspondientes).
+* **Modificación:** No se permite editar desde su módulo para evitar cambios no auditados.
+* **Eliminación:** No se permite. Solo se pueden activar o desactivar.
+* **Auditoría:** La creación queda registrada automáticamente en `movimientos_catalogos`.
 
-* S
-* M
-* L
-* XL
-* Talla única
-
-Reglas:
-
-* **Solo lectura en su módulo.** Se crean desde el flujo de Movimientos → Nuevo artículo.
-* No se editan desde su módulo dedicado.
-* No se eliminan desde la aplicación.
-* Se pueden activar o desactivar.
-* La creación queda registrada en `movimientos_catalogos`.
+*Excepción:* El módulo de **Danzas** mantiene su CRUD completo (crear, editar, activar/desactivar), ya que se prevén mejoras futuras (como asociación de imágenes). Sus creaciones también se auditan.
 
 ---
 
-# 6. Gestión de Propietarios
+# 5. Gestión de Artículos e Inventario
 
-Los propietarios representan a la persona o entidad dueña original de una prenda o artículo.
+Los artículos son el núcleo del sistema.
 
-Reglas:
+## 5.1 Creación y Modificación
+* **Creación:** Exclusivamente desde `Movimientos → + Nuevo artículo`.
+* **Modificación:** Exclusivamente desde `Movimientos` (tipo `"Modificar Datos"`).
+* **Activación/Desactivación:** Se realiza desde el módulo de Inventario.
 
-* Un artículo pertenece a un propietario.
-* **Solo lectura en su módulo.** Se crean desde el flujo de Movimientos → Nuevo artículo.
-* No se editan desde su módulo dedicado.
-* No se eliminan desde la aplicación.
-* Se pueden activar o desactivar.
-* La creación queda registrada en `movimientos_catalogos`.
+## 5.2 Código de Artículo
+* Es único e irrepetible.
+* Se genera automáticamente combinando el nombre y la talla (ej. `CAM-BLA-L`).
 
----
-
-# 7. Gestión de Danzas
-
-Las danzas representan las expresiones culturales asociadas a los artículos.
-
-Ejemplos:
-
-* Cashua Cajamarquina
-* Chotanos
-* Carnaval de Cajamarca
-
-Reglas:
-
-* Una danza puede tener múltiples artículos.
-* Un artículo puede pertenecer a múltiples danzas.
-* La relación es de muchos a muchos.
-* **El módulo de Danzas mantiene CRUD completo** (crear, editar, activar/desactivar) porque se prevén mejoras futuras.
-* La creación desde el flujo de Movimientos también queda registrada en `movimientos_catalogos`.
+## 5.3 Control de Stock
+* El stock refleja la cantidad física disponible.
+* El sistema **prohíbe** stock negativo mediante validación en base de datos `CHECK (stock_actual >= 0)`.
+* Si el stock llega a 0, el artículo **no se elimina**, sigue visible con una advertencia visual de "Agotado".
 
 ---
 
-# 8. Gestión de Artículos
+# 6. Gestión de Alquileres
 
-Los artículos constituyen el núcleo del inventario.
+El módulo de Alquileres permite controlar la salida y retorno de vestuario, descontando y sumando stock de forma automática.
 
-Ejemplos:
+## 6.1 Tipos de Alquiler
+* **Conjunto:** Destinado a 1 sola persona. El sistema restringe la selección a **1 unidad por cada prenda**.
+* **Paquete:** Destinado a grupos. Permite alquilar múltiples unidades de la misma prenda, respetando el stock máximo disponible.
 
-* Sombrero Chotano
-* Camisa Blanca
-* Pantalón Negro de Lana
+## 6.2 Registro Obligatorio del Cliente
+Para agilizar futuras búsquedas, es obligatorio registrar:
+* Nombre (Persona o Agrupación).
+* DNI / Carnet.
+* Teléfono de contacto y Dirección (opcionales, pero recomendados).
 
-Cada artículo debe contener:
+## 6.3 Fechas y Devoluciones
+* La fecha de salida se registra automáticamente con la fecha actual.
+* La fecha de devolución pactada se sugiere para el día siguiente, pero es editable.
+* El sistema cuenta con un **aviso visual (alerta)** cuando un alquiler ha superado la fecha pactada sin ser devuelto.
+* Al registrar la devolución, el stock se restaura automáticamente y se genera un movimiento de `"Agregar"`.
 
-* Código.
-* Nombre.
-* Categoría.
-* Talla.
-* Propietario.
-* Stock.
-* Imagen principal.
-* Observaciones.
-
-**Creación:** desde Movimientos → "+ Nuevo artículo".
-**Modificación:** desde Movimientos → tipo "Modificar Datos".
-**Activación/Desactivación:** desde el módulo de Inventario.
-
----
-
-# 9. Código de Artículo
-
-Cada artículo posee un código único.
-
-Ejemplos:
-
-* SOM-001
-* CAM-001
-* PAN-001
-
-Reglas:
-
-* El código nunca se reutiliza.
-* El código es único.
-* El código permanece asociado al artículo durante toda su vida útil.
-* **Se genera automáticamente** a partir del nombre y la talla.
+## 6.4 Observaciones por Prenda
+* **A la salida:** Se puede registrar una nota por cada prenda (ej. "Tiene un hueco pequeño"). Esto protege al negocio ante reclamos.
+* **Al retorno:** Se puede registrar cómo regresó la prenda. Si todo está bien, existe un botón rápido de "Todo limpio y en buen estado".
 
 ---
 
-# 10. Control de Stock
+# 7. Eliminación de Registros
 
-El stock representa la cantidad física disponible de un artículo.
+Como política general inquebrantable: **Los registros no se eliminan.**
 
-Ejemplo:
-
-Sombrero Chotano
-
-Stock: 12
-
-Significa que existen doce unidades disponibles.
+Se utiliza el campo `activo` para desactivar registros (usuarios, artículos, categorías, etc.). Esto garantiza que el historial de movimientos y alquileres nunca pierda sus referencias y mantenga la integridad relacional.
 
 ---
 
-## Stock Agotado
+# 8. Auditoría y Seguridad
 
-Cuando un artículo alcanza stock cero:
-
-* No se elimina.
-* No se oculta.
-* Continúa visible en el sistema.
-* Debe mostrarse una advertencia visual.
-
-Ejemplo:
-
-⚠ Artículo agotado
-
-El sistema debe impedir disminuir el stock por debajo de cero (validado tanto en el frontend como en la base de datos mediante `CHECK (stock_actual >= 0)`).
-
----
-
-# 11. Imágenes
-
-Cada artículo debe poseer al menos una imagen.
-
-Objetivos:
-
-* Facilitar la identificación visual.
-* Reducir la manipulación innecesaria de prendas.
-* Agilizar consultas de clientes y usuarios.
-
-En futuras versiones se permitirá:
-
-* Varias imágenes por artículo.
-* Imágenes asociadas a danzas.
-
----
-
-# 12. Movimientos de Inventario
-
-Todo cambio importante debe registrarse como movimiento.
-
-Tipos soportados actualmente:
-
-* **Agregar** — Ingreso de stock.
-* **Desechar** — Pérdida o baja.
-* **Actualizar Stock** — Ajuste por conteo físico.
-* **Modificar Datos** — Cambio en los datos del artículo.
-
-Solo los administradores pueden registrar movimientos.
-
-Cada movimiento incluye:
-
-* Fecha y hora.
+## 8.1 Auditoría
+Todo cambio crítico registra:
 * Usuario responsable.
-* Artículo afectado.
-* Tipo de movimiento.
-* Cantidad (0 para modificaciones de datos).
-* Motivo.
-* Descripción textual del cambio.
-* Detalles JSON con el diff (para "Modificar Datos").
+* Fecha y hora exacta.
+* Acción realizada (tipo de movimiento).
+* Valores anteriores y nuevos (en caso de modificaciones).
+
+## 8.2 Seguridad
+* Uso de Roles (`administrador` / `visitante`).
+* Validaciones dobles: Zod en el frontend y CHECK constraints en PostgreSQL.
+* Uso de RPCs (Remote Procedure Calls) con `SECURITY DEFINER` para garantizar transacciones atómicas (si falla un paso, se cancela todo).
+* RLS (Row Level Security) configurado en Supabase.
 
 ---
 
-# 13. Eliminación de Registros
+# 9. Principios Generales
 
-Como política general:
-
-Los registros no se eliminan.
-
-Se utilizarán mecanismos de desactivación o estados para conservar el historial.
-
-Objetivos:
-
-* Evitar pérdida de información.
-* Mantener trazabilidad.
-* Reducir errores humanos.
-
----
-
-# 14. Auditoría
-
-El sistema registra cambios importantes realizados por los administradores.
-
-Se registra:
-
-* Usuario responsable.
-* Fecha.
-* Hora.
-* Acción realizada.
-* Registro afectado.
-* Valores anteriores y nuevos (para modificaciones).
-
-Objetivos:
-
-* Trazabilidad.
-* Seguridad.
-* Investigación de incidentes.
-* Recuperación de información.
-
----
-
-# 15. Seguridad
-
-Las operaciones críticas están protegidas mediante:
-
-* Autenticación.
-* Roles (`administrador` / `visitante`).
-* Validaciones (Zod en frontend, CHECK constraints en backend).
-* Auditoría completa.
-* RPCs atómicas con `SECURITY DEFINER` en Supabase.
-
-No existen funciones de creación de administradores dentro de la aplicación.
-
----
-
-# 16. Preparación para Sistema de Alquiler
-
-El sistema actual trabaja con inventario por lotes.
-
-Sin embargo, la arquitectura permite una futura migración hacia inventario unitario.
-
-Ejemplo futuro:
-
-SOM-001
-
-SOM-002
-
-SOM-003
-
-SOM-004
-
-Cada unidad podrá tener estados independientes:
-
-* Disponible.
-* Alquilado.
-* Perdido.
-* En mantenimiento.
-
-El stock visible será calculado automáticamente a partir de dichas unidades.
-
----
-
-# 17. Principios Generales
-
-* No eliminar información innecesariamente.
-* Mantener trazabilidad completa.
-* Priorizar la integridad de los datos.
-* Mantener simplicidad operativa para el negocio.
-* Preparar el sistema para futuras ampliaciones.
-* Garantizar que el inventario refleje la realidad física del local.
+* No eliminar información, solo desactivarla.
+* Mantener trazabilidad completa de todas las acciones.
 * Centralizar los cambios en el módulo de Movimientos.
+* Garantizar que el inventario refleje la realidad física del local en todo momento.
+* Preparar la arquitectura para futuras ampliaciones (sistema de reservas, inventario unitario, etc.).

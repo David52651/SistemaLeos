@@ -56,8 +56,8 @@
 | Campo         | Tipo      |
 |---------------|-----------|
 | id            | uuid      |
-| articulo_id   | uuid      |
-| danza_id      | uuid      |
+| articulo_id   | uuid (FK) |
+| danza_id      | uuid (FK) |
 
 ---
 
@@ -66,7 +66,7 @@
 | Campo         | Tipo      |
 |---------------|-----------|
 | id            | uuid      |
-| articulo_id   | uuid      |
+| articulo_id   | uuid (FK) |
 | url_imagen    | text      |
 | principal     | bool      |
 | created_at    | timestamp |
@@ -78,14 +78,14 @@
 | Campo            | Tipo      |
 |------------------|-----------|
 | id               | uuid      |
-| articulo_id      | uuid      |
-| usuario_id       | uuid      |
+| articulo_id      | uuid (FK) |
+| usuario_id       | uuid (FK) |
 | tipo_movimiento  | varchar   |
 | cantidad         | int       |
 | motivo           | text      |
-| movimiento       | text      |
-| detalles         | jsonb     |
 | fecha_movimiento | timestamp |
+| detalles         | jsonb     |
+| movimiento       | text      |
 
 **Restricciones:**
 - `CHECK (cantidad >= 0)`
@@ -99,12 +99,12 @@
 
 ---
 
-## movimientos_catalogos (NUEVA)
+## movimientos_catalogos
 
 | Campo            | Tipo      |
 |------------------|-----------|
 | id               | uuid      |
-| usuario_id       | uuid      |
+| usuario_id       | uuid (FK) |
 | entidad          | varchar   |
 | entidad_id       | uuid      |
 | nombre_entidad   | varchar   |
@@ -167,61 +167,83 @@
 
 ---
 
+## alquileres (NUEVA)
+
+| Campo                     | Tipo      |
+|---------------------------|-----------|
+| id                        | uuid      |
+| usuario_id                | uuid (FK) |
+| cliente_nombre            | text      |
+| tipo                      | text      |
+| fecha_salida              | timestamp |
+| fecha_devolucion_pactada  | timestamp |
+| fecha_devolucion_real     | timestamp |
+| estado                    | text      |
+| observaciones             | text      |
+| created_at                | timestamp |
+| cliente_dni               | varchar   |
+| cliente_contacto          | varchar   |
+| cliente_direccion         | text      |
+
+**Restricciones:**
+- `CHECK (tipo IN ('Conjunto', 'Paquete'))`
+- `CHECK (estado IN ('Activo', 'Devuelto'))`
+
+---
+
+## alquiler_detalles (NUEVA)
+
+| Campo                  | Tipo      |
+|------------------------|-----------|
+| id                     | uuid      |
+| alquiler_id            | uuid (FK) |
+| articulo_id            | uuid (FK) |
+| cantidad               | int       |
+| observacion_salida     | text      |
+| observacion_devolucion | text      |
+
+**Restricciones:**
+- `CHECK (cantidad > 0)`
+- `ON DELETE CASCADE` en `alquiler_id` (si se borra la cabecera, se borran los detalles).
+
+---
+
 # Funciones RPC
 
 ## registrar_movimiento_inventario
-
 Registra un movimiento de stock (Agregar, Desechar, Actualizar Stock) y actualiza `articulos.stock_actual` de forma atómica.
-
-**Parámetros:**
-- `p_articulo_id UUID`
-- `p_usuario_id UUID`
-- `p_tipo_movimiento VARCHAR`
-- `p_cantidad INT`
-- `p_motivo TEXT`
-- `p_movimiento TEXT`
-- `p_detalles JSONB` (opcional)
+**Parámetros:** `p_articulo_id`, `p_usuario_id`, `p_tipo_movimiento`, `p_cantidad`, `p_motivo`, `p_movimiento`, `p_detalles`.
 
 ---
 
 ## modificar_articulo_con_movimiento
-
 Modifica los datos de un artículo (excepto stock) y registra el cambio en `movimientos_inventario` con el diff en `detalles`.
-
-**Parámetros:**
-- `p_articulo_id UUID`
-- `p_usuario_id UUID`
-- `p_nuevos_datos JSONB`
-- `p_motivo TEXT`
-- `p_movimiento TEXT`
-- `p_detalles JSONB`
+**Parámetros:** `p_articulo_id`, `p_usuario_id`, `p_nuevos_datos`, `p_motivo`, `p_movimiento`, `p_detalles`.
 
 ---
 
 ## crear_articulo_con_stock_inicial
-
 Crea un artículo y, si tiene stock inicial > 0, registra automáticamente un movimiento tipo `"Agregar"` con motivo `"Stock inicial al crear artículo"`.
-
-**Parámetros:**
-- `p_datos JSONB`
-- `p_usuario_id UUID`
-
+**Parámetros:** `p_datos`, `p_usuario_id`.
 **Retorna:** UUID del artículo creado.
 
 ---
 
 ## registrar_movimiento_catalogo
-
 Registra la creación de una categoría, talla, propietario o danza en `movimientos_catalogos`.
-
-**Parámetros:**
-- `p_usuario_id UUID`
-- `p_entidad VARCHAR`
-- `p_entidad_id UUID`
-- `p_nombre_entidad VARCHAR`
-- `p_tipo_movimiento VARCHAR`
-- `p_movimiento TEXT`
-- `p_motivo TEXT`
-- `p_detalles JSONB` (opcional)
-
+**Parámetros:** `p_usuario_id`, `p_entidad`, `p_entidad_id`, `p_nombre_entidad`, `p_tipo_movimiento`, `p_movimiento`, `p_motivo`, `p_detalles`.
 **Retorna:** UUID del movimiento creado.
+
+---
+
+## crear_alquiler
+Registra la cabecera del alquiler, los detalles (carrito), valida el stock de cada prenda, descuenta el stock y registra el movimiento en el historial. Todo de forma atómica.
+**Parámetros:** `p_usuario_id`, `p_cliente_nombre`, `p_cliente_dni`, `p_cliente_contacto`, `p_cliente_direccion`, `p_tipo`, `p_fecha_devolucion_pactada`, `p_observaciones`, `p_detalles`.
+**Retorna:** UUID del alquiler creado.
+
+---
+
+## devolver_alquiler
+Recibe el ID del alquiler, suma el stock devuelto, guarda las observaciones de retorno y cambia el estado a `"Devuelto"`.
+**Parámetros:** `p_alquiler_id`, `p_usuario_id`, `p_detalles_devolucion`.
+**Retorna:** VOID.
