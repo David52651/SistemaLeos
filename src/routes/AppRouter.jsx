@@ -4,7 +4,6 @@ import MainLayout from "@/components/layout/MainLayout";
 
 import DashboardPage from "@/modules/dashboard/pages/DashboardPage";
 import InventarioPage from "@/modules/inventario/pages/InventarioPage";
-import UsuariosPage from "@/modules/usuarios/pages/UsuariosPage";
 import LoginPage from "@/modules/auth/LoginPage";
 
 import CategoriasPage from "@/modules/catalogos/categorias/pages/CategoriasPage";
@@ -13,6 +12,7 @@ import PropietariosPage from "@/modules/catalogos/propietarios/pages/Propietario
 import DanzasPage from "@/modules/catalogos/danzas/pages/DanzasPage";
 
 import MovimientosPage from "@/modules/movimientos/pages/MovimientosPage";
+import AlquileresPage from "@/modules/alquileres/pages/AlquileresPage";
 
 import ProtectedRoute from "@/routes/ProtectedRoute";
 import RoleRoute from "@/routes/RoleRoute";
@@ -21,13 +21,8 @@ import RoleRoute from "@/routes/RoleRoute";
 export default function AppRouter() {
   return (
     <BrowserRouter>
-
       <Routes>
-
-        <Route
-          path="/login"
-          element={<LoginPage />}
-        />
+        <Route path="/login" element={<LoginPage />} />
 
         <Route
           element={
@@ -36,18 +31,18 @@ export default function AppRouter() {
             </ProtectedRoute>
           }
         >
-
+          <Route path="/" element={<DashboardPage />} />
+          <Route path="/inventario" element={<InventarioPage />} />
+          
           <Route
-            path="/"
-            element={<DashboardPage />}
+            path="/alquileres"
+            element={
+              <RoleRoute allowedRoles={["administrador"]}>
+                <AlquileresPage />
+              </RoleRoute>
+            }
           />
 
-          <Route
-            path="/inventario"
-            element={<InventarioPage />}
-          />
-
-          {/* ⬇️ NUEVA RUTA: Solo administradores */}
           <Route
             path="/movimientos"
             element={
@@ -84,24 +79,10 @@ export default function AppRouter() {
             }
           />
 
-          <Route
-            path="/danzas"
-            element={<DanzasPage />}
-          />
-
-          <Route
-            path="/usuarios"
-            element={
-              <RoleRoute allowedRoles={["administrador"]}>
-                <UsuariosPage />
-              </RoleRoute>
-            }
-          />
-
+          <Route path="/danzas" element={<DanzasPage />} />
+          
         </Route>
-
       </Routes>
-
     </BrowserRouter>
   );
 }

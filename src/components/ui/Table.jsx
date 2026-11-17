@@ -117,11 +117,9 @@ export default function Table({
 
                                                 {
 
-                                                    column.render
-
-                                                        ? column.render(row)
-
-                                                        : row[column.key]
+                                                    column.render 
+                                                    ? column.render(row, index) 
+                                                    : row[column.key]
 
                                                 }
 

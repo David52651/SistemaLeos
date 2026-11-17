@@ -12,47 +12,17 @@ export default function MainLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Definimos el menú con los roles permitidos
-  const menuCompleto = [
-    {
-      nombre: "Dashboard",
-      ruta: "/",
-      roles: ["administrador", "visitante"],
-    },
-    {
-      nombre: "Inventario",
-      ruta: "/inventario",
-      roles: ["administrador", "visitante"],
-    },
-    {
-      nombre: "Movimientos",         
-      ruta: "/movimientos",          
-      roles: ["administrador"],      
-    },
-    {
-      nombre: "Usuarios",
-      ruta: "/usuarios",
-      roles: ["administrador"],
-    },
-    {
-      nombre: "Categorías",
-      ruta: "/categorias",
-      roles: ["administrador"],
-    },
-    {
-      nombre: "Tallas",
-      ruta: "/tallas",
-      roles: ["administrador"],
-    },
-    {
-      nombre: "Propietarios",
-      ruta: "/propietarios",
-      roles: ["administrador"],
-    },
-    {
-      nombre: "Danzas",
-      ruta: "/danzas",
-      roles: ["administrador", "visitante"],
-    },
+    const menuCompleto = [
+    { nombre: "Dashboard", ruta: "/", roles: ["administrador", "visitante"] },
+    { nombre: "Inventario", ruta: "/inventario", roles: ["administrador", "visitante"] },
+    
+
+    { nombre: "Alquileres", ruta: "/alquileres", roles: ["administrador"] },
+        { nombre: "Movimientos", ruta: "/movimientos", roles: ["administrador"] },
+    { nombre: "Categorías", ruta: "/categorias", roles: ["administrador"] },
+    { nombre: "Tallas", ruta: "/tallas", roles: ["administrador"] },
+    { nombre: "Propietarios", ruta: "/propietarios", roles: ["administrador"] },
+    { nombre: "Danzas", ruta: "/danzas", roles: ["administrador", "visitante"] },
   ];
 
   // Filtramos el menú según el rol del perfil
