@@ -17,14 +17,14 @@
 
 ---
 
-## Fase 3 - Inventario
+## Fase 3 - Inventario (Completado)
 [x] CRUD Artículos (creación y edición centralizada vía Movimientos)
 [x] Generación automática de códigos (Ej. CAM-BLA-L)
 [x] Asociación de múltiples danzas a un artículo
 [x] Búsqueda y filtros avanzados (código, nombre, propietario, categoría, talla)
-[x] Modal de detalle del artículo tipo "ficha técnica"
+[x] Modal de detalle del artículo tipo "ficha técnica" con visor de imágenes (zoom)
 [x] Alertas visuales de stock bajo / agotado
-[ ] Subida de imágenes de artículos (Supabase Storage)
+[x] Subida de imágenes de artículos (Supabase Storage integrado)
 
 ---
 
@@ -87,6 +87,6 @@
 [ ] Sistema de reservas de prendas
 [ ] Notificaciones automáticas (WhatsApp o Email al cliente)
 [ ] Historial de clientes con deudas o incidencias
-[ ] Subida de imágenes de artículos
+[ ] Múltiples imágenes por artículo (Galería)
 [ ] Imágenes asociadas a danzas
 [ ] Migración de inventario por lotes a inventario unitario

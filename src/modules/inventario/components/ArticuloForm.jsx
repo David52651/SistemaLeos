@@ -24,6 +24,9 @@ export default function ArticuloForm({
   const [internalOpen, setInternalOpen] = useState(false);
   const open = hideToggleButton || internalOpen; 
 
+  const [imagenFile, setImagenFile] = useState(null);
+  const [imagenPreview, setImagenPreview] = useState("");
+
   const { categorias, tallas, propietarios, danzas } = useCatalogosInventario();
 
   const {
@@ -56,13 +59,29 @@ export default function ArticuloForm({
     if (initialValues) {
       reset(initialValues);
       setInternalOpen(true);
+      // Si el artículo ya tiene imagen, la mostramos
+      if (initialValues.imagen_url) {
+        setImagenPreview(initialValues.imagen_url);
+      }
     }
   }, [initialValues, reset]);
 
+  function handleImagenChange(e) {
+    const file = e.target.files[0];
+    if (file) {
+      setImagenFile(file);
+      setImagenPreview(URL.createObjectURL(file)); // Vista previa instantánea
+    }
+  }
+
   async function enviar(data) {
-    await onSubmit(data);
+
+    await onSubmit(data, imagenFile); 
+    
     if (!initialValues) {
       reset();
+      setImagenFile(null);
+      setImagenPreview("");
       if (!hideToggleButton) {
         setInternalOpen(false);
       }
@@ -112,6 +131,31 @@ export default function ArticuloForm({
               as="textarea"
               {...register("descripcion")}
             />
+
+            <div className="form-group" style={{ marginTop: "1rem", marginBottom: "1rem" }}>
+              <label className="form-label">Imagen del artículo (opcional)</label>
+              <input 
+                type="file" 
+                accept="image/*" 
+                onChange={handleImagenChange} 
+                className="form-control" 
+              />
+              {imagenPreview && (
+                <div style={{ marginTop: "10px" }}>
+                  <img 
+                    src={imagenPreview} 
+                    alt="Vista previa" 
+                    style={{ 
+                      width: "120px", 
+                      height: "120px", 
+                      objectFit: "cover", 
+                      borderRadius: "8px",
+                      border: "2px solid var(--border-color)"
+                    }} 
+                  />
+                </div>
+              )}
+            </div>
 
             <Select label="Categoría" {...register("categoria_id", { required: true })}>
               <option value="">Seleccione</option>

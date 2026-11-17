@@ -19,10 +19,10 @@ import { supabase } from "@/lib/supabase";
 
 import { generarCodigoArticulo } from "@/modules/inventario/utils/generarCodigoArticulo";
 import {
-    createArticulo,
     guardarDanzasArticulo,
     existeArticulo,
     crearArticuloConStockInicial,  
+    guardarImagenArticulo, // ⬅️ NUEVO: Importamos la función
 } from "@/modules/inventario/services/inventario.service";
 
 import { createCategoria } from "@/modules/catalogos/categorias/services/categorias.service";
@@ -33,8 +33,7 @@ import { createDanza } from "@/modules/catalogos/danzas/services/danzas.service"
 import { movimientoSchema } from "../schemas/movimientos.schema";
 import { useMovimientos } from "../hooks/useMovimientos";
 import { TIPOS_MOVIMIENTO } from "../constants/tiposMovimiento";
-import { modificarArticuloConMovimiento } from "../services/movimientos.service";
-import { registrarMovimientoCatalogo } from "../services/movimientos.service";
+import { modificarArticuloConMovimiento, registrarMovimientoCatalogo } from "../services/movimientos.service";
 
 export default function MovimientoForm({ onSuccess }) {
   const { perfil } = useAuth();
@@ -64,7 +63,6 @@ export default function MovimientoForm({ onSuccess }) {
       tipo_movimiento: "Agregar",
       cantidad: 0,
       motivo: "",
-      // Campos de "Modificar Datos"
       nombre: "",
       descripcion: "",
       categoria_id: "",
@@ -83,7 +81,6 @@ export default function MovimientoForm({ onSuccess }) {
   const esModificarDatos = tipoMovimiento === "Modificar Datos";
   const esActualizarStock = tipoMovimiento === "Actualizar Stock";
 
-  // Cuando cambia el artículo seleccionado, precargamos sus datos en el form
   useEffect(() => {
     if (esModificarDatos && articuloSeleccionado) {
       setValue("nombre", articuloSeleccionado.nombre || "");
@@ -98,12 +95,12 @@ export default function MovimientoForm({ onSuccess }) {
   }, [articuloSeleccionado, esModificarDatos, setValue]);
 
   // ============================================
-  // CREAR ARTÍCULO (desde el modal)
+  // CREAR ARTÍCULO (con subida de imagen)
   // ============================================
-  async function handleCrearArticulo(values) {
+  async function handleCrearArticulo(values, imagenFile) {
     try {
         if (!perfil?.id) {
-            toast.error("No se encontró el perfil del usuario. Vuelve a iniciar sesión.");
+            toast.error("No se encontró el perfil del usuario.");
             return;
         }
 
@@ -113,46 +110,56 @@ export default function MovimientoForm({ onSuccess }) {
             return;
         }
 
-        const tallaSeleccionada = tallas.data?.find(
-            (t) => t.id === values.talla_id
-        );
+        let imagen_url = null;
 
-        const codigo = generarCodigoArticulo(
-            values.nombre,
-            tallaSeleccionada?.nombre
-        );
+        // 1. Subir imagen a Supabase Storage
+        if (imagenFile) {
+            const fileExt = imagenFile.name.split('.').pop();
+            const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+            const filePath = `${fileName}`;
 
+            const { error: uploadError } = await supabase.storage
+                .from('articulos')
+                .upload(filePath, imagenFile);
+
+            if (uploadError) throw new Error("Error al subir la imagen: " + uploadError.message);
+
+            const { data: publicUrlData } = supabase.storage
+                .from('articulos')
+                .getPublicUrl(filePath);
+
+            imagen_url = publicUrlData.publicUrl;
+        }
+
+        const tallaSeleccionada = tallas.data?.find((t) => t.id === values.talla_id);
+        const codigo = generarCodigoArticulo(values.nombre, tallaSeleccionada?.nombre);
         const { danzas_ids: _danzas_ids, ...restoValores } = values;
+        
+        // 2. Crear el artículo (Ya NO pasamos imagen_url en el payload)
         const payload = { ...restoValores, codigo };
+        const articuloGuardado = await crearArticuloConStockInicial(payload, perfil.id);
 
-        // ⬅️ NUEVO: usa la RPC atómica con stock inicial
-        const articuloGuardado = await crearArticuloConStockInicial(
-            payload,
-            perfil.id
-        );
+        // 3. Guardar danzas
+        await guardarDanzasArticulo(articuloGuardado.id, values.danzas_ids || []);
 
-        // Guardar danzas asociadas
-        await guardarDanzasArticulo(
-            articuloGuardado.id,
-            values.danzas_ids || []
-        );
+        // 4. ⬅️ NUEVO: Guardar la relación de la imagen en la tabla `imagenes_articulo`
+        if (imagen_url) {
+            await guardarImagenArticulo(articuloGuardado.id, imagen_url, true);
+        }
 
         toast.success("Artículo creado correctamente");
 
-        // Actualizar el caché para que aparezca en el selector
         queryClient.setQueryData(["articulos-selector"], (old = []) => {
             const nuevo = {
                 id: articuloGuardado.id,
                 codigo: articuloGuardado.codigo,
                 nombre: articuloGuardado.nombre,
                 stock_actual: articuloGuardado.stock_actual,
+                imagen_url: imagen_url, // Lo pasamos al caché local para la miniatura
             };
-            return [...old, nuevo].sort((a, b) =>
-                a.nombre.localeCompare(b.nombre)
-            );
+            return [...old, nuevo].sort((a, b) => a.nombre.localeCompare(b.nombre));
         });
 
-        // Invalidate queries para refrescar tablas
         queryClient.invalidateQueries({ queryKey: ["movimientos"] });
         queryClient.invalidateQueries({ queryKey: ["articulos"] });
 
@@ -161,7 +168,7 @@ export default function MovimientoForm({ onSuccess }) {
     } catch (error) {
         toast.error(error.message);
     }
-}
+  }
 
   // ============================================
   // CREAR CATÁLOGOS
@@ -169,7 +176,6 @@ export default function MovimientoForm({ onSuccess }) {
   async function crearCategoria(values) {
     try {
         const nueva = await createCategoria(values);
-
         await registrarMovimientoCatalogo({
             usuario_id: perfil.id,
             entidad: "categoria",
@@ -177,7 +183,6 @@ export default function MovimientoForm({ onSuccess }) {
             nombre_entidad: nueva.nombre,
             accion: "Agregar",
         });
-
         toast.success("Categoría creada correctamente");
         queryClient.invalidateQueries({ queryKey: ["categorias-activo"] });
         queryClient.invalidateQueries({ queryKey: ["movimientos"] });
@@ -185,12 +190,11 @@ export default function MovimientoForm({ onSuccess }) {
     } catch (error) {
         toast.error(error.message);
     }
-}
+  }
 
   async function crearTalla(values) {
     try {
         const nueva = await createTalla(values);
-
         await registrarMovimientoCatalogo({
             usuario_id: perfil.id,
             entidad: "talla",
@@ -198,7 +202,6 @@ export default function MovimientoForm({ onSuccess }) {
             nombre_entidad: nueva.nombre,
             accion: "Agregar",
         });
-
         toast.success("Talla creada correctamente");
         queryClient.invalidateQueries({ queryKey: ["tallas-activo"] });
         queryClient.invalidateQueries({ queryKey: ["movimientos"] });
@@ -206,12 +209,11 @@ export default function MovimientoForm({ onSuccess }) {
     } catch (error) {
         toast.error(error.message);
     }
-}
+  }
 
   async function crearPropietario(values) {
     try {
         const nuevo = await createPropietario(values);
-
         await registrarMovimientoCatalogo({
             usuario_id: perfil.id,
             entidad: "propietario",
@@ -219,7 +221,6 @@ export default function MovimientoForm({ onSuccess }) {
             nombre_entidad: nuevo.nombre,
             accion: "Agregar",
         });
-
         toast.success("Propietario creado correctamente");
         queryClient.invalidateQueries({ queryKey: ["propietarios-activo"] });
         queryClient.invalidateQueries({ queryKey: ["movimientos"] });
@@ -227,12 +228,11 @@ export default function MovimientoForm({ onSuccess }) {
     } catch (error) {
         toast.error(error.message);
     }
-}
+  }
 
   async function crearDanza(values) {
     try {
         const nueva = await createDanza(values);
-
         await registrarMovimientoCatalogo({
             usuario_id: perfil.id,
             entidad: "danza",
@@ -240,7 +240,6 @@ export default function MovimientoForm({ onSuccess }) {
             nombre_entidad: nueva.nombre,
             accion: "Agregar",
         });
-
         toast.success("Danza creada correctamente");
         queryClient.invalidateQueries({ queryKey: ["danzas"] });
         queryClient.invalidateQueries({ queryKey: ["movimientos"] });
@@ -248,7 +247,7 @@ export default function MovimientoForm({ onSuccess }) {
     } catch (error) {
         toast.error(error.message);
     }
-}
+  }
 
   // ============================================
   // CONSTRUIR DETALLES DE AUDITORÍA (diff)
@@ -270,7 +269,6 @@ export default function MovimientoForm({ onSuccess }) {
     campos.forEach(({ key, label }) => {
       const antes = articuloSeleccionado?.[key];
       const despues = data[key];
-      // Comparamos como strings para evitar falsos positivos (ej: 3 vs "3")
       if (String(antes ?? "") !== String(despues ?? "")) {
         cambios[key] = { label, antes, despues };
       }
@@ -284,16 +282,11 @@ export default function MovimientoForm({ onSuccess }) {
   // ============================================
   async function onSubmit(data) {
     if (!perfil?.id) {
-      toast.error(
-        "No se encontró el perfil del usuario. Vuelve a iniciar sesión.",
-      );
+      toast.error("No se encontró el perfil del usuario.");
       return;
     }
 
     try {
-      // --------------------------------------------------
-      // CASO 1: MODIFICAR DATOS (usa la nueva RPC)
-      // --------------------------------------------------
       if (esModificarDatos) {
         const cambios = construirDetallesCambios(data);
 
@@ -316,9 +309,7 @@ export default function MovimientoForm({ onSuccess }) {
             observaciones: data.observaciones,
           },
           motivo: data.motivo,
-          movimiento: `Se modificaron los datos: ${Object.values(cambios)
-            .map((c) => c.label)
-            .join(", ")}`,
+          movimiento: `Se modificaron los datos: ${Object.values(cambios).map((c) => c.label).join(", ")}`,
           detalles: { cambios },
         });
 
@@ -331,17 +322,14 @@ export default function MovimientoForm({ onSuccess }) {
         return;
       }
 
-      // --------------------------------------------------
-      // CASO 2: MOVIMIENTOS DE STOCK (RPC original)
-      // --------------------------------------------------
       await registrar({
-    articulo_id: data.articulo_id,
-    usuario_id: perfil.id,
-    tipo_movimiento: data.tipo_movimiento,
-    cantidad: Number(data.cantidad),
-    motivo: data.motivo,
-    detalles: null,
-});
+        articulo_id: data.articulo_id,
+        usuario_id: perfil.id,
+        tipo_movimiento: data.tipo_movimiento,
+        cantidad: Number(data.cantidad),
+        motivo: data.motivo,
+        detalles: null,
+      });
 
       toast.success("Movimiento registrado correctamente");
       reset();
@@ -391,10 +379,22 @@ export default function MovimientoForm({ onSuccess }) {
               borderRadius: "6px",
               marginBottom: "12px",
               fontSize: "14px",
+              display: "flex",
+              alignItems: "center",
+              gap: "10px"
             }}
           >
-            Stock actual de <strong>{articuloSeleccionado.nombre}</strong>:{" "}
-            <strong>{articuloSeleccionado.stock_actual}</strong> unidades
+            {articuloSeleccionado.imagen_url && (
+              <img 
+                src={articuloSeleccionado.imagen_url} 
+                alt="mini" 
+                style={{ width: "30px", height: "30px", objectFit: "cover", borderRadius: "4px" }} 
+              />
+            )}
+            <span>
+              Stock actual de <strong>{articuloSeleccionado.nombre}</strong>:{" "}
+              <strong>{articuloSeleccionado.stock_actual}</strong> unidades
+            </span>
           </div>
         )}
 
@@ -412,93 +412,47 @@ export default function MovimientoForm({ onSuccess }) {
           ))}
         </Select>
 
-        {/* ============================================
-                    BLOQUE A: MODIFICAR DATOS (form completo)
-                ============================================ */}
+        {/* BLOQUE A: MODIFICAR DATOS */}
         {esModificarDatos && articuloSeleccionado && (
           <Card>
             <h3>Datos del artículo</h3>
-
-            <Input
-              label="Nombre del artículo"
-              {...register("nombre")}
-              error={errors.nombre?.message}
-              required
-            />
-
-            <Input
-              label="Descripción"
-              as="textarea"
-              {...register("descripcion")}
-            />
-
+            <Input label="Nombre del artículo" {...register("nombre")} error={errors.nombre?.message} required />
+            <Input label="Descripción" as="textarea" {...register("descripcion")} />
             <Select label="Categoría" {...register("categoria_id")}>
               <option value="">Seleccione</option>
               {categorias.data?.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.nombre}
-                </option>
+                <option key={c.id} value={c.id}>{c.nombre}</option>
               ))}
             </Select>
-
             <Select label="Talla" {...register("talla_id")}>
               <option value="">Seleccione</option>
               {tallas.data?.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.nombre}
-                </option>
+                <option key={t.id} value={t.id}>{t.nombre}</option>
               ))}
             </Select>
-
             <Select label="Propietario" {...register("propietario_id")}>
               <option value="">Seleccione</option>
               {propietarios.data?.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.nombre}
-                </option>
+                <option key={p.id} value={p.id}>{p.nombre}</option>
               ))}
             </Select>
-
             <Select label="Género" {...register("genero")}>
               <option value="masculino">Masculino</option>
               <option value="femenino">Femenino</option>
               <option value="unisex">Unisex</option>
             </Select>
-
-            <Input
-              label="Stock mínimo"
-              type="number"
-              min="0"
-              {...register("stock_min", { valueAsNumber: true })}
-            />
-
-            <Input
-              label="Observaciones"
-              as="textarea"
-              {...register("observaciones")}
-            />
+            <Input label="Stock mínimo" type="number" min="0" {...register("stock_min", { valueAsNumber: true })} />
+            <Input label="Observaciones" as="textarea" {...register("observaciones")} />
           </Card>
         )}
 
         {esModificarDatos && !articuloSeleccionado && (
-          <div
-            className="info-box"
-            style={{
-              padding: "12px",
-              background: "var(--bg-secondary, #f3f4f6)",
-              borderRadius: "6px",
-              marginBottom: "12px",
-              fontSize: "14px",
-              opacity: 0.75,
-            }}
-          >
+          <div className="info-box" style={{ padding: "12px", background: "var(--bg-secondary, #f3f4f6)", borderRadius: "6px", marginBottom: "12px", fontSize: "14px", opacity: 0.75 }}>
             Selecciona un artículo para ver y modificar sus datos.
           </div>
         )}
 
-        {/* ============================================
-                    BLOQUE B: MOVIMIENTOS DE STOCK (cantidad)
-                ============================================ */}
+        {/* BLOQUE B: MOVIMIENTOS DE STOCK */}
         {!esModificarDatos && (
           <Input
             label={esActualizarStock ? "Nuevo stock exacto" : "Cantidad"}
@@ -510,7 +464,6 @@ export default function MovimientoForm({ onSuccess }) {
           />
         )}
 
-        {/* 3. Motivo (siempre visible) */}
         <Input
           label="Motivo"
           placeholder="Ej: Compra a proveedor, Conteo físico, Prenda dañada..."
@@ -519,14 +472,8 @@ export default function MovimientoForm({ onSuccess }) {
           required
         />
 
-        {/* 4. Botón */}
         <div className="form-actions">
-          <Button
-            type="submit"
-            variant="primary"
-            disabled={isRegistrando}
-            loading={isRegistrando}
-          >
+          <Button type="submit" variant="primary" disabled={isRegistrando} loading={isRegistrando}>
             {esModificarDatos ? "Guardar Cambios" : "Registrar Movimiento"}
           </Button>
         </div>
