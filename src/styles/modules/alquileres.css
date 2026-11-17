@@ -1,0 +1,50 @@
+
+/* =====================================================
+   MÓDULO DE ALQUILERES
+===================================================== */
+
+/* Formulario del Modal (Grids) */
+.alquiler-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.alquiler-grid-2-1-1 {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+/* Fila para agregar artículos al carrito */
+.alquiler-carrito-row {
+    display: grid;
+    grid-template-columns: 2.5fr 0.8fr 2fr auto;
+    gap: 1rem;
+    align-items: end;
+    margin-bottom: 1rem;
+}
+
+/* Caja contenedora del carrito */
+.alquiler-carrito-box {
+    background: var(--bg-hover);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+/* Responsive para pantallas pequeñas */
+@media (max-width: 768px) {
+    .alquiler-grid-3,
+    .alquiler-grid-2-1-1,
+    .alquiler-carrito-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Ajuste para que los inputs dentro del modal no se aplasten */
+.alquiler-carrito-row .form-group {
+    margin-bottom: 0;
+}

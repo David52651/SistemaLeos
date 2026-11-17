@@ -1,83 +1,92 @@
 # Roadmap
 
-## Fase 1 - infraestructura
-
-[x] Base de datos
-[x] Supabase
-[x] Login
-[x] Roles
-[x] Router protegido
+## Fase 1 - Infraestructura
+[x] Base de datos (PostgreSQL / Supabase)
+[x] Autenticación con Supabase Auth
+[x] Roles (Administrador / Visitante)
+[x] Router protegido y control de acceso
+[x] Diseño de UI/UX (Componentes reutilizables con variables CSS)
 
 ---
 
-## Fase 2 - catálogos
-
+## Fase 2 - Catálogos
 [x] CRUD Categorías (migrado a solo lectura + activar/desactivar)
 [x] CRUD Tallas (migrado a solo lectura + activar/desactivar)
 [x] CRUD Propietarios (migrado a solo lectura + activar/desactivar)
-[x] CRUD Danzas (mantiene CRUD completo)
+[x] CRUD Danzas (mantiene CRUD completo con editor de texto enriquecido)
 
 ---
 
 ## Fase 3 - Inventario
-
-[x] CRUD Artículos (vía módulo de Movimientos)
-[x] Generación automática de códigos
-[x] Asociación artículo-danza
-[x] Búsqueda y filtros (código, nombre, propietario, categoría, talla)
-[x] Modal de detalle del artículo
-[ ] Subida de imágenes
+[x] CRUD Artículos (creación y edición centralizada vía Movimientos)
+[x] Generación automática de códigos (Ej. CAM-BLA-L)
+[x] Asociación de múltiples danzas a un artículo
+[x] Búsqueda y filtros avanzados (código, nombre, propietario, categoría, talla)
+[x] Modal de detalle del artículo tipo "ficha técnica"
+[x] Alertas visuales de stock bajo / agotado
+[ ] Subida de imágenes de artículos (Supabase Storage)
 
 ---
 
-## Fase 4 - Movimientos
-
-[x] Registro de ingresos (Agregar)
+## Fase 4 - Movimientos (Auditoría)
+[x] Registro de ingresos (Agregar stock)
 [x] Registro de bajas (Desechar)
-[x] Registro de ajustes de stock (Actualizar Stock)
-[x] Registro de modificaciones de datos (Modificar Datos)
+[x] Registro de ajustes de stock (Actualizar Stock por conteo físico)
+[x] Registro de modificaciones de datos (Modificar Datos con diff de cambios)
 [x] Registro de creación de catálogos
-[x] Registro de stock inicial al crear artículo
-[x] Historial unificado (inventario + catálogos)
-[ ] Registro de préstamos al elenco de danzas GMD FSR (futuro)
-[ ] Registro de devoluciones (futuro)
+[x] Registro de stock inicial al crear un artículo
+[x] Historial unificado en una sola tabla (inventario + catálogos)
+[x] Generación de descripciones legibles para el usuario (ej. "Se agregaron X artículos")
 
 ---
 
-## Fase 5 - Dashboard
-
-[ ] Indicadores principales
-[ ] Artículos por categoría
-[ ] Artículos por danza
-[ ] Movimientos recientes
-[ ] Reportes
-
----
-
-## Fase 6 - Calidad
-
-[ ] Pruebas funcionales
-[ ] Pruebas de seguridad
-[ ] Pruebas con usuarios reales
-[ ] Corrección de errores
+## Fase 5 - Sistema de Alquileres (Completado)
+[x] Estructura de base de datos para alquileres (Cabecera y Detalles)
+[x] Funciones RPC atómicas para crear alquiler y descontar stock
+[x] Funciones RPC para registrar devoluciones y restaurar stock
+[x] Formulario con "Carrito" para agrupar múltiples prendas
+[x] Validación de tipos de alquiler: Conjunto (1 persona) y Paquete (grupos)
+[x] Control de stock: validación en frontend y backend (no permite alquilar de más)
+[x] Buscador de prendas con autocompletado (react-select)
+[x] Registro de datos del cliente (DNI, Contacto, Dirección)
+[x] Sugerencia automática de fecha de devolución (día siguiente)
+[x] Alertas y badge visual para alquileres retrasados
+[x] Modal tipo "Factura" con el detalle del alquiler
+[x] Modal para registrar observaciones de retorno (ej. "Todo limpio")
 
 ---
 
-## Fase 7 - Despliegue
-
-[ ] Configuración de producción
-[ ] Migración de datos
-[ ] Capacitación
-[ ] Puesta en marcha
+## Fase 6 - Dashboard e Indicadores
+[ ] Indicadores principales (Total de prendas, alquileres activos, etc.)
+[ ] Artículos agrupados por categoría
+[ ] Artículos agrupados por danza
+[ ] Lista de movimientos recientes
+[ ] Reportes de alquileres (más solicitados, clientes frecuentes)
+[ ] Gráficos estadísticos (Chart.js o Recharts)
 
 ---
 
-## Fase 8 - Mejoras Futuras
+## Fase 7 - Calidad y Pruebas
+[ ] Pruebas funcionales de todos los flujos (QA Manual)
+[ ] Pruebas de seguridad y políticas RLS en Supabase
+[ ] Pruebas con usuarios reales (Encargado de tienda)
+[ ] Corrección de errores y ajustes de UI/UX
 
-[ ] Sistema de alquiler
-[ ] Historial de alquileres
-[ ] Reservas
-[ ] Notificaciones
-[ ] Dashboard avanzado
+---
+
+## Fase 8 - Despliegue y Producción
+[ ] Configuración de producción en Cloudflare Pages
+[ ] Configuración de variables de entorno (VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY)
+[ ] Migración de datos reales a Supabase
+[ ] Capacitación al personal
+[ ] Puesta en marcha oficial
+
+---
+
+## Fase 9 - Mejoras Futuras (Backlog)
+[ ] Sistema de reservas de prendas
+[ ] Notificaciones automáticas (WhatsApp o Email al cliente)
+[ ] Historial de clientes con deudas o incidencias
 [ ] Subida de imágenes de artículos
 [ ] Imágenes asociadas a danzas
+[ ] Migración de inventario por lotes a inventario unitario
