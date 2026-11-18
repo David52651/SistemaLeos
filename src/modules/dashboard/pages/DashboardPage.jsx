@@ -53,6 +53,7 @@ export default function DashboardPage() {
     ];
 
     return (
+      
         <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <h1 style={{ margin: 0 }}>Dashboard</h1>
