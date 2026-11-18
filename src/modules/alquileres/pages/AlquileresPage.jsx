@@ -14,15 +14,20 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useAlquileres } from "../hooks/useAlquileres";
 import { useMovimientos } from "@/modules/movimientos/hooks/useMovimientos";
 
-import "@/styles/modules/alquileres.css"; // ⬅️ NUEVO: Importamos los estilos
-
 export default function AlquileresPage() {
     const { perfil } = useAuth();
     const { alquileres, isLoading, crear, isCreando, devolver } = useAlquileres();
     const { articulos } = useMovimientos(); 
 
+    // ==========================================
+    // ESTADOS DE UI
+    // ==========================================
     const [modalNuevoOpen, setModalNuevoOpen] = useState(false);
     const [busqueda, setBusqueda] = useState("");
+
+    // ==========================================
+    // ESTADOS DEL FORMULARIO (Nuevo Alquiler)
+    // ==========================================
     const [cliente, setCliente] = useState("");
     const [dni, setDni] = useState("");
     const [contacto, setContacto] = useState("");
@@ -37,19 +42,32 @@ export default function AlquileresPage() {
     const [fechaDevolucion, setFechaDevolucion] = useState(getManana());
     const [observaciones, setObservaciones] = useState("");
 
+    // ==========================================
+    // ESTADOS DEL CARRITO Y BUSCADOR
+    // ==========================================
     const [carrito, setCarrito] = useState([]);
-    const [articuloSeleccionado, setArticuloSeleccionado] = useState("");
+    const [modeloSeleccionado, setModeloSeleccionado] = useState(""); 
+    const [tallaSeleccionada, setTallaSeleccionada] = useState(""); 
     const [cantidad, setCantidad] = useState(1);
     const [notaArticulo, setNotaArticulo] = useState("");
 
+    // ==========================================
+    // ESTADOS MODALES (Factura y Devolución)
+    // ==========================================
     const [alquilerFactura, setAlquilerFactura] = useState(null);
     const [alquilerDevolucion, setAlquilerDevolucion] = useState(null);
     const [obsDevolucion, setObsDevolucion] = useState({});
 
+    // ==========================================
+    // EFECTOS Y MEMOS
+    // ==========================================
+    
     useEffect(() => {
         if (!alquileres.length) return;
         const hoy = new Date();
-        const retrasados = alquileres.filter(a => a.estado === "Activo" && new Date(a.fecha_devolucion_pactada) < hoy);
+        const retrasados = alquileres.filter(a => 
+            a.estado === "Activo" && new Date(a.fecha_devolucion_pactada) < hoy
+        );
 
         if (retrasados.length > 0) {
             toast.warning(`⚠️ Tienes ${retrasados.length} alquiler(es) retrasado(s)`, {
@@ -74,24 +92,41 @@ export default function AlquileresPage() {
         });
     }, [alquileres, busqueda]);
 
-    const opcionesArticulos = useMemo(() => {
-        return articulos.map(a => {
-            const enCarrito = carrito.filter(item => item.articulo_id === a.id);
-            const cantidadEnCarrito = enCarrito.reduce((sum, item) => sum + item.cantidad, 0);
-            const stockDisponible = a.stock_actual - cantidadEnCarrito;
+    // 1. Agrupar nombres únicos para el primer buscador
+    const opcionesModelos = useMemo(() => {
+        const modelos = new Set();
+        articulos.forEach(a => modelos.add(a.nombre));
+        return Array.from(modelos).sort().map(nombre => ({ value: nombre, label: nombre }));
+    }, [articulos]);
 
-            return {
-                value: a.id,
-                label: `${a.nombre} (Stock: ${stockDisponible})`,
-                stock: stockDisponible,
-                isDisabled: stockDisponible <= 0
-            };
-        });
-    }, [articulos, carrito]);
+    // 2. Filtrar las tallas disponibles del modelo seleccionado
+    const opcionesTallas = useMemo(() => {
+        if (!modeloSeleccionado) return [];
+        
+        return articulos
+            .filter(a => a.nombre === modeloSeleccionado)
+            .map(a => {
+                const enCarrito = carrito.filter(item => item.articulo_id === a.id);
+                const cantidadEnCarrito = enCarrito.reduce((sum, item) => sum + item.cantidad, 0);
+                const stockDisponible = a.stock_actual - cantidadEnCarrito;
 
+                return {
+                    value: a.id,
+                    label: `Talla ${a.tallas?.nombre || "Única"} (Stock: ${stockDisponible})`,
+                    stock: stockDisponible
+                };
+            })
+            .filter(t => t.stock > 0);
+    }, [modeloSeleccionado, articulos, carrito]);
+
+    // ==========================================
+    // FUNCIONES DEL CARRITO
+    // ==========================================
     function agregarAlCarrito() {
-        if (!articuloSeleccionado) return toast.error("Selecciona un artículo");
-        const articulo = articulos.find(a => a.id === articuloSeleccionado);
+        if (!tallaSeleccionada) return toast.error("Selecciona una talla");
+        
+        const articulo = articulos.find(a => a.id === tallaSeleccionada);
+        
         const enCarrito = carrito.filter(item => item.articulo_id === articulo.id);
         const cantidadEnCarrito = enCarrito.reduce((sum, item) => sum + item.cantidad, 0);
         const stockDisponible = articulo.stock_actual - cantidadEnCarrito;
@@ -111,13 +146,16 @@ export default function AlquileresPage() {
         const nuevoItem = {
             articulo_id: articulo.id,
             nombre: articulo.nombre,
+            talla: articulo.tallas?.nombre || "-",
             codigo: articulo.codigo,
             cantidad: Number(cantidad),
             observacion_salida: notaArticulo || "",
         };
 
         setCarrito([...carrito, nuevoItem]);
-        setArticuloSeleccionado(""); 
+        
+        setModeloSeleccionado("");
+        setTallaSeleccionada("");
         setCantidad(1);
         setNotaArticulo(""); 
     }
@@ -128,6 +166,9 @@ export default function AlquileresPage() {
         setCarrito(nuevoCarrito);
     }
 
+    // ==========================================
+    // REGISTRAR ALQUILER
+    // ==========================================
     async function handleSubmit(e) {
         e.preventDefault();
         if (carrito.length === 0) return toast.error("Agrega al menos un artículo al carrito");
@@ -159,6 +200,9 @@ export default function AlquileresPage() {
         }
     }
 
+    // ==========================================
+    // DEVOLVER ALQUILER
+    // ==========================================
     function abrirModalDevolucion(alquiler) {
         setAlquilerDevolucion(alquiler);
         const obsIniciales = {};
@@ -186,6 +230,9 @@ export default function AlquileresPage() {
         }
     }
 
+    // ==========================================
+    // COLUMNAS DE LA TABLA
+    // ==========================================
     const columnas = [
         {
             key: "cliente",
@@ -204,7 +251,7 @@ export default function AlquileresPage() {
             render: (row) => (
                 <div style={{ fontSize: "0.85rem" }}>
                     {row.alquiler_detalles?.map((d, i) => (
-                        <div key={i}>{d.cantidad}x {d.articulos?.nombre}</div>
+                        <div key={i}>{d.cantidad}x {d.articulos?.nombre} ({d.articulos?.tallas?.nombre})</div>
                     ))}
                 </div>
             )
@@ -232,7 +279,9 @@ export default function AlquileresPage() {
             render: (row) => (
                 <div className="table-actions" onClick={(e) => e.stopPropagation()}>
                     {row.estado === "Activo" ? (
-                        <Button variant="success" onClick={() => abrirModalDevolucion(row)}>Devolver</Button>
+                        <Button variant="success" onClick={() => abrirModalDevolucion(row)}>
+                            Devolver
+                        </Button>
                     ) : (
                         <span style={{ fontSize: "0.85rem", opacity: 0.6 }}>Completado</span>
                     )}
@@ -241,6 +290,9 @@ export default function AlquileresPage() {
         }
     ];
 
+    // ==========================================
+    // RENDER
+    // ==========================================
     return (
         <div className="page-container">
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
@@ -267,98 +319,131 @@ export default function AlquileresPage() {
                 />
             </Card>
 
-            {/* MODAL: NUEVO ALQUILER */}
+            {/* MODAL NUEVO ALQUILER (Size XL) */}
             <CatalogoModal 
                 open={modalNuevoOpen} 
                 title="Registrar Nuevo Alquiler" 
                 onClose={() => setModalNuevoOpen(false)}
-                size="lg"
+                size="xl" 
             >
-                <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                {/* ⬅️ FORMULARIO CON NUEVO GRID */}
+                <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
                     
-                    <div className="alquiler-grid-3">
+                    {/* Fila 1: 3 columnas */}
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1.5rem" }}>
                         <Input label="Cliente / Agrupación" value={cliente} onChange={e => setCliente(e.target.value)} required />
                         <Input label="DNI / Carnet" value={dni} onChange={e => setDni(e.target.value)} required placeholder="Ej: 12345678" />
                         <Input label="Contacto (Teléfono)" value={contacto} onChange={e => setContacto(e.target.value)} />
                     </div>
                     
-                    <div className="alquiler-grid-2-1-1">
+                    {/* Fila 2: Dirección(2), Tipo(1), Fecha(1) */}
+                    <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: "1.5rem" }}>
                         <Input label="Dirección" value={direccion} onChange={e => setDireccion(e.target.value)} />
-                        <CustomSelect 
-                            label="Tipo" 
-                            value={tipo} 
-                            onChange={e => {
-                                const nuevoTipo = e.target.value;
-                                if (carrito.length > 0) {
-                                    if (window.confirm("Cambiar el tipo vaciará el carrito. ¿Continuar?")) {
-                                        setCarrito([]);
-                                        setTipo(nuevoTipo);
-                                    }
-                                } else {
+                        
+                        <CustomSelect label="Tipo" value={tipo} onChange={e => {
+                            const nuevoTipo = e.target.value;
+                            if (carrito.length > 0) {
+                                if (window.confirm("Cambiar el tipo vaciará el carrito. ¿Continuar?")) {
+                                    setCarrito([]);
                                     setTipo(nuevoTipo);
                                 }
-                            }}
-                        >
+                            } else {
+                                setTipo(nuevoTipo);
+                            }
+                        }}>
                             <option value="Conjunto">Conjunto</option>
                             <option value="Paquete">Paquete</option>
                         </CustomSelect>
+                        
                         <Input label="Fecha Devolución" type="date" value={fechaDevolucion} onChange={e => setFechaDevolucion(e.target.value)} required />
                     </div>
 
-                    <div className="alquiler-carrito-box">
-                        <h4 style={{ marginTop: 0, marginBottom: "1rem" }}>Agregar artículos al {tipo}</h4>
+                    {/* Carrito */}
+                    <div style={{ background: "var(--bg-hover)", padding: "1.5rem", borderRadius: "8px", border: "1px solid var(--border-color)" }}>
+                        <h4 style={{ marginTop: 0, marginBottom: "1.5rem", fontSize: "1.1rem" }}>Agregar artículos al {tipo}</h4>
                         
-                        <div className="alquiler-carrito-row">
-                            <div className="form-group">
-                                <label className="form-label required">Artículo</label>
+                        {/* Fila 3: Buscador Ancho Completo */}
+                        <div style={{ marginBottom: "1.5rem" }}>
+                            <label className="form-label required">1. Buscar Prenda</label>
+                            <Select
+                                options={opcionesModelos}
+                                value={opcionesModelos.find(o => o.value === modeloSeleccionado) || null}
+                                onChange={(opcion) => {
+                                    setModeloSeleccionado(opcion ? opcion.value : "");
+                                    setTallaSeleccionada("");
+                                }}
+                                placeholder="Escribe el nombre de la prenda..."
+                                isClearable
+                                isSearchable
+                                noOptionsMessage={() => "No se encontraron prendas"}
+                                classNamePrefix="react-select"
+                                styles={{
+                                    control: (base) => ({ ...base, background: "var(--bg-input)", borderColor: "var(--border-color)", color: "var(--text-primary)", minHeight: "42px" }),
+                                    menu: (base) => ({ ...base, background: "var(--bg-card)", zIndex: 9999 }),
+                                    option: (base, state) => ({ ...base, background: state.isFocused ? "var(--bg-hover)" : "transparent", color: "var(--text-primary)", cursor: "pointer" }),
+                                    singleValue: (base) => ({ ...base, color: "var(--text-primary)" }),
+                                    input: (base) => ({ ...base, color: "var(--text-primary)" })
+                                }}
+                            />
+                        </div>
+
+                                                {/* Fila 4: Talla, Cant, Nota, Botón */}
+                        <div style={{ display: "flex", gap: "1.5rem", alignItems: "flex-start" }}>
+                            
+                            <div style={{ flex: 1.5 }}>
+                                <label className="form-label required" style={{ display: "block", height: "24px", marginBottom: "8px" }}>2. Talla</label>
                                 <Select
-                                    options={opcionesArticulos}
-                                    value={opcionesArticulos.find(o => o.value === articuloSeleccionado) || null}
-                                    onChange={(opcion) => setArticuloSeleccionado(opcion ? opcion.value : "")}
-                                    placeholder="Escribe para buscar..."
+                                    options={opcionesTallas}
+                                    value={opcionesTallas.find(o => o.value === tallaSeleccionada) || null}
+                                    onChange={(opcion) => setTallaSeleccionada(opcion ? opcion.value : "")}
+                                    placeholder={modeloSeleccionado ? "Selecciona talla..." : "Elige prenda"}
+                                    isDisabled={!modeloSeleccionado}
                                     isClearable
-                                    isSearchable
-                                    noOptionsMessage={() => "No se encontraron prendas"}
                                     classNamePrefix="react-select"
                                     styles={{
                                         control: (base) => ({ ...base, background: "var(--bg-input)", borderColor: "var(--border-color)", color: "var(--text-primary)", minHeight: "42px" }),
                                         menu: (base) => ({ ...base, background: "var(--bg-card)", zIndex: 9999 }),
-                                        option: (base, state) => ({ ...base, background: state.isFocused ? "var(--bg-hover)" : "transparent", color: state.isDisabled ? "var(--text-muted)" : "var(--text-primary)", cursor: state.isDisabled ? "not-allowed" : "pointer" }),
+                                        option: (base, state) => ({ ...base, background: state.isFocused ? "var(--bg-hover)" : "transparent", color: "var(--text-primary)", cursor: "pointer" }),
                                         singleValue: (base) => ({ ...base, color: "var(--text-primary)" }),
                                         input: (base) => ({ ...base, color: "var(--text-primary)" })
                                     }}
                                 />
                             </div>
-                            
-                            <div className="form-group">
-                                <label className="form-label required">Cant.</label>
-                                <input type="number" className="form-control" min="1" value={tipo === "Conjunto" ? 1 : cantidad} onChange={e => setCantidad(e.target.value)} disabled={tipo === "Conjunto"} style={{ height: "42px" }} />
+
+                            <div style={{ width: "100px" }}>
+                                <label className="form-label" style={{ display: "block", height: "24px", marginBottom: "8px" }}>Cant.</label>
+                                <Input type="number" min="1" value={tipo === "Conjunto" ? 1 : cantidad} onChange={e => setCantidad(e.target.value)} disabled={tipo === "Conjunto" || !tallaSeleccionada} style={{ height: "42px" }} />
                             </div>
                             
-                            <div className="form-group">
-                                <label className="form-label">Nota (opcional)</label>
-                                <input type="text" className="form-control" placeholder="Ej: Tiene un hueco" value={notaArticulo} onChange={e => setNotaArticulo(e.target.value)} style={{ height: "42px" }} />
+                            <div style={{ flex: 1 }}>
+                                <label className="form-label" style={{ display: "block", height: "24px", marginBottom: "8px" }}>Nota (opcional)</label>
+                                <Input placeholder="Ej: Tiene un hueco" value={notaArticulo} onChange={e => setNotaArticulo(e.target.value)} disabled={!tallaSeleccionada} style={{ height: "42px" }} />
                             </div>
                             
-                            <Button type="button" variant="secondary" onClick={agregarAlCarrito} style={{ height: "42px" }}>+ Agregar</Button>
+                            <div style={{ paddingTop: "32px" }}> 
+                                <Button type="button" variant="secondary" onClick={agregarAlCarrito} disabled={!tallaSeleccionada} style={{ height: "42px", width: "100%" }}>+ Agregar</Button>
+                            </div>
                         </div>
 
-                        {carrito.length > 0 ? (
-                            <Table
-                                columns={[
-                                    { key: "codigo", title: "Código" },
-                                    { key: "nombre", title: "Artículo" },
-                                    { key: "cantidad", title: "Cant." },
-                                    { key: "observacion_salida", title: "Observación", render: (item) => item.observacion_salida || "-" },
-                                    { key: "acciones", title: "", render: (item, index) => (
-                                        <Button type="button" variant="danger" onClick={() => quitarDelCarrito(index)}>✖</Button>
-                                    )}
-                                ]}
-                                data={carrito}
-                            />
-                        ) : (
-                            <p style={{ textAlign: "center", opacity: 0.5, margin: "1rem 0" }}>No hay artículos en el carrito</p>
-                        )}
+                        {/* Tabla del Carrito */}
+                        <div style={{ marginTop: "1.5rem" }}>
+                            {carrito.length > 0 ? (
+                                <Table
+                                    columns={[
+                                        { key: "codigo", title: "Código" },
+                                        { key: "nombre", title: "Artículo", render: (item) => `${item.nombre} (${item.talla})` },
+                                        { key: "cantidad", title: "Cant." },
+                                        { key: "observacion_salida", title: "Observación", render: (item) => item.observacion_salida || "-" },
+                                        { key: "acciones", title: "", render: (item, index) => (
+                                            <Button type="button" variant="danger" onClick={() => quitarDelCarrito(index)}>✖</Button>
+                                        )}
+                                    ]}
+                                    data={carrito}
+                                />
+                            ) : (
+                                <p style={{ textAlign: "center", opacity: 0.5, margin: "1rem 0" }}>No hay artículos en el carrito</p>
+                            )}
+                        </div>
                     </div>
 
                     <Input label="Observaciones generales" value={observaciones} onChange={e => setObservaciones(e.target.value)} placeholder="Ej: Se lleva en una bolsa negra..." />
@@ -370,7 +455,7 @@ export default function AlquileresPage() {
                 </form>
             </CatalogoModal>
 
-            {/* MODAL FACTURA */}
+            {/* ... MODALES FACTURA Y DEVOLUCIÓN SE MANTIENEN IGUAL ... */}
             <CatalogoModal open={!!alquilerFactura} title="Detalle del Alquiler" onClose={() => setAlquilerFactura(null)} size="md">
                 {alquilerFactura && (
                     <div style={{ fontSize: "0.9rem" }}>
@@ -385,7 +470,7 @@ export default function AlquileresPage() {
                         <ul style={{ paddingLeft: "1rem", marginBottom: "1rem" }}>
                             {alquilerFactura.alquiler_detalles?.map((d, i) => (
                                 <li key={i} style={{ marginBottom: "0.5rem" }}>
-                                    <strong>{d.cantidad}x {d.articulos?.nombre}</strong> ({d.articulos?.codigo})
+                                    <strong>{d.cantidad}x {d.articulos?.nombre} ({d.articulos?.tallas?.nombre})</strong> ({d.articulos?.codigo})
                                     <br/>
                                     <span style={{ color: "var(--text-muted)" }}>Salida: {d.observacion_salida || "Sin observaciones"}</span>
                                     {d.observacion_devolucion && (
@@ -403,14 +488,13 @@ export default function AlquileresPage() {
                 )}
             </CatalogoModal>
 
-            {/* MODAL DEVOLUCIÓN */}
             <CatalogoModal open={!!alquilerDevolucion} title="Registrar Devolución" onClose={() => setAlquilerDevolucion(null)} size="md">
                 {alquilerDevolucion && (
                     <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                         <p>Revisa el estado de cada prenda. Si está todo bien, puedes dejarlo en blanco.</p>
                         {alquilerDevolucion.alquiler_detalles.map((detalle) => (
                             <div key={detalle.id} style={{ background: "var(--bg-hover)", padding: "0.5rem", borderRadius: "6px" }}>
-                                <p style={{ margin: 0, fontWeight: "bold" }}>{detalle.cantidad}x {detalle.articulos?.nombre}</p>
+                                <p style={{ margin: 0, fontWeight: "bold" }}>{detalle.cantidad}x {detalle.articulos?.nombre} ({detalle.articulos?.tallas?.nombre})</p>
                                 <small style={{ display: "block", marginBottom: "0.5rem", opacity: 0.7 }}>Salida: {detalle.observacion_salida || "Sin novedades"}</small>
                                 <Input placeholder="Observación de retorno..." value={obsDevolucion[detalle.id] || ""} onChange={(e) => setObsDevolucion({ ...obsDevolucion, [detalle.id]: e.target.value })} />
                                 <Button type="button" variant="secondary" style={{ marginTop: "0.5rem", fontSize: "0.75rem", padding: "2px 8px" }} onClick={() => setObsDevolucion({ ...obsDevolucion, [detalle.id]: "Todo limpio y en buen estado" })}>

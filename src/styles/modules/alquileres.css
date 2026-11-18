@@ -1,4 +1,3 @@
-
 /* =====================================================
    MÓDULO DE ALQUILERES
 ===================================================== */
@@ -7,38 +6,41 @@
 .alquiler-grid-3 {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
+    gap: 1.5rem;
     margin-bottom: 1rem;
 }
 
 .alquiler-grid-2-1-1 {
     display: grid;
     grid-template-columns: 2fr 1fr 1fr;
-    gap: 1rem;
+    gap: 1.5rem;
     margin-bottom: 1rem;
 }
 
 /* Fila para agregar artículos al carrito */
 .alquiler-carrito-row {
     display: grid;
-    grid-template-columns: 2.5fr 0.8fr 2fr auto;
-    gap: 1rem;
+    grid-template-columns: 2.5fr 1fr 2fr auto; /* Más espacio para el buscador y el botón */
+    gap: 1.2rem;
     align-items: end;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
 }
 
 /* Caja contenedora del carrito */
 .alquiler-carrito-box {
     background: var(--bg-hover);
-    padding: 1rem;
+    padding: 1.5rem;
     border-radius: 8px;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--border-color);
 }
 
 /* Responsive para pantallas pequeñas */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
     .alquiler-grid-3,
-    .alquiler-grid-2-1-1,
+    .alquiler-grid-2-1-1 {
+        grid-template-columns: 1fr;
+    }
     .alquiler-carrito-row {
         grid-template-columns: 1fr;
     }

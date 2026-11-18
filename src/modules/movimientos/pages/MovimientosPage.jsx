@@ -32,6 +32,8 @@ export default function MovimientosPage() {
             case "Desechar":          return "danger";
             case "Actualizar Stock":  return "warning";
             case "Modificar Datos":   return "info";
+            case "Alquiler":          return "warning"; // Naranja/Amarillo
+            case "Devolución":        return "success"; // Verde
             default:                  return "secondary";
         }
     }

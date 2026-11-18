@@ -2,7 +2,7 @@
 
 ## SistemaLeos
 
-Versión: 1.7.1
+Versión: 1.7.5
 
 ---
 
@@ -69,7 +69,8 @@ Se registran aquí:
 * **Desechar:** Pérdida o baja.
 * **Actualizar Stock:** Ajuste por conteo físico.
 * **Modificar Datos:** Cambios en los datos del artículo (nombre, categoría, talla, etc.).
-* **Alquileres:** Salidas y devoluciones de prendas (generados automáticamente por el módulo de alquileres).
+* **Alquiler:** Salida de prendas (generado automáticamente por el módulo de alquileres).
+* **Devolución:** Retorno de prendas alquiladas.
 
 ## 3.2 Movimientos de Catálogos (`movimientos_catalogos`)
 Se registran aquí:
@@ -132,7 +133,7 @@ Para agilizar futuras búsquedas, es obligatorio registrar:
 * La fecha de salida se registra automáticamente con la fecha actual.
 * La fecha de devolución pactada se sugiere para el día siguiente, pero es editable.
 * El sistema cuenta con un **aviso visual (alerta)** cuando un alquiler ha superado la fecha pactada sin ser devuelto.
-* Al registrar la devolución, el stock se restaura automáticamente y se genera un movimiento de `"Agregar"`.
+* Al registrar la devolución, el stock se restaura automáticamente y se genera un movimiento de **`"Devolución"`**.
 
 ## 6.4 Observaciones por Prenda
 * **A la salida:** Se puede registrar una nota por cada prenda (ej. "Tiene un hueco pequeño"). Esto protege al negocio ante reclamos.

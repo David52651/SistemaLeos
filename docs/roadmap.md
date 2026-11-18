@@ -25,6 +25,7 @@
 [x] Modal de detalle del artículo tipo "ficha técnica" con visor de imágenes (zoom)
 [x] Alertas visuales de stock bajo / agotado
 [x] Subida de imágenes de artículos (Supabase Storage integrado)
+[x] Agrupación visual de prendas por modelo y talla en la tabla principal
 
 ---
 
@@ -37,6 +38,7 @@
 [x] Registro de stock inicial al crear un artículo
 [x] Historial unificado en una sola tabla (inventario + catálogos)
 [x] Generación de descripciones legibles para el usuario (ej. "Se agregaron X artículos")
+[x] Diferenciación visual y lógica entre movimientos de "Alquiler" y "Devolución"
 
 ---
 
@@ -47,7 +49,7 @@
 [x] Formulario con "Carrito" para agrupar múltiples prendas
 [x] Validación de tipos de alquiler: Conjunto (1 persona) y Paquete (grupos)
 [x] Control de stock: validación en frontend y backend (no permite alquilar de más)
-[x] Buscador de prendas con autocompletado (react-select)
+[x] Selector doble de prendas (1. Buscar Modelo -> 2. Elegir Talla)
 [x] Registro de datos del cliente (DNI, Contacto, Dirección)
 [x] Sugerencia automática de fecha de devolución (día siguiente)
 [x] Alertas y badge visual para alquileres retrasados
@@ -60,7 +62,7 @@
 [x] Indicadores principales (Total de prendas, alquileres activos, retrasados, stock perdido)
 [x] Lista de movimientos recientes (Últimos 5 movimientos)
 [x] Gráficos estadísticos con Recharts (Tendencia de alquileres y Estado del inventario)
-
+[x] Tooltips y leyendas interactivas en los gráficos (muestran porcentajes y cantidades al pasar el mouse)
 
 ---
 

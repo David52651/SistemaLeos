@@ -89,13 +89,15 @@
 
 **Restricciones:**
 - `CHECK (cantidad >= 0)`
-- `CHECK (tipo_movimiento IN ('Agregar', 'Desechar', 'Actualizar Stock', 'Modificar Datos'))`
+- `CHECK (tipo_movimiento IN ('Agregar', 'Desechar', 'Actualizar Stock', 'Modificar Datos', 'Alquiler', 'Devolución'))` ⬅️ ACTUALIZADO
 
 **Tipos válidos de `tipo_movimiento`:**
-- `Agregar` — Ingreso de stock
-- `Desechar` — Pérdida o baja
-- `Actualizar Stock` — Ajuste por conteo
-- `Modificar Datos` — Cambio en los datos del artículo
+- `Agregar` — Ingreso de stock.
+- `Desechar` — Pérdida o baja.
+- `Actualizar Stock` — Ajuste por conteo.
+- `Modificar Datos` — Cambio en los datos del artículo.
+- **`Alquiler` — Salida de prendas por alquiler.**
+- **`Devolución` — Retorno de prendas alquiladas.**
 
 ---
 
@@ -237,13 +239,13 @@ Registra la creación de una categoría, talla, propietario o danza en `movimien
 ---
 
 ## crear_alquiler
-Registra la cabecera del alquiler, los detalles (carrito), valida el stock de cada prenda, descuenta el stock y registra el movimiento en el historial. Todo de forma atómica.
+Registra la cabecera del alquiler, los detalles (carrito), valida el stock de cada prenda, descuenta el stock y registra un movimiento de tipo **`"Alquiler"`**. Todo de forma atómica.
 **Parámetros:** `p_usuario_id`, `p_cliente_nombre`, `p_cliente_dni`, `p_cliente_contacto`, `p_cliente_direccion`, `p_tipo`, `p_fecha_devolucion_pactada`, `p_observaciones`, `p_detalles`.
 **Retorna:** UUID del alquiler creado.
 
 ---
 
 ## devolver_alquiler
-Recibe el ID del alquiler, suma el stock devuelto, guarda las observaciones de retorno y cambia el estado a `"Devuelto"`.
+Recibe el ID del alquiler, suma el stock devuelto, guarda las observaciones de retorno, cambia el estado a `"Devuelto"` y registra un movimiento de tipo **`"Devolución"`**.
 **Parámetros:** `p_alquiler_id`, `p_usuario_id`, `p_detalles_devolucion`.
 **Retorna:** VOID.

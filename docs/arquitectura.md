@@ -23,6 +23,7 @@ SistemaLeosDB
 - React Hook Form + Zod (Formularios y validaciones)
 - React-Select (Buscadores con autocompletado)
 - Sonner (Notificaciones flotantes)
+- Recharts (Gráficos del Dashboard)
 
 ## Estructura
 
@@ -53,6 +54,8 @@ src/
 ## Módulos
 
 - dashboard
+    - pages (Dashboard con gráficos y métricas)
+    - hooks (useDashboardData para cálculos)
 - inventario
     - pages
     - components
@@ -72,7 +75,7 @@ src/
     - schemas
     - constants
     - utils
-- **alquileres (NUEVO)**
+- **alquileres**
     - pages (AlquileresPage con formulario de carrito y modales)
     - services (Conexión a RPCs crear_alquiler y devolver_alquiler)
     - hooks (Manejo de estado con React Query)
@@ -88,10 +91,10 @@ src/
 
 Toda acción que modifique el estado del inventario o los catálogos pasa por el módulo de **Movimientos**:
 
-- **Movimientos de inventario** → tabla `movimientos_inventario` (incluye salidas y retornos de alquiler).
+- **Movimientos de inventario** → tabla `movimientos_inventario` (incluye tipos como `"Agregar"`, `"Desechar"`, `"Alquiler"` y `"Devolución"`).
 - **Movimientos de catálogos** → tabla `movimientos_catalogos`.
 
-El historial del frontend **unifica ambas fuentes** y las ordena por fecha, mostrando al usuario una sola tabla.
+El historial del frontend **unifica ambas fuentes** y las ordena por fecha, mostrando al usuario una sola tabla con colores distintivos para cada acción.
 
 ### RPCs Atómicas (Transacciones)
 
@@ -103,9 +106,10 @@ Las operaciones críticas se ejecutan mediante **funciones RPC en PostgreSQL** c
 ### Módulo de Alquileres con "Carrito"
 
 El módulo de alquileres utiliza un estado local de "carrito" en el frontend para armar el paquete o conjunto antes de enviarlo al backend. 
-- Usa `react-select` para un buscador rápido y filtrado de prendas.
+- Usa **dos selectores con `react-select`**: el primero agrupa los modelos de prendas (evitando duplicados) y el segundo despliega las tallas disponibles con su stock.
 - Valida en el frontend (y en el backend) que no se alquilen más prendas de las disponibles.
 - Restringe la cantidad a 1 por prenda si el alquiler es de tipo "Conjunto".
+- Almacena observaciones individuales por cada prenda al momento de la salida y del retorno.
 
 ### Módulos de Catálogos en Solo Lectura
 
@@ -121,3 +125,7 @@ Todos los componentes de `src/components/ui` usan `forwardRef` para ser compatib
 ### Modal con React Portal
 
 `CatalogoModal` usa `createPortal` para renderizar en `<body>`, evitando problemas de `z-index` y `overflow` cuando el modal está anidado en layouts complejos. Es reutilizado tanto en Movimientos como en Alquileres (para ver la "factura" o registrar devoluciones).
+
+### Gestión de Imágenes
+
+Las imágenes de los artículos se almacenan en **Supabase Storage** y su URL pública se guarda en la tabla relacional `imagenes_articulo`. La subida se realiza desde el formulario de creación de artículos y se refleja instantáneamente en el inventario y en el modal de detalle.

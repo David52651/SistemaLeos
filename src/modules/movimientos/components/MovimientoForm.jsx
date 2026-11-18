@@ -1,11 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import Select from "react-select"; 
 
 import Input from "@/components/ui/Input";
-import Select from "@/components/ui/Select";
+import CustomSelect from "@/components/ui/Select"; 
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 
@@ -22,7 +23,7 @@ import {
     guardarDanzasArticulo,
     existeArticulo,
     crearArticuloConStockInicial,  
-    guardarImagenArticulo, // ⬅️ NUEVO: Importamos la función
+    guardarImagenArticulo,
 } from "@/modules/inventario/services/inventario.service";
 
 import { createCategoria } from "@/modules/catalogos/categorias/services/categorias.service";
@@ -47,6 +48,10 @@ export default function MovimientoForm({ onSuccess }) {
   const [modalTalla, setModalTalla] = useState(false);
   const [modalPropietario, setModalPropietario] = useState(false);
   const [modalDanza, setModalDanza] = useState(false);
+
+  // ⬅️ NUEVOS ESTADOS PARA EL BUSCADOR
+  const [modeloSeleccionado, setModeloSeleccionado] = useState("");
+  const [tallaSeleccionada, setTallaSeleccionada] = useState("");
 
   // Formulario principal
   const {
@@ -81,6 +86,24 @@ export default function MovimientoForm({ onSuccess }) {
   const esModificarDatos = tipoMovimiento === "Modificar Datos";
   const esActualizarStock = tipoMovimiento === "Actualizar Stock";
 
+  // ⬅️ 1. AGRUPAR MODELOS ÚNICOS PARA EL BUSCADOR
+  const opcionesModelos = useMemo(() => {
+    const modelos = new Set();
+    articulos.forEach(a => modelos.add(a.nombre));
+    return Array.from(modelos).sort().map(nombre => ({ value: nombre, label: nombre }));
+  }, [articulos]);
+
+  // ⬅️ 2. FILTRAR TALLAS DEL MODELO SELECCIONADO
+  const opcionesTallas = useMemo(() => {
+    if (!modeloSeleccionado) return [];
+    return articulos
+      .filter(a => a.nombre === modeloSeleccionado)
+      .map(a => ({
+        value: a.id,
+        label: `Talla ${a.tallas?.nombre || "Única"} (Stock: ${a.stock_actual})`
+      }));
+  }, [modeloSeleccionado, articulos]);
+
   useEffect(() => {
     if (esModificarDatos && articuloSeleccionado) {
       setValue("nombre", articuloSeleccionado.nombre || "");
@@ -91,6 +114,10 @@ export default function MovimientoForm({ onSuccess }) {
       setValue("genero", articuloSeleccionado.genero || "unisex");
       setValue("stock_min", articuloSeleccionado.stock_min || 3);
       setValue("observaciones", articuloSeleccionado.observaciones || "");
+      
+      // Sincronizar los selectores visuales si estamos editando
+      setModeloSeleccionado(articuloSeleccionado.nombre);
+      setTallaSeleccionada(articuloSeleccionado.id);
     }
   }, [articuloSeleccionado, esModificarDatos, setValue]);
 
@@ -111,8 +138,6 @@ export default function MovimientoForm({ onSuccess }) {
         }
 
         let imagen_url = null;
-
-        // 1. Subir imagen a Supabase Storage
         if (imagenFile) {
             const fileExt = imagenFile.name.split('.').pop();
             const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
@@ -131,18 +156,15 @@ export default function MovimientoForm({ onSuccess }) {
             imagen_url = publicUrlData.publicUrl;
         }
 
-        const tallaSeleccionada = tallas.data?.find((t) => t.id === values.talla_id);
-        const codigo = generarCodigoArticulo(values.nombre, tallaSeleccionada?.nombre);
+        const tallaSel = tallas.data?.find((t) => t.id === values.talla_id);
+        const codigo = generarCodigoArticulo(values.nombre, tallaSel?.nombre);
         const { danzas_ids: _danzas_ids, ...restoValores } = values;
         
-        // 2. Crear el artículo (Ya NO pasamos imagen_url en el payload)
         const payload = { ...restoValores, codigo };
         const articuloGuardado = await crearArticuloConStockInicial(payload, perfil.id);
 
-        // 3. Guardar danzas
         await guardarDanzasArticulo(articuloGuardado.id, values.danzas_ids || []);
 
-        // 4. ⬅️ NUEVO: Guardar la relación de la imagen en la tabla `imagenes_articulo`
         if (imagen_url) {
             await guardarImagenArticulo(articuloGuardado.id, imagen_url, true);
         }
@@ -155,7 +177,7 @@ export default function MovimientoForm({ onSuccess }) {
                 codigo: articuloGuardado.codigo,
                 nombre: articuloGuardado.nombre,
                 stock_actual: articuloGuardado.stock_actual,
-                imagen_url: imagen_url, // Lo pasamos al caché local para la miniatura
+                imagen_url: imagen_url,
             };
             return [...old, nuevo].sort((a, b) => a.nombre.localeCompare(b.nombre));
         });
@@ -163,7 +185,11 @@ export default function MovimientoForm({ onSuccess }) {
         queryClient.invalidateQueries({ queryKey: ["movimientos"] });
         queryClient.invalidateQueries({ queryKey: ["articulos"] });
 
+        // Autoseleccionar el artículo recién creado
         setValue("articulo_id", articuloGuardado.id);
+        setModeloSeleccionado(articuloGuardado.nombre);
+        setTallaSeleccionada(articuloGuardado.id);
+
         setModalNuevoArticulo(false);
     } catch (error) {
         toast.error(error.message);
@@ -175,78 +201,70 @@ export default function MovimientoForm({ onSuccess }) {
   // ============================================
   async function crearCategoria(values) {
     try {
-        const nueva = await createCategoria(values);
-        await registrarMovimientoCatalogo({
-            usuario_id: perfil.id,
-            entidad: "categoria",
-            entidad_id: nueva.id,
-            nombre_entidad: nueva.nombre,
-            accion: "Agregar",
-        });
-        toast.success("Categoría creada correctamente");
-        queryClient.invalidateQueries({ queryKey: ["categorias-activo"] });
-        queryClient.invalidateQueries({ queryKey: ["movimientos"] });
-        setModalCategoria(false);
-    } catch (error) {
-        toast.error(error.message);
-    }
+      const nueva = await createCategoria(values);
+      await registrarMovimientoCatalogo({
+          usuario_id: perfil.id,
+          entidad: "categoria",
+          entidad_id: nueva.id,
+          nombre_entidad: nueva.nombre,
+          accion: "Agregar",
+      });
+      toast.success("Categoría creada correctamente");
+      queryClient.invalidateQueries({ queryKey: ["categorias-activo"] });
+      queryClient.invalidateQueries({ queryKey: ["movimientos"] });
+      setModalCategoria(false);
+    } catch (error) { toast.error(error.message); }
   }
 
   async function crearTalla(values) {
     try {
-        const nueva = await createTalla(values);
-        await registrarMovimientoCatalogo({
-            usuario_id: perfil.id,
-            entidad: "talla",
-            entidad_id: nueva.id,
-            nombre_entidad: nueva.nombre,
-            accion: "Agregar",
-        });
-        toast.success("Talla creada correctamente");
-        queryClient.invalidateQueries({ queryKey: ["tallas-activo"] });
-        queryClient.invalidateQueries({ queryKey: ["movimientos"] });
-        setModalTalla(false);
-    } catch (error) {
-        toast.error(error.message);
-    }
+      const nueva = await createTalla(values);
+      await registrarMovimientoCatalogo({
+          usuario_id: perfil.id,
+          entidad: "talla",
+          entidad_id: nueva.id,
+          nombre_entidad: nueva.nombre,
+          accion: "Agregar",
+      });
+      toast.success("Talla creada correctamente");
+      queryClient.invalidateQueries({ queryKey: ["tallas-activo"] });
+      queryClient.invalidateQueries({ queryKey: ["movimientos"] });
+      setModalTalla(false);
+    } catch (error) { toast.error(error.message); }
   }
 
   async function crearPropietario(values) {
     try {
-        const nuevo = await createPropietario(values);
-        await registrarMovimientoCatalogo({
-            usuario_id: perfil.id,
-            entidad: "propietario",
-            entidad_id: nuevo.id,
-            nombre_entidad: nuevo.nombre,
-            accion: "Agregar",
-        });
-        toast.success("Propietario creado correctamente");
-        queryClient.invalidateQueries({ queryKey: ["propietarios-activo"] });
-        queryClient.invalidateQueries({ queryKey: ["movimientos"] });
-        setModalPropietario(false);
-    } catch (error) {
-        toast.error(error.message);
-    }
+      const nuevo = await createPropietario(values);
+      await registrarMovimientoCatalogo({
+          usuario_id: perfil.id,
+          entidad: "propietario",
+          entidad_id: nuevo.id,
+          nombre_entidad: nuevo.nombre,
+          accion: "Agregar",
+      });
+      toast.success("Propietario creado correctamente");
+      queryClient.invalidateQueries({ queryKey: ["propietarios-activo"] });
+      queryClient.invalidateQueries({ queryKey: ["movimientos"] });
+      setModalPropietario(false);
+    } catch (error) { toast.error(error.message); }
   }
 
   async function crearDanza(values) {
     try {
-        const nueva = await createDanza(values);
-        await registrarMovimientoCatalogo({
-            usuario_id: perfil.id,
-            entidad: "danza",
-            entidad_id: nueva.id,
-            nombre_entidad: nueva.nombre,
-            accion: "Agregar",
-        });
-        toast.success("Danza creada correctamente");
-        queryClient.invalidateQueries({ queryKey: ["danzas"] });
-        queryClient.invalidateQueries({ queryKey: ["movimientos"] });
-        setModalDanza(false);
-    } catch (error) {
-        toast.error(error.message);
-    }
+      const nueva = await createDanza(values);
+      await registrarMovimientoCatalogo({
+          usuario_id: perfil.id,
+          entidad: "danza",
+          entidad_id: nueva.id,
+          nombre_entidad: nueva.nombre,
+          accion: "Agregar",
+      });
+      toast.success("Danza creada correctamente");
+      queryClient.invalidateQueries({ queryKey: ["danzas"] });
+      queryClient.invalidateQueries({ queryKey: ["movimientos"] });
+      setModalDanza(false);
+    } catch (error) { toast.error(error.message); }
   }
 
   // ============================================
@@ -342,137 +360,171 @@ export default function MovimientoForm({ onSuccess }) {
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)} className="form-container">
-        {/* 1. Selector de Artículo + Botón Nuevo */}
-        <div style={{ display: "flex", gap: "8px", alignItems: "flex-end" }}>
-          <div style={{ flex: 1 }}>
+        
+        {/* FILA 1: Selector de Artículo doble (Prenda -> Talla) */}
+        <div style={{ display: "flex", gap: "1rem", alignItems: "flex-end", marginBottom: "1rem" }}>
+          
+          <div style={{ flex: 2 }}>
+            <label className="form-label required">1. Buscar Prenda</label>
             <Select
-              label="Artículo"
-              required
-              {...register("articulo_id")}
-              error={errors.articulo_id?.message}
-            >
-              <option value="">Seleccione un artículo</option>
-              {articulos.map((art) => (
-                <option key={art.id} value={art.id}>
-                  {art.codigo} - {art.nombre} (Stock: {art.stock_actual})
-                </option>
-              ))}
-            </Select>
+              options={opcionesModelos}
+              value={opcionesModelos.find(o => o.value === modeloSeleccionado) || null}
+              onChange={(opcion) => {
+                setModeloSeleccionado(opcion ? opcion.value : "");
+                setTallaSeleccionada("");
+                setValue("articulo_id", ""); 
+              }}
+              placeholder="Escribe el nombre de la prenda..."
+              isClearable
+              isSearchable
+              classNamePrefix="react-select"
+              styles={{
+                control: (base) => ({ ...base, background: "var(--bg-input)", borderColor: "var(--border-color)", color: "var(--text-primary)", minHeight: "42px" }),
+                menu: (base) => ({ ...base, background: "var(--bg-card)", zIndex: 9999 }),
+                option: (base, state) => ({ ...base, background: state.isFocused ? "var(--bg-hover)" : "transparent", color: "var(--text-primary)", cursor: "pointer" }),
+                singleValue: (base) => ({ ...base, color: "var(--text-primary)" }),
+                input: (base) => ({ ...base, color: "var(--text-primary)" })
+              }}
+            />
+          </div>
+
+          <div style={{ flex: 1 }}>
+            <label className="form-label required">2. Talla</label>
+            <Select
+              options={opcionesTallas}
+              value={opcionesTallas.find(o => o.value === tallaSeleccionada) || null}
+              onChange={(opcion) => {
+                setTallaSeleccionada(opcion ? opcion.value : "");
+                setValue("articulo_id", opcion ? opcion.value : "", { shouldValidate: true });
+              }}
+              placeholder={modeloSeleccionado ? "Selecciona talla..." : "Elige prenda primero"}
+              isDisabled={!modeloSeleccionado}
+              isClearable
+              classNamePrefix="react-select"
+              styles={{
+                control: (base) => ({ ...base, background: "var(--bg-input)", borderColor: "var(--border-color)", color: "var(--text-primary)", minHeight: "42px" }),
+                menu: (base) => ({ ...base, background: "var(--bg-card)", zIndex: 9999 }),
+                option: (base, state) => ({ ...base, background: state.isFocused ? "var(--bg-hover)" : "transparent", color: "var(--text-primary)", cursor: "pointer" }),
+                singleValue: (base) => ({ ...base, color: "var(--text-primary)" }),
+                input: (base) => ({ ...base, color: "var(--text-primary)" })
+              }}
+            />
           </div>
 
           <Button
             type="button"
             variant="secondary"
             onClick={() => setModalNuevoArticulo(true)}
-            style={{ marginBottom: "12px" }}
+            style={{ height: "42px", marginBottom: "12px" }}
           >
             + Nuevo artículo
           </Button>
         </div>
 
+        {/* Info Box de Stock */}
         {articuloSeleccionado && !esModificarDatos && (
-          <div
-            className="info-box"
-            style={{
+          <div style={{
               padding: "8px 12px",
               background: "var(--bg-secondary, #f3f4f6)",
               borderRadius: "6px",
-              marginBottom: "12px",
               fontSize: "14px",
               display: "flex",
               alignItems: "center",
-              gap: "10px"
-            }}
-          >
+              gap: "10px",
+              marginBottom: "1rem"
+          }}>
             {articuloSeleccionado.imagen_url && (
-              <img 
-                src={articuloSeleccionado.imagen_url} 
-                alt="mini" 
-                style={{ width: "30px", height: "30px", objectFit: "cover", borderRadius: "4px" }} 
-              />
+              <img src={articuloSeleccionado.imagen_url} alt="mini" style={{ width: "30px", height: "30px", objectFit: "cover", borderRadius: "4px" }} />
             )}
             <span>
-              Stock actual de <strong>{articuloSeleccionado.nombre}</strong>:{" "}
+              Stock actual de <strong>{articuloSeleccionado.nombre} (Talla {articuloSeleccionado.tallas?.nombre})</strong>:{" "}
               <strong>{articuloSeleccionado.stock_actual}</strong> unidades
             </span>
           </div>
         )}
 
-        {/* 2. Tipo de Movimiento */}
-        <Select
-          label="Tipo de Movimiento"
-          required
-          {...register("tipo_movimiento")}
-          error={errors.tipo_movimiento?.message}
-        >
-          {TIPOS_MOVIMIENTO.map((tipo) => (
-            <option key={tipo.value} value={tipo.value}>
-              {tipo.label}
-            </option>
-          ))}
-        </Select>
+        {/* FILA 2: Tipo y Cantidad (en dos columnas) */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
+          <CustomSelect
+            label="Tipo de Movimiento"
+            required
+            {...register("tipo_movimiento")}
+            error={errors.tipo_movimiento?.message}
+          >
+            {TIPOS_MOVIMIENTO.map((tipo) => (
+              <option key={tipo.value} value={tipo.value}>
+                {tipo.label}
+              </option>
+            ))}
+          </CustomSelect>
 
-        {/* BLOQUE A: MODIFICAR DATOS */}
+          {!esModificarDatos && (
+            <Input
+              label={esActualizarStock ? "Nuevo stock exacto" : "Cantidad"}
+              type="number"
+              placeholder="0"
+              {...register("cantidad")}
+              error={errors.cantidad?.message}
+              required
+            />
+          )}
+        </div>
+
+        {/* BLOQUE A: MODIFICAR DATOS (form completo) */}
         {esModificarDatos && articuloSeleccionado && (
           <Card>
-            <h3>Datos del artículo</h3>
-            <Input label="Nombre del artículo" {...register("nombre")} error={errors.nombre?.message} required />
-            <Input label="Descripción" as="textarea" {...register("descripcion")} />
-            <Select label="Categoría" {...register("categoria_id")}>
-              <option value="">Seleccione</option>
-              {categorias.data?.map((c) => (
-                <option key={c.id} value={c.id}>{c.nombre}</option>
-              ))}
-            </Select>
-            <Select label="Talla" {...register("talla_id")}>
-              <option value="">Seleccione</option>
-              {tallas.data?.map((t) => (
-                <option key={t.id} value={t.id}>{t.nombre}</option>
-              ))}
-            </Select>
-            <Select label="Propietario" {...register("propietario_id")}>
-              <option value="">Seleccione</option>
-              {propietarios.data?.map((p) => (
-                <option key={p.id} value={p.id}>{p.nombre}</option>
-              ))}
-            </Select>
-            <Select label="Género" {...register("genero")}>
-              <option value="masculino">Masculino</option>
-              <option value="femenino">Femenino</option>
-              <option value="unisex">Unisex</option>
-            </Select>
-            <Input label="Stock mínimo" type="number" min="0" {...register("stock_min", { valueAsNumber: true })} />
+            <h3 style={{ marginTop: 0, marginBottom: "1rem" }}>Datos del artículo</h3>
+            
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
+                <Input label="Nombre del artículo" {...register("nombre")} error={errors.nombre?.message} required />
+                <Input label="Género" {...register("genero")} error={errors.genero?.message} />
+            </div>
+
+            <Input label="Descripción" as="textarea" {...register("descripcion")} style={{ marginBottom: "1rem" }} />
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
+                <CustomSelect label="Categoría" {...register("categoria_id")}>
+                  <option value="">Seleccione</option>
+                  {categorias.data?.map((c) => (
+                    <option key={c.id} value={c.id}>{c.nombre}</option>
+                  ))}
+                </CustomSelect>
+                <CustomSelect label="Talla" {...register("talla_id")}>
+                  <option value="">Seleccione</option>
+                  {tallas.data?.map((t) => (
+                    <option key={t.id} value={t.id}>{t.nombre}</option>
+                  ))}
+                </CustomSelect>
+                <CustomSelect label="Propietario" {...register("propietario_id")}>
+                  <option value="">Seleccione</option>
+                  {propietarios.data?.map((p) => (
+                    <option key={p.id} value={p.id}>{p.nombre}</option>
+                  ))}
+                </CustomSelect>
+            </div>
+
+            <Input label="Stock mínimo" type="number" min="0" {...register("stock_min", { valueAsNumber: true })} style={{ marginBottom: "1rem" }} />
             <Input label="Observaciones" as="textarea" {...register("observaciones")} />
           </Card>
         )}
 
         {esModificarDatos && !articuloSeleccionado && (
-          <div className="info-box" style={{ padding: "12px", background: "var(--bg-secondary, #f3f4f6)", borderRadius: "6px", marginBottom: "12px", fontSize: "14px", opacity: 0.75 }}>
+          <div className="info-box" style={{ padding: "12px", background: "var(--bg-secondary, #f3f4f6)", borderRadius: "6px", fontSize: "14px", opacity: 0.75 }}>
             Selecciona un artículo para ver y modificar sus datos.
           </div>
         )}
 
-        {/* BLOQUE B: MOVIMIENTOS DE STOCK */}
-        {!esModificarDatos && (
-          <Input
-            label={esActualizarStock ? "Nuevo stock exacto" : "Cantidad"}
-            type="number"
-            placeholder="0"
-            {...register("cantidad")}
-            error={errors.cantidad?.message}
-            required
-          />
-        )}
-
+        {/* FILA 3: Motivo (ancho completo) */}
         <Input
-          label="Motivo"
+          label="Motivo del movimiento"
           placeholder="Ej: Compra a proveedor, Conteo físico, Prenda dañada..."
           {...register("motivo")}
           error={errors.motivo?.message}
           required
         />
 
-        <div className="form-actions">
+        {/* FILA 4: Botón */}
+        <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "1rem" }}>
           <Button type="submit" variant="primary" disabled={isRegistrando} loading={isRegistrando}>
             {esModificarDatos ? "Guardar Cambios" : "Registrar Movimiento"}
           </Button>

@@ -133,7 +133,14 @@ export async function obtenerMovimientos() {
 export async function obtenerArticulosActivos() {
     const { data, error } = await supabase
         .from("articulos")
-        .select("id, codigo, nombre, stock_actual")
+        .select(`
+            id, 
+            codigo, 
+            nombre, 
+            stock_actual, 
+            imagen_url,
+            tallas ( nombre )
+        `) // ⬅️ ESTO ES LO QUE FALTA
         .eq("activo", true)
         .order("nombre", { ascending: true });
 

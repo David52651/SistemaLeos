@@ -59,7 +59,6 @@ export default function ArticuloForm({
     if (initialValues) {
       reset(initialValues);
       setInternalOpen(true);
-      // Si el artículo ya tiene imagen, la mostramos
       if (initialValues.imagen_url) {
         setImagenPreview(initialValues.imagen_url);
       }
@@ -70,12 +69,11 @@ export default function ArticuloForm({
     const file = e.target.files[0];
     if (file) {
       setImagenFile(file);
-      setImagenPreview(URL.createObjectURL(file)); // Vista previa instantánea
+      setImagenPreview(URL.createObjectURL(file));
     }
   }
 
   async function enviar(data) {
-
     await onSubmit(data, imagenFile); 
     
     if (!initialValues) {
@@ -103,12 +101,12 @@ export default function ArticuloForm({
   return (
     <div className="articulo-form-container">
 
-      {/* Solo mostramos el botón si NO está embebido en un modal */}
       {!hideToggleButton && (
         <Button
           type="button"
           variant="primary"
           onClick={() => setInternalOpen(!internalOpen)}
+          style={{ marginBottom: "1rem" }}
         >
           {internalOpen ? "Cancelar" : "+ Nuevo artículo"}
         </Button>
@@ -117,22 +115,32 @@ export default function ArticuloForm({
       {open && (
         <form onSubmit={handleSubmit(enviar)} className="form-container">
           <Card>
-            <h3>Datos generales</h3>
+            <h3 style={{ marginTop: 0, marginBottom: "1.5rem" }}>Datos generales</h3>
 
-            <Input
-              label="Nombre del artículo"
-              placeholder="Ejemplo: Camisa Blanca"
-              {...register("nombre", { required: true })}
-            />
+            {/* FILA 1: Nombre y Género */}
+            <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "1.5rem", marginBottom: "1rem" }}>
+                <Input
+                  label="Nombre del artículo"
+                  placeholder="Ejemplo: Camisa Blanca"
+                  {...register("nombre", { required: true })}
+                />
+                <Select label="Género" {...register("genero")}>
+                  <option value="masculino">Masculino</option>
+                  <option value="femenino">Femenino</option>
+                  <option value="unisex">Unisex</option>
+                </Select>
+            </div>
 
             <Input
               label="Descripción"
               placeholder="Descripción del artículo"
               as="textarea"
               {...register("descripcion")}
+              style={{ marginBottom: "1rem" }}
             />
 
-            <div className="form-group" style={{ marginTop: "1rem", marginBottom: "1rem" }}>
+            {/* FILA 2: Imagen */}
+            <div className="form-group" style={{ marginBottom: "1.5rem" }}>
               <label className="form-label">Imagen del artículo (opcional)</label>
               <input 
                 type="file" 
@@ -157,86 +165,105 @@ export default function ArticuloForm({
               )}
             </div>
 
-            <Select label="Categoría" {...register("categoria_id", { required: true })}>
-              <option value="">Seleccione</option>
-              {categorias.data?.map((categoria) => (
-                <option key={categoria.id} value={categoria.id}>{categoria.nombre}</option>
-              ))}
-            </Select>
+            {/* FILA 3: Categoría, Talla y Propietario + Botones al lado */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1.5rem", marginBottom: "1.5rem" }}>
+                
+                {/* Categoría */}
+                <div>
+                  <Select label="Categoría" {...register("categoria_id", { required: true })}>
+                    <option value="">Seleccione</option>
+                    {categorias.data?.map((categoria) => (
+                      <option key={categoria.id} value={categoria.id}>{categoria.nombre}</option>
+                    ))}
+                  </Select>
+                  <Button type="button" variant="ghost" onClick={onOpenCategoria} style={{ marginTop: "4px", padding: 0, fontSize: "0.8rem" }}>
+                    + Añadir categoría
+                  </Button>
+                </div>
 
-            <Button type="button" variant="secondary" onClick={onOpenCategoria}>
-              + Nueva categoría
-            </Button>
+                {/* Talla */}
+                <div>
+                  <Select label="Talla" {...register("talla_id", { required: true })}>
+                    <option value="">Seleccione</option>
+                    {tallas.data?.map((talla) => (
+                      <option key={talla.id} value={talla.id}>{talla.nombre}</option>
+                    ))}
+                  </Select>
+                  <Button type="button" variant="ghost" onClick={onOpenTalla} style={{ marginTop: "4px", padding: 0, fontSize: "0.8rem" }}>
+                    + Añadir talla
+                  </Button>
+                </div>
 
-            <Select label="Talla" {...register("talla_id", { required: true })}>
-              <option value="">Seleccione</option>
-              {tallas.data?.map((talla) => (
-                <option key={talla.id} value={talla.id}>{talla.nombre}</option>
-              ))}
-            </Select>
+                {/* Propietario */}
+                <div>
+                  <Select label="Propietario" {...register("propietario_id", { required: true })}>
+                    <option value="">Seleccione</option>
+                    {propietarios.data?.map((propietario) => (
+                      <option key={propietario.id} value={propietario.id}>{propietario.nombre}</option>
+                    ))}
+                  </Select>
+                  <Button type="button" variant="ghost" onClick={onOpenPropietario} style={{ marginTop: "4px", padding: 0, fontSize: "0.8rem" }}>
+                    + Añadir propietario
+                  </Button>
+                </div>
+            </div>
 
-            <Button type="button" variant="secondary" onClick={onOpenTalla}>
-              + Nueva talla
-            </Button>
+            {/* FILA 4: Danzas Asociadas */}
+            <div style={{ marginBottom: "1.5rem" }}>
+              <MultiSelectCheckbox
+                label="Danzas asociadas"
+                options={danzas.data || []}
+                value={danzasSeleccionadas}
+                onChange={(values) => {
+                  setValue("danzas_ids", values, { shouldValidate: true });
+                }}
+              />
+              <Button type="button" variant="ghost" onClick={onOpenDanza} style={{ marginTop: "4px", padding: 0, fontSize: "0.8rem" }}>
+                + Añadir danza
+              </Button>
+            </div>
 
-            <Select label="Propietario" {...register("propietario_id", { required: true })}>
-              <option value="">Seleccione</option>
-              {propietarios.data?.map((propietario) => (
-                <option key={propietario.id} value={propietario.id}>{propietario.nombre}</option>
-              ))}
-            </Select>
-
-            <Button type="button" variant="secondary" onClick={onOpenPropietario}>
-              + Nuevo propietario
-            </Button>
-
-            <MultiSelectCheckbox
-              label="Danzas asociadas"
-              options={danzas.data || []}
-              value={danzasSeleccionadas}
-              onChange={(values) => {
-                setValue("danzas_ids", values, { shouldValidate: true });
-              }}
-            />
-
-            <Button type="button" variant="secondary" onClick={onOpenDanza}>
-              + Nueva danza
-            </Button>
-
-            <Select label="Género" {...register("genero")}>
-              <option value="masculino">Masculino</option>
-              <option value="femenino">Femenino</option>
-              <option value="unisex">Unisex</option>
-            </Select>
-
-            <Input
-              label="Stock actual"
-              type="number"
-              min="0"
-              {...register("stock_actual", { valueAsNumber: true })}
-            />
-
-            <Input
-              label="Stock mínimo"
-              type="number"
-              min="1"
-              {...register("stock_min", { valueAsNumber: true })}
-            />
+            {/* FILA 5: Stock actual y Stock mínimo */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem", marginBottom: "1rem" }}>
+                <Input
+                  label="Stock actual"
+                  type="number"
+                  min="0"
+                  {...register("stock_actual", { valueAsNumber: true })}
+                />
+                <Input
+                  label="Stock mínimo"
+                  type="number"
+                  min="1"
+                  {...register("stock_min", { valueAsNumber: true })}
+                />
+            </div>
 
             <Input
               label="Observaciones"
               as="textarea"
               {...register("observaciones")}
+              style={{ marginBottom: "1.5rem" }}
             />
 
-            <div className="codigo-generado">
-              <h3>Código generado</h3>
-              <strong>{codigoGenerado || "—"}</strong>
+            <div className="codigo-generado" style={{ 
+                background: "var(--bg-hover)", 
+                padding: "12px", 
+                borderRadius: "8px", 
+                marginBottom: "1.5rem",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center"
+            }}>
+              <span style={{ fontWeight: 600, opacity: 0.7 }}>Código generado:</span>
+              <strong style={{ fontSize: "1.1rem", color: "var(--color-primary)" }}>{codigoGenerado || "—"}</strong>
             </div>
 
-            <Button type="submit" variant="primary">
-              {initialValues ? "Actualizar" : "Guardar"}
-            </Button>
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                <Button type="submit" variant="primary">
+                  {initialValues ? "Actualizar" : "Guardar Artículo"}
+                </Button>
+            </div>
           </Card>
         </form>
       )}
