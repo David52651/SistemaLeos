@@ -2,7 +2,7 @@
 
 ## SistemaLeos
 
-Versión: 1.5.1
+Versión: 1.6
 
 ---
 

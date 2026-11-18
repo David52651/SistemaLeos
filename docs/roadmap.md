@@ -56,13 +56,11 @@
 
 ---
 
-## Fase 6 - Dashboard e Indicadores
-[ ] Indicadores principales (Total de prendas, alquileres activos, etc.)
-[ ] Artículos agrupados por categoría
-[ ] Artículos agrupados por danza
-[ ] Lista de movimientos recientes
-[ ] Reportes de alquileres (más solicitados, clientes frecuentes)
-[ ] Gráficos estadísticos (Chart.js o Recharts)
+## Fase 6 - Dashboard e Indicadores (Completado)
+[x] Indicadores principales (Total de prendas, alquileres activos, retrasados, stock perdido)
+[x] Lista de movimientos recientes (Últimos 5 movimientos)
+[x] Gráficos estadísticos con Recharts (Tendencia de alquileres y Estado del inventario)
+
 
 ---
 
