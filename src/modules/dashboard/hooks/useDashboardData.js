@@ -56,6 +56,9 @@ export function useDashboardData() {
         // ----- 1. MÉTRICAS PRINCIPALES -----
         const totalArticulos = articulos.length;
         
+        // ⬅️ NUEVO: Sumamos todas las unidades físicas (tallas) de todos los artículos
+        const stockTotalUnidades = articulos.reduce((sum, art) => sum + art.stock_actual, 0);
+
         const alquileresActivos = alquileres.filter(a => a.estado === "Activo").length;
         
         const alquileresRetrasados = alquileres.filter(a => 
@@ -113,6 +116,7 @@ export function useDashboardData() {
 
         return {
             totalArticulos,
+            stockTotalUnidades, // ⬅️ NUEVO: Lo exportamos al frontend
             alquileresActivos,
             alquileresRetrasados,
             stockPerdidoMes,

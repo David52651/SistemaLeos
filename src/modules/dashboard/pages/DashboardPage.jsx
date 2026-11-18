@@ -11,6 +11,7 @@ import {
 export default function DashboardPage() {
     const { 
         totalArticulos, 
+        stockTotalUnidades,
         alquileresActivos, 
         alquileresRetrasados, 
         stockPerdidoMes,
@@ -69,18 +70,16 @@ export default function DashboardPage() {
                     <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between" }}>
                         <span style={valorMetrica}>{totalArticulos}</span>
                         <span style={subtextoMetrica}>
-                            {datosTorta.find(d => d.name === "Disponibles")?.value || 0} en stock
+                            {stockTotalUnidades} unidades en stock
                         </span>
                     </div>
                 </div>
                 
-                {/* ⬅️ QUITADO EL SUBTEXTO DE AQUÍ */}
                 <div style={cardStyle}>
                     <span style={tituloMetrica}>Alquileres Activos</span>
                     <span style={estilosValor(valorMetrica, "var(--color-primary)")}>{alquileresActivos}</span>
                 </div>
 
-                {/* ⬅️ QUITADO EL SUBTEXTO DE AQUÍ */}
                 <div style={{ ...cardStyle, border: hayRetrasos ? "1px solid var(--danger)" : cardStyle.border }}>
                     <span style={tituloMetrica}>Alquileres Retrasados</span>
                     <span style={estilosValor(valorMetrica, hayRetrasos ? "var(--danger)" : "var(--text-primary)")}>

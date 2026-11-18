@@ -1,318 +1,168 @@
-import { useState } from "react"; // ⬅️ NUEVO: Para manejar el estado del zoom
+import { useState } from "react";
 import CatalogoModal from "./CatalogoModal";
+import Button from "@/components/ui/Button";
+import Card from "@/components/ui/Card";
+import { toast } from "sonner";
+import { activarArticulo, desactivarArticulo } from "../services/inventario.service";
 
+// ⬅️ NUEVO: Importamos el CSS
+import "@/styles/modules/articuloDetalle.css";
 
-export default function ArticuloDetalle({ open, articulo, onClose }) {
-
-    // ⬅️ NUEVO: Estado para controlar si la imagen está en modo zoom
+export default function ArticuloDetalle({ open, grupo, onClose, onRefresh }) {
     const [imagenExpandida, setImagenExpandida] = useState(false);
+    
+    if (!grupo) return null;
 
-    if (!articulo) return null;
+    const artReferencia = grupo.tallas[0];
+
+    async function toggleEstado(talla) {
+        try {
+            if (talla.activo) {
+                await desactivarArticulo(talla.id);
+                toast.success("Talla desactivada correctamente");
+            } else {
+                await activarArticulo(talla.id);
+                toast.success("Talla activada correctamente");
+            }
+            if (onRefresh) onRefresh(); 
+        } catch (error) {
+            toast.error(error.message);
+        }
+    }
 
     function formatearFecha(fechaISO) {
         if (!fechaISO) return "-";
         const fecha = new Date(fechaISO);
         return fecha.toLocaleString("es-PE", {
-            day: "2-digit",
-            month: "long",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
+            day: "2-digit", month: "long", year: "numeric",
+            hour: "2-digit", minute: "2-digit",
         });
     }
 
-    const styles = {
-        headerBox: {
-            display: "flex",
-            gap: "1.5rem",
-            alignItems: "flex-start",
-            paddingBottom: "1rem",
-            borderBottom: "1px solid rgba(255,255,255,0.08)",
-            marginBottom: "1.5rem",
-        },
-        imagenContainer: {
-            width: "120px",
-            height: "120px",
-            borderRadius: "12px",
-            overflow: "hidden",
-            background: "rgba(255,255,255,0.05)",
-            flexShrink: 0,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            border: "1px solid rgba(255,255,255,0.1)",
-            cursor: "pointer", // ⬅️ NUEVO: Cursor de mano
-            transition: "transform 0.2s", // ⬅️ NUEVO: Efecto hover
-        },
-        imagen: {
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-        },
-        imagenVacia: {
-            fontSize: "2rem",
-            opacity: 0.3,
-        },
-        tituloContainer: {
-            flex: 1,
-            minWidth: 0,
-            display: "flex",
-            flexDirection: "column",
-            gap: "8px",
-            paddingTop: "4px",
-        },
-        titulo: {
-            margin: 0,
-            fontSize: "1.4rem",
-            fontWeight: 600,
-            lineHeight: 1.2,
-        },
-        codigo: {
-            display: "inline-block",
-            alignSelf: "flex-start",
-            padding: "4px 10px",
-            background: "rgba(56, 189, 248, 0.15)",
-            color: "#38bdf8",
-            borderRadius: "6px",
-            fontFamily: "monospace",
-            fontSize: "0.8rem",
-            letterSpacing: "0.5px",
-        },
-        estadoBadge: (activo) => ({
-            alignSelf: "flex-start",
-            padding: "6px 12px",
-            borderRadius: "20px",
-            fontSize: "0.75rem",
-            fontWeight: 600,
-            textTransform: "uppercase",
-            letterSpacing: "0.5px",
-            background: activo
-                ? "rgba(34, 197, 94, 0.15)"
-                : "rgba(239, 68, 68, 0.15)",
-            color: activo ? "#22c55e" : "#ef4444",
-            border: activo
-                ? "1px solid rgba(34, 197, 94, 0.3)"
-                : "1px solid rgba(239, 68, 68, 0.3)",
-            whiteSpace: "nowrap",
-        }),
-        grid: {
-            display: "grid",
-            gridTemplateColumns: "repeat(2, 1fr)",
-            gap: "1rem",
-            marginBottom: "1.5rem",
-        },
-        item: {
-            background: "rgba(255,255,255,0.03)",
-            border: "1px solid rgba(255,255,255,0.06)",
-            borderRadius: "8px",
-            padding: "12px 14px",
-        },
-        label: {
-            display: "block",
-            fontSize: "0.7rem",
-            textTransform: "uppercase",
-            letterSpacing: "0.8px",
-            opacity: 0.55,
-            marginBottom: "4px",
-            fontWeight: 600,
-        },
-        value: {
-            fontSize: "0.95rem",
-            lineHeight: 1.3,
-            wordBreak: "break-word",
-        },
-        seccion: {
-            marginTop: "1rem",
-        },
-        seccionTitulo: {
-            fontSize: "0.75rem",
-            textTransform: "uppercase",
-            letterSpacing: "0.8px",
-            opacity: 0.55,
-            marginBottom: "8px",
-            fontWeight: 600,
-        },
-        seccionTexto: {
-            margin: 0,
-            padding: "12px 14px",
-            background: "rgba(255,255,255,0.03)",
-            border: "1px solid rgba(255,255,255,0.06)",
-            borderRadius: "8px",
-            lineHeight: 1.6,
-            fontSize: "0.9rem",
-            opacity: 0.9,
-            whiteSpace: "pre-wrap",
-            wordBreak: "break-word",
-        },
-        stockBox: (bajo) => ({
-            background: bajo
-                ? "rgba(239, 68, 68, 0.08)"
-                : "rgba(56, 189, 248, 0.08)",
-            border: bajo
-                ? "1px solid rgba(239, 68, 68, 0.25)"
-                : "1px solid rgba(56, 189, 248, 0.25)",
-            borderRadius: "8px",
-            padding: "12px 14px",
-        }),
-        stockNumero: (bajo) => ({
-            fontSize: "1.5rem",
-            fontWeight: 700,
-            color: bajo ? "#ef4444" : "#38bdf8",
-            lineHeight: 1,
-        }),
-        footer: {
-            display: "flex",
-            justifyContent: "space-between",
-            gap: "1rem",
-            paddingTop: "1rem",
-            marginTop: "1.5rem",
-            borderTop: "1px solid rgba(255,255,255,0.08)",
-            fontSize: "0.8rem",
-            opacity: 0.55,
-        },
-    };
-
-    const stockBajo = articulo.stock_actual <= articulo.stock_min;
-
     return (
         <>
-            <CatalogoModal
-                open={open}
-                title="Detalle del artículo"
-                onClose={onClose}
-                size="lg"
-            >
+            <CatalogoModal open={open} title="Detalle del Artículo" onClose={onClose} size="lg">
                 <div>
-
-                    {/* HEADER: Imagen + Nombre + Estado */}
-                    <div style={styles.headerBox}>
-                        
-                        {/* ⬅️ NUEVO: Al hacer clic se abre el zoom */}
+                    {/* HEADER */}
+                    <div className="detalle-header">
                         <div 
-                            style={styles.imagenContainer}
-                            onClick={() => {
-                                if (articulo.imagen_url) setImagenExpandida(true);
-                            }}
-                            title={articulo.imagen_url ? "Clic para ampliar" : ""}
+                            className={`detalle-imagen-container ${grupo.imagen_url ? 'clickable' : ''}`}
+                            onClick={() => grupo.imagen_url && setImagenExpandida(true)}
                         >
-                            {articulo.imagen_url ? (
-                                <img 
-                                    src={articulo.imagen_url} 
-                                    alt={articulo.nombre} 
-                                    style={styles.imagen} 
-                                />
+                            {grupo.imagen_url ? (
+                                <img src={grupo.imagen_url} alt={grupo.nombre} className="detalle-imagen" />
                             ) : (
-                                <span style={styles.imagenVacia}>📷</span>
+                                <span className="detalle-imagen-vacia">📷</span>
                             )}
                         </div>
 
-                        <div style={styles.tituloContainer}>
-                            <h2 style={styles.titulo}>{articulo.nombre}</h2>
-                            <span style={styles.codigo}>{articulo.codigo}</span>
-                            <span style={styles.estadoBadge(articulo.activo)}>
-                                {articulo.activo ? "Activo" : "Inactivo"}
+                        <div className="detalle-titulo-container">
+                            <h2 className="detalle-titulo">{grupo.nombre}</h2>
+                            <span className="detalle-codigo">{grupo.codigoBase}-[Talla]</span>
+                            <span className={`detalle-estado-badge ${grupo.activos > 0 ? 'activo' : 'inactivo'}`}>
+                                {grupo.activos} Tallas Activas
                             </span>
                         </div>
-
                     </div>
 
-                    {/* STOCK destacado */}
-                    <div style={{ ...styles.stockBox(stockBajo), marginBottom: "1.5rem" }}>
-                        <span style={styles.label}>Stock actual</span>
-                        <span style={styles.stockNumero(stockBajo)}>
-                            {articulo.stock_actual}
-                        </span>
-                        <span style={{ marginLeft: "8px", opacity: 0.6, fontSize: "0.85rem" }}>
-                            unidades (mínimo: {articulo.stock_min})
-                        </span>
-                        {stockBajo && (
-                            <div style={{
-                                marginTop: "6px",
-                                fontSize: "0.8rem",
-                                color: "#ef4444",
-                                fontWeight: 500,
-                            }}>
-                                ⚠️ {articulo.stock_actual === 0 ? "Sin stock" : "Stock por debajo del mínimo"}
+                    {/* STOCK TOTAL */}
+                    <div className="detalle-stock-box">
+                        <span className="detalle-label">Stock Total Sumado</span>
+                        <span className="detalle-stock-numero">{grupo.stockTotal}</span>
+                        <span style={{ marginLeft: "8px", opacity: 0.6, fontSize: "0.85rem" }}>unidades en todas las tallas</span>
+                    </div>
+
+                    {/* DESGLOSE POR TALLAS */}
+                    <div className="detalle-seccion">
+                        <div className="detalle-seccion-titulo">Gestión de Tallas</div>
+                        <div className="detalle-tallas-lista">
+                            {grupo.tallas.map(t => (
+                                <div key={t.id} className="detalle-talla-item">
+                                    <div>
+                                        <strong style={{ fontSize: "1.1rem" }}>Talla {t.tallas?.nombre}</strong>
+                                        <div style={{ fontSize: "0.8rem", color: "var(--text-muted)", fontFamily: "monospace" }}>
+                                            Cód: {t.codigo}
+                                        </div>
+                                    </div>
+                                    <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+                                        <span>Stock: <strong>{t.stock_actual}</strong></span>
+                                        <Button 
+                                            variant={t.activo ? "danger" : "success"} 
+                                            onClick={() => toggleEstado(t)}
+                                            style={{ padding: "4px 10px", fontSize: "0.75rem" }}
+                                        >
+                                            {t.activo ? "Desactivar" : "Activar"}
+                                        </Button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* INFORMACIÓN GENERAL EN UN CARD */}
+                    <div style={{ marginTop: "2rem" }}>
+                        <Card>
+                            <div className="detalle-seccion">
+                                <div className="detalle-seccion-titulo">Información General</div>
+                                
+                                <div className="detalle-grid">
+                                    <div className="detalle-item">
+                                        <span className="detalle-label">Categoría</span>
+                                        <span className="detalle-value">{artReferencia.categorias?.nombre || "-"}</span>
+                                    </div>
+                                    <div className="detalle-item">
+                                        <span className="detalle-label">Propietario</span>
+                                        <span className="detalle-value">{artReferencia.propietarios?.nombre || "-"}</span>
+                                    </div>
+                                    <div className="detalle-item">
+                                        <span className="detalle-label">Género</span>
+                                        <span className="detalle-value" style={{ textTransform: "capitalize" }}>{artReferencia.genero || "-"}</span>
+                                    </div>
+                                    <div className="detalle-item">
+                                        <span className="detalle-label">Stock Mínimo Permitido</span>
+                                        <span className="detalle-value">{artReferencia.stock_min} unidades</span>
+                                    </div>
+                                </div>
+
+                                {/* Descripción y Observaciones dentro del Card */}
+                                {artReferencia.descripcion && (
+                                    <div style={{ marginTop: "1.2rem" }}>
+                                        <div className="detalle-seccion-titulo">Descripción</div>
+                                        <p className="detalle-texto-caja">{artReferencia.descripcion}</p>
+                                    </div>
+                                )}
+
+                                {artReferencia.observaciones && (
+                                    <div style={{ marginTop: "1.2rem" }}>
+                                        <div className="detalle-seccion-titulo">Observaciones</div>
+                                        <p className="detalle-texto-caja">{artReferencia.observaciones}</p>
+                                    </div>
+                                )}
                             </div>
-                        )}
+                        </Card>
                     </div>
-
-                    {/* GRID: Clasificación */}
-                    <div style={styles.grid}>
-                        <div style={styles.item}>
-                            <span style={styles.label}>Categoría</span>
-                            <span style={styles.value}>{articulo.categorias?.nombre || "-"}</span>
-                        </div>
-
-                        <div style={styles.item}>
-                            <span style={styles.label}>Talla</span>
-                            <span style={styles.value}>{articulo.tallas?.nombre || "-"}</span>
-                        </div>
-
-                        <div style={styles.item}>
-                            <span style={styles.label}>Propietario</span>
-                            <span style={styles.value}>{articulo.propietarios?.nombre || "-"}</span>
-                        </div>
-
-                        <div style={styles.item}>
-                            <span style={styles.label}>Género</span>
-                            <span style={{
-                                ...styles.value,
-                                textTransform: "capitalize",
-                            }}>
-                                {articulo.genero || "-"}
-                            </span>
-                        </div>
-                    </div>
-
-                    {/* Descripción */}
-                    {articulo.descripcion && (
-                        <div style={styles.seccion}>
-                            <div style={styles.seccionTitulo}>Descripción</div>
-                            <p style={styles.seccionTexto}>{articulo.descripcion}</p>
-                        </div>
-                    )}
-
-                    {/* Observaciones */}
-                    {articulo.observaciones && (
-                        <div style={styles.seccion}>
-                            <div style={styles.seccionTitulo}>Observaciones</div>
-                            <p style={styles.seccionTexto}>{articulo.observaciones}</p>
-                        </div>
-                    )}
 
                     {/* Footer con fechas */}
-                    <div style={styles.footer}>
-                        <span>
-                            Registrado: {formatearFecha(articulo.created_at)}
-                        </span>
-                        {articulo.updated_at && (
-                            <span>
-                                Actualizado: {formatearFecha(articulo.updated_at)}
-                            </span>
-                        )}
+                    <div className="detalle-footer">
+                        <span>Registrado: {formatearFecha(artReferencia.created_at)}</span>
+                        {artReferencia.updated_at && <span>Actualizado: {formatearFecha(artReferencia.updated_at)}</span>}
                     </div>
 
                 </div>
             </CatalogoModal>
 
-            {/* ⬅️ NUEVO: MODAL DE ZOOM DE IMAGEN */}
+            {/* MODAL DE ZOOM DE IMAGEN */}
             <CatalogoModal
                 open={imagenExpandida}
-                title={articulo.nombre}
+                title={grupo.nombre}
                 onClose={() => setImagenExpandida(false)}
                 size="md"
             >
-                <div style={{ display: "flex", justifyContent: "center", padding: "1rem" }}>
+                <div className="zoom-imagen-container">
                     <img 
-                        src={articulo.imagen_url} 
-                        alt={articulo.nombre} 
-                        style={{ 
-                            maxWidth: "100%", 
-                            maxHeight: "70vh", 
-                            objectFit: "contain",
-                            borderRadius: "8px"
-                        }} 
+                        src={grupo.imagen_url} 
+                        alt={grupo.nombre} 
+                        className="zoom-imagen" 
                     />
                 </div>
             </CatalogoModal>
