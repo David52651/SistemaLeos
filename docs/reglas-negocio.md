@@ -2,7 +2,7 @@
 
 ## SistemaLeos
 
-Versión: 1.6
+Versión: 1.7
 
 ---
 
@@ -18,6 +18,7 @@ El sistema tiene como finalidad:
 * Registrar movimientos importantes de forma centralizada.
 * Mantener trazabilidad y auditoría de los cambios.
 * **Gestionar el alquiler de vestuario a personas y agrupaciones.**
+* **Proporcionar un panel de control (Dashboard) con métricas visuales.**
 
 ---
 
@@ -36,6 +37,7 @@ Puede:
 * Registrar alquileres y devoluciones.
 * Gestionar el inventario y los catálogos.
 * Visualizar la auditoría completa.
+* **Visualizar el Dashboard con indicadores de rendimiento y gráficos.**
 
 *Nota: Los administradores son creados exclusivamente desde Supabase. No existe funcionalidad dentro de la aplicación para crear administradores.*
 
@@ -99,6 +101,7 @@ Los artículos son el núcleo del sistema.
 * **Creación:** Exclusivamente desde `Movimientos → + Nuevo artículo`.
 * **Modificación:** Exclusivamente desde `Movimientos` (tipo `"Modificar Datos"`).
 * **Activación/Desactivación:** Se realiza desde el módulo de Inventario.
+* **Imágenes:** Los artículos pueden tener una imagen principal alojada en Supabase Storage, la cual se muestra en el listado de inventario y en la ficha de detalle.
 
 ## 5.2 Código de Artículo
 * Es único e irrepetible.
@@ -169,3 +172,19 @@ Todo cambio crítico registra:
 * Centralizar los cambios en el módulo de Movimientos.
 * Garantizar que el inventario refleje la realidad física del local en todo momento.
 * Preparar la arquitectura para futuras ampliaciones (sistema de reservas, inventario unitario, etc.).
+
+---
+
+# 10. Reportes e Indicadores (Dashboard)
+
+El sistema cuenta con un panel de control (Dashboard) que permite al administrador visualizar de un vistazo:
+* **Métricas principales:** Total de artículos, alquileres activos, alquileres retrasados y stock perdido en el mes.
+* **Gráfico de tendencia:** Evolución de la cantidad de alquileres en los últimos 6 meses.
+* **Estado del inventario:** Gráfico de distribución que muestra el porcentaje de artículos disponibles, con stock bajo y agotados.
+* **Últimos movimientos:** Un resumen de los 5 movimientos más recientes del sistema.
+
+---
+
+# 11. Imágenes de Artículos
+
+Cada artículo puede tener asociada una imagen principal, la cual se almacena en el servicio de Storage de Supabase. Esta imagen se muestra en el catálogo de inventario y puede ser ampliada (zoom) al abrir la ficha técnica del artículo.
