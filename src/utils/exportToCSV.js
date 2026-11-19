@@ -15,7 +15,7 @@ export function exportToCSV(data, columns, filename = "exportacion") {
     // 2. Extraer los valores
     for (const row of data) {
         const values = columns.map(col => {
-            let value = "";
+            let value;
 
             // Si la columna tiene un "render", intentamos obtener el texto
             if (col.render) {
