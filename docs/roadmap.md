@@ -87,19 +87,16 @@
 ---
 
 ## Fase 9 - Despliegue y Producción
-[ ] Hacer el push final a GitHub
-[ ] Configuración de producción en Cloudflare Pages
-[ ] Configuración de variables de entorno (VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY)
-[ ] Migración de datos reales a Supabase (si aplica)
+[x] Hacer el push final a GitHub
+[x] Configuración de producción en Cloudflare Pages
+[x] Configuración de variables de entorno (VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY)
+[x] Migración de datos reales a Supabase (si aplica)
 [ ] Capacitación al personal
-[ ] Puesta en marcha oficial
+[x] Puesta en marcha oficial
 
 ---
 
 ## Fase 10 - Mejoras Futuras (Backlog)
-[ ] Sistema de reservas de prendas
 [ ] Notificaciones automáticas (WhatsApp o Email al cliente)
 [ ] Historial de clientes con deudas o incidencias
-[ ] Múltiples imágenes por artículo (Galería)
-[ ] Imágenes asociadas a danzas
-[ ] Migración de inventario por lotes a inventario unitario
+[ ] Múltiples imágenes por Danza (Galería - proyecto aparte)
