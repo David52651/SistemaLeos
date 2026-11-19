@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 
 import { useInventario } from "../hooks/useInventario";
+import { useAlquileres } from "@/modules/alquileres/hooks/useAlquileres";
 
 import Card from "@/components/ui/Card";
 import Table from "@/components/ui/Table";
@@ -17,6 +18,9 @@ export default function InventarioPage() {
     refetch,
   } = useInventario();
 
+
+  const { alquileres } = useAlquileres();
+
   /* ==========================================
      ESTADOS DE FILTROS
   ========================================== */
@@ -25,12 +29,22 @@ export default function InventarioPage() {
   const [filtroTalla, setFiltroTalla] = useState("");
   const [filtroPropietario, setFiltroPropietario] = useState("");
   
-  // Estado para el modal (ahora guardará el grupo entero)
   const [grupoDetalle, setGrupoDetalle] = useState(null);
 
+  /* ==========================================
+     1. CALCULAR PRENDAS EN ALQUILER (NUEVO)
+  ========================================== */
+  const prendasEnAlquiler = useMemo(() => {
+    if (!alquileres) return 0;
+    return alquileres
+      .filter(a => a.estado === "Activo")
+      .reduce((total, alq) => {
+          return total + alq.alquiler_detalles.reduce((sum, d) => sum + d.cantidad, 0);
+      }, 0);
+  }, [alquileres]);
 
   /* ==========================================
-     1. AGRUPAR ARTÍCULOS POR NOMBRE
+     2. AGRUPAR ARTÍCULOS POR NOMBRE
   ========================================== */
   const articulosAgrupados = useMemo(() => {
     if (!articulos) return [];
@@ -38,24 +52,22 @@ export default function InventarioPage() {
     const agrupados = {};
 
     articulos.forEach(art => {
-      // Creamos una "llave" única combinando nombre, categoría y propietario
       const key = `${art.nombre}-${art.categoria_id}-${art.propietario_id}`;
       
       if (!agrupados[key]) {
         agrupados[key] = {
-          id: key, // Usamos esta llave como ID del grupo
+          id: key,
           nombre: art.nombre,
-          codigoBase: art.codigo.replace(/-[^-]+$/, ''), // Quita la talla del final
+          codigoBase: art.codigo.replace(/-[^-]+$/, ''),
           categoria: art.categorias,
           propietario: art.propietarios,
-          imagen_url: art.imagen_url, // Tomamos la primera imagen que encuentre
-          tallas: [], // Aquí guardaremos los registros individuales
+          imagen_url: art.imagen_url,
+          tallas: [],
           stockTotal: 0,
           activos: 0,
         };
       }
       
-      // Agregamos la talla al grupo y sumamos stock
       agrupados[key].tallas.push(art);
       agrupados[key].stockTotal += art.stock_actual;
       if (art.activo) agrupados[key].activos++;
@@ -66,13 +78,12 @@ export default function InventarioPage() {
 
 
   /* ==========================================
-     2. APLICAR FILTROS A LOS GRUPOS
+     3. APLICAR FILTROS A LOS GRUPOS
   ========================================== */
   const articulosFiltrados = useMemo(() => {
     const texto = busqueda.toLowerCase().trim();
 
     return articulosAgrupados.filter((grupo) => {
-      // Buscar por nombre del grupo o propietario
       const coincideBusqueda = !texto || 
         grupo.nombre.toLowerCase().includes(texto) || 
         grupo.propietario?.nombre?.toLowerCase().includes(texto) ||
@@ -80,8 +91,6 @@ export default function InventarioPage() {
 
       const coincideCategoria = !filtroCategoria || grupo.tallas[0].categoria_id === filtroCategoria;
       const coincidePropietario = !filtroPropietario || grupo.tallas[0].propietario_id === filtroPropietario;
-      
-      // Si se busca por talla, verificamos si el grupo contiene esa talla
       const coincideTalla = !filtroTalla || grupo.tallas.some(t => t.talla_id === filtroTalla);
 
       return coincideBusqueda && coincideCategoria && coincidePropietario && coincideTalla;
@@ -113,11 +122,7 @@ export default function InventarioPage() {
       render: (grupo) => (
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           {grupo.imagen_url ? (
-            <img 
-              src={grupo.imagen_url} 
-              alt="mini" 
-              style={{ width: "35px", height: "35px", borderRadius: "4px", objectFit: "cover" }} 
-            />
+            <img src={grupo.imagen_url} alt="mini" style={{ width: "35px", height: "35px", borderRadius: "4px", objectFit: "cover" }} />
           ) : (
             <div style={{ width: "35px", height: "35px", borderRadius: "4px", background: "var(--bg-hover)", display: "flex", alignItems: "center", justifyContent: "center" }}>📷</div>
           )}
@@ -128,54 +133,35 @@ export default function InventarioPage() {
         </div>
       )
     },
-    { 
-      key: "categoria", 
-      title: "Categoría", 
-      render: (grupo) => grupo.categoria?.nombre || "-" 
-    },
-    { 
-      key: "propietario", 
-      title: "Propietario", 
-      render: (grupo) => grupo.propietario?.nombre || "-" 
-    },
+    { key: "categoria", title: "Categoría", render: (grupo) => grupo.categoria?.nombre || "-" },
+    { key: "propietario", title: "Propietario", render: (grupo) => grupo.propietario?.nombre || "-" },
     { 
       key: "tallas", 
       title: "Tallas", 
       render: (grupo) => (
         <div style={{ display: "flex", gap: "4px", flexWrap: "wrap" }}>
           {grupo.tallas.map(t => (
-            <span 
-              key={t.id} 
-              style={{ 
+            <span key={t.id} style={{ 
                 padding: "2px 8px", 
                 background: t.activo ? "var(--bg-selected)" : "var(--bg-hover)",
                 color: t.activo ? "var(--text-primary)" : "var(--text-muted)",
                 borderRadius: "12px",
                 fontSize: "0.75rem",
                 fontWeight: 500
-              }}
-            >
+            }}>
               {t.tallas?.nombre} ({t.stock_actual})
             </span>
           ))}
         </div>
       )
     },
-    {
-      key: "stock",
-      title: "Stock Total",
-      render: (grupo) => <strong>{grupo.stockTotal}</strong>,
-    },
+    { key: "stock", title: "Stock Total", render: (grupo) => <strong>{grupo.stockTotal}</strong> },
     {
       key: "acciones",
       title: "Acciones",
       render: (grupo) => (
         <div className="table-actions" onClick={(e) => e.stopPropagation()}>
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={() => setGrupoDetalle(grupo)}
-          >
+          <Button type="button" variant="secondary" onClick={() => setGrupoDetalle(grupo)}>
             Ver Detalles
           </Button>
         </div>
@@ -189,10 +175,41 @@ export default function InventarioPage() {
   ========================================== */
   return (
     <div className="inventario-page">
-      <h1>Inventario</h1>
-      <p style={{ marginBottom: "1rem", opacity: 0.75 }}>
-        Haz clic en cualquier fila para ver el desglose por tallas y gestionar su estado.
-      </p>
+      
+      <div style={{ 
+          display: "flex", 
+          justifyContent: "space-between", 
+          alignItems: "flex-start", 
+          marginBottom: "1rem",
+          flexWrap: "wrap",
+          gap: "1rem"
+      }}>
+        <div>
+            <h1 style={{ margin: 0 }}>Inventario</h1>
+            <p style={{ opacity: 0.75, margin: "4px 0 0 0" }}>
+                Haz clic en cualquier fila para ver el desglose por tallas y gestionar su estado.
+            </p>
+        </div>
+        
+        {prendasEnAlquiler > 0 && (
+            <div style={{ 
+                background: "var(--bg-hover)", 
+                border: "1px solid var(--color-warning)", 
+                padding: "10px 16px", 
+                borderRadius: "8px",
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                fontSize: "0.9rem",
+                boxShadow: "var(--shadow-sm)"
+            }}>
+                <span style={{ fontSize: "1.2rem" }}>⚠️</span>
+                <span>
+                    <strong>{prendasEnAlquiler}</strong> prendas fuera por alquiler
+                </span>
+            </div>
+        )}
+      </div>
 
       <Card>
         <InventarioFilters
@@ -222,7 +239,6 @@ export default function InventarioPage() {
         />
       </Card>
 
-      {/* El modal ahora recibe el grupo completo y la función refetch */}
       <ArticuloDetalle
         open={!!grupoDetalle}
         grupo={grupoDetalle}

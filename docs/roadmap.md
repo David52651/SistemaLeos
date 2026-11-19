@@ -37,7 +37,7 @@
 [x] Registro de creación de catálogos
 [x] Registro de stock inicial al crear un artículo
 [x] Historial unificado en una sola tabla (inventario + catálogos)
-[x] Generación de descripciones legibles para el usuario (ej. "Se agregaron X artículos")
+[x] Generación de descripciones legibles para el usuario
 [x] Diferenciación visual y lógica entre movimientos de "Alquiler" y "Devolución"
 
 ---
@@ -62,11 +62,20 @@
 [x] Indicadores principales (Total de prendas, alquileres activos, retrasados, stock perdido)
 [x] Lista de movimientos recientes (Últimos 5 movimientos)
 [x] Gráficos estadísticos con Recharts (Tendencia de alquileres y Estado del inventario)
-[x] Tooltips y leyendas interactivas en los gráficos (muestran porcentajes y cantidades al pasar el mouse)
+[x] Tooltips y leyendas interactivas en los gráficos (muestran porcentajes y cantidades)
 
 ---
 
-## Fase 7 - Calidad y Pruebas
+## Fase 7 - Mejoras de Calidad y UX (Completado)
+[x] Implementación de Error Boundary global (tolerancia a fallos)
+[x] Validación estricta de DNI (solo 8 dígitos numéricos)
+[x] Alerta visual de prendas fuera de local (alquileres activos)
+[x] Filtros avanzados por Mes y Año en el historial de movimientos
+[x] Exportación a CSV/Excel (Historial de Movimientos y Alquileres)
+
+---
+
+## Fase 8 - Calidad y Pruebas (QA)
 [ ] Pruebas funcionales de todos los flujos (QA Manual)
 [ ] Pruebas de seguridad y políticas RLS en Supabase
 [ ] Pruebas con usuarios reales (Encargado de tienda)
@@ -74,7 +83,7 @@
 
 ---
 
-## Fase 8 - Despliegue y Producción
+## Fase 9 - Despliegue y Producción
 [ ] Configuración de producción en Cloudflare Pages
 [ ] Configuración de variables de entorno (VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY)
 [ ] Migración de datos reales a Supabase
@@ -83,7 +92,7 @@
 
 ---
 
-## Fase 9 - Mejoras Futuras (Backlog)
+## Fase 10 - Mejoras Futuras (Backlog)
 [ ] Sistema de reservas de prendas
 [ ] Notificaciones automáticas (WhatsApp o Email al cliente)
 [ ] Historial de clientes con deudas o incidencias
