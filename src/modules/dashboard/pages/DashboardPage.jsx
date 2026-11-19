@@ -2,6 +2,7 @@ import { useDashboardData } from "../hooks/useDashboardData";
 import Card from "@/components/ui/Card";
 import Table from "@/components/ui/Table";
 import Badge from "@/components/ui/Badge";
+import { useTheme } from "@/contexts/ThemeContext"; 
 
 import { 
     AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -21,6 +22,9 @@ export default function DashboardPage() {
         isLoading,
         hayRetrasos
     } = useDashboardData();
+
+    // ⬅️ IMPORTANTE: Obtener el tema actual del contexto
+    const { theme } = useTheme(); 
 
     if (isLoading) return <p>Cargando dashboard...</p>;
 
@@ -53,7 +57,6 @@ export default function DashboardPage() {
     ];
 
     return (
-      
         <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <h1 style={{ margin: 0 }}>Dashboard</h1>
@@ -107,7 +110,8 @@ export default function DashboardPage() {
                     <h3 style={{ marginTop: 0 }}>Tendencia de Alquileres (Últimos 6 meses)</h3>
                     <div style={{ width: "100%", height: 300 }}>
                         <ResponsiveContainer>
-                            <AreaChart data={datosArea} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                            {/* ⬅️ AGREGA key={theme} AQUÍ */}
+                            <AreaChart key={theme} data={datosArea} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                                 <defs>
                                     <linearGradient id="colorAlquileres" x1="0" y1="0" x2="0" y2="1">
                                         <stop offset="5%" stopColor="var(--color-primary)" stopOpacity={0.8}/>
@@ -132,7 +136,8 @@ export default function DashboardPage() {
                     <h3 style={{ marginTop: 0 }}>Estado del Inventario</h3>
                     <div style={{ width: "100%", height: 300 }}>
                         <ResponsiveContainer>
-                            <PieChart>
+                            {/* ⬅️ AGREGA key={theme} AQUÍ TAMBIÉN */}
+                            <PieChart key={theme}>
                                 <Pie
                                     data={datosTorta}
                                     cx="50%"

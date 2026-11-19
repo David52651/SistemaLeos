@@ -72,21 +72,25 @@
 [x] Alerta visual de prendas fuera de local (alquileres activos)
 [x] Filtros avanzados por Mes y Año en el historial de movimientos
 [x] Exportación a CSV/Excel (Historial de Movimientos y Alquileres)
+[x] Protección contra errores 400 (validación de stock en frontend)
 
 ---
 
-## Fase 8 - Calidad y Pruebas (QA)
-[ ] Pruebas funcionales de todos los flujos (QA Manual)
-[ ] Pruebas de seguridad y políticas RLS en Supabase
-[ ] Pruebas con usuarios reales (Encargado de tienda)
-[ ] Corrección de errores y ajustes de UI/UX
+## Fase 8 - Calidad y Pruebas (QA) (Completado)
+[x] Pruebas de seguridad y roles (Rutas protegidas)
+[x] Pruebas de validación de formularios (DNI, Stock)
+[x] Pruebas del flujo de alquileres (Conjunto/Paquete, Devoluciones)
+[x] Pruebas del Dashboard (Gráficos, métricas, filtros)
+[x] Pruebas de exportación de datos (CSV)
+[x] Pruebas de tolerancia a fallos (Error Boundary)
 
 ---
 
 ## Fase 9 - Despliegue y Producción
+[ ] Hacer el push final a GitHub
 [ ] Configuración de producción en Cloudflare Pages
 [ ] Configuración de variables de entorno (VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY)
-[ ] Migración de datos reales a Supabase
+[ ] Migración de datos reales a Supabase (si aplica)
 [ ] Capacitación al personal
 [ ] Puesta en marcha oficial
 

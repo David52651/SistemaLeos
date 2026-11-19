@@ -49,7 +49,7 @@ export default function MovimientoForm({ onSuccess }) {
   const [modalPropietario, setModalPropietario] = useState(false);
   const [modalDanza, setModalDanza] = useState(false);
 
-  // ⬅️ NUEVOS ESTADOS PARA EL BUSCADOR
+  // NUEVOS ESTADOS PARA EL BUSCADOR
   const [modeloSeleccionado, setModeloSeleccionado] = useState("");
   const [tallaSeleccionada, setTallaSeleccionada] = useState("");
 
@@ -86,14 +86,14 @@ export default function MovimientoForm({ onSuccess }) {
   const esModificarDatos = tipoMovimiento === "Modificar Datos";
   const esActualizarStock = tipoMovimiento === "Actualizar Stock";
 
-  // ⬅️ 1. AGRUPAR MODELOS ÚNICOS PARA EL BUSCADOR
+  //  1. AGRUPAR MODELOS ÚNICOS PARA EL BUSCADOR
   const opcionesModelos = useMemo(() => {
     const modelos = new Set();
     articulos.forEach(a => modelos.add(a.nombre));
     return Array.from(modelos).sort().map(nombre => ({ value: nombre, label: nombre }));
   }, [articulos]);
 
-  // ⬅️ 2. FILTRAR TALLAS DEL MODELO SELECCIONADO
+  // 2. FILTRAR TALLAS DEL MODELO SELECCIONADO
   const opcionesTallas = useMemo(() => {
     if (!modeloSeleccionado) return [];
     return articulos
@@ -302,6 +302,17 @@ export default function MovimientoForm({ onSuccess }) {
     if (!perfil?.id) {
       toast.error("No se encontró el perfil del usuario.");
       return;
+    }
+
+    // Validar stock antes de enviar (para evitar el error 400)
+    if ((data.tipo_movimiento === "Desechar" || data.tipo_movimiento === "Alquiler") && articuloSeleccionado) {
+        if (Number(data.cantidad) > articuloSeleccionado.stock_actual) {
+            return toast.warning(`No puedes desechar/alquilar más de lo que tienes. Stock actual: ${articuloSeleccionado.stock_actual}`, {
+                duration: 4000,
+                position: "top-center",
+                style: { background: "#ff9800", color: "#fff", fontWeight: "bold" }
+            });
+        }
     }
 
     try {

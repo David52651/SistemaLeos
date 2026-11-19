@@ -160,14 +160,18 @@ export default function AlquileresPage() {
     }
 
     if (tipo === "Conjunto") {
-      if (cantidadEnCarrito > 0)
-        return toast.warning(
-          "En un Conjunto solo puedes alquilar 1 unidad de esta prenda.",
-        );
-      if (Number(cantidad) > 1)
-        return toast.warning(
-          "En un Conjunto solo puedes alquilar 1 unidad por prenda.",
-        );
+      if (cantidadEnCarrito > 0) {
+        return toast.warning("En un Conjunto solo puedes alquilar 1 unidad de esta prenda.", {
+          duration: 4000, position: "top-center",
+          style: { background: "#ff9800", color: "#fff", fontWeight: "bold" }
+        });
+      }
+      if (Number(cantidad) > 1) {
+        return toast.warning("En un Conjunto solo puedes alquilar 1 unidad por prenda.", {
+          duration: 4000, position: "top-center",
+          style: { background: "#ff9800", color: "#fff", fontWeight: "bold" }
+        });
+      }
     }
 
     const nuevoItem = {
@@ -300,8 +304,7 @@ export default function AlquileresPage() {
         <div style={{ fontSize: "0.85rem" }}>
           {row.alquiler_detalles?.map((d, i) => (
             <div key={i}>
-              {d.cantidad}x {d.articulos?.nombre} ({d.articulos?.tallas?.nombre}
-              )
+              {d.cantidad}x {d.articulos?.nombre} ({d.articulos?.tallas?.nombre})
             </div>
           ))}
         </div>
@@ -423,7 +426,7 @@ export default function AlquileresPage() {
         onClose={() => setModalNuevoOpen(false)}
         size="xl"
       >
-        /* FORMULARIO CON NUEVO GRID */
+        {/* FORMULARIO CON NUEVO GRID */}
         <form
           onSubmit={handleSubmit}
           style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}
@@ -771,7 +774,7 @@ export default function AlquileresPage() {
         </form>
       </CatalogoModal>
 
-      {/* ... MODALES FACTURA Y DEVOLUCIÓN SE MANTIENEN IGUAL ... */}
+      {/* MODAL FACTURA */}
       <CatalogoModal
         open={!!alquilerFactura}
         title="Detalle del Alquiler"
@@ -848,6 +851,7 @@ export default function AlquileresPage() {
         )}
       </CatalogoModal>
 
+      {/* MODAL DEVOLUCIÓN */}
       <CatalogoModal
         open={!!alquilerDevolucion}
         title="Registrar Devolución"

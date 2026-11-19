@@ -96,6 +96,8 @@ export default function Login() {
 
                         type="password"
 
+                        autoComplete="current-password"
+
                         placeholder="Ingrese su contraseña"
 
                         value={password}
