@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -14,7 +14,7 @@ import CatalogoModal from "@/modules/inventario/components/CatalogoModal";
 import ArticuloForm from "@/modules/inventario/components/ArticuloForm";
 import ArticuloModal from "@/modules/inventario/components/modals/ArticuloModal";
 
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/authHook";
 import { useCatalogosInventario } from "@/modules/inventario/hooks/useCatalogosInventario";
 import { supabase } from "@/lib/supabase";
 
@@ -40,7 +40,7 @@ export default function MovimientoForm({ onSuccess }) {
   const { perfil } = useAuth();
   const queryClient = useQueryClient();
   const { articulos, registrar, isRegistrando } = useMovimientos();
-  const { categorias, tallas, propietarios, danzas } = useCatalogosInventario();
+  const { categorias, tallas, propietarios } = useCatalogosInventario();
 
   // Modales
   const [modalNuevoArticulo, setModalNuevoArticulo] = useState(false);
@@ -57,7 +57,7 @@ export default function MovimientoForm({ onSuccess }) {
   const {
     register,
     handleSubmit,
-    watch,
+    control,
     reset,
     setValue,
     formState: { errors },
@@ -79,8 +79,8 @@ export default function MovimientoForm({ onSuccess }) {
     },
   });
 
-  const tipoMovimiento = watch("tipo_movimiento");
-  const articuloId = watch("articulo_id");
+  const tipoMovimiento = useWatch({ control, name: "tipo_movimiento" });
+  const articuloId = useWatch({ control, name: "articulo_id" });
   const articuloSeleccionado = articulos.find((a) => a.id === articuloId);
 
   const esModificarDatos = tipoMovimiento === "Modificar Datos";
@@ -116,6 +116,7 @@ export default function MovimientoForm({ onSuccess }) {
       setValue("observaciones", articuloSeleccionado.observaciones || "");
       
       // Sincronizar los selectores visuales si estamos editando
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setModeloSeleccionado(articuloSeleccionado.nombre);
       setTallaSeleccionada(articuloSeleccionado.id);
     }
@@ -158,12 +159,12 @@ export default function MovimientoForm({ onSuccess }) {
 
         const tallaSel = tallas.data?.find((t) => t.id === values.talla_id);
         const codigo = generarCodigoArticulo(values.nombre, tallaSel?.nombre);
-        const { danzas_ids: _danzas_ids, ...restoValores } = values;
+        const { danzas_ids, ...restoValores } = values;
         
         const payload = { ...restoValores, codigo };
         const articuloGuardado = await crearArticuloConStockInicial(payload, perfil.id);
 
-        await guardarDanzasArticulo(articuloGuardado.id, values.danzas_ids || []);
+        await guardarDanzasArticulo(articuloGuardado.id, danzas_ids || []);
 
         if (imagen_url) {
             await guardarImagenArticulo(articuloGuardado.id, imagen_url, true);

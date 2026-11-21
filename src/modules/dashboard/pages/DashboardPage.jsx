@@ -2,7 +2,7 @@ import { useDashboardData } from "../hooks/useDashboardData";
 import Card from "@/components/ui/Card";
 import Table from "@/components/ui/Table";
 import Badge from "@/components/ui/Badge";
-import { useTheme } from "@/contexts/ThemeContext"; 
+import { useTheme } from "@/contexts/themeHook";
 
 import { 
     AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,

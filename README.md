@@ -97,6 +97,21 @@ Ejecutar el proyecto
 npm run dev
 ```
 
+## Verificación
+
+Ejecutar las pruebas automatizadas:
+
+```bash
+npm test
+```
+
+Antes de integrar cambios, también se pueden ejecutar las verificaciones de calidad:
+
+```bash
+npm run lint
+npm run build
+```
+
 ---
 
 # Variables de entorno

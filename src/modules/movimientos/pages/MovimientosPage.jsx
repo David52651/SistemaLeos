@@ -4,7 +4,6 @@ import Table from "@/components/ui/Table";
 import Badge from "@/components/ui/Badge";
 import Select from "@/components/ui/Select";
 import Button from "@/components/ui/Button";
-import Input from "@/components/ui/Input";
 
 import MovimientoForm from "../components/MovimientoForm";
 import { useMovimientos } from "../hooks/useMovimientos";

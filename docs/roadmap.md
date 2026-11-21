@@ -76,13 +76,17 @@
 
 ---
 
-## Fase 8 - Calidad y Pruebas (QA) (Completado)
-[x] Pruebas de seguridad y roles (Rutas protegidas)
-[x] Pruebas de validación de formularios (DNI, Stock)
-[x] Pruebas del flujo de alquileres (Conjunto/Paquete, Devoluciones)
-[x] Pruebas del Dashboard (Gráficos, métricas, filtros)
-[x] Pruebas de exportación de datos (CSV)
-[x] Pruebas de tolerancia a fallos (Error Boundary)
+## Fase 8 - Calidad y Pruebas (QA) (En progreso)
+[x] Pruebas automatizadas para generación de códigos de artículos
+[x] Pruebas automatizadas para validaciones del esquema de movimientos
+[x] Pruebas de rutas protegidas y autorización por rol
+[x] Pruebas de servicios de inventario, movimientos y alquileres con backend simulado
+[x] Pruebas de métricas del Dashboard, exportación CSV y Error Boundary
+[x] Verificación de ESLint sin errores ni advertencias
+[x] Verificación de compilación de producción
+[x] Flujo de CI en GitHub Actions para pruebas, lint y build
+[ ] Pruebas de integración contra un proyecto Supabase aislado
+[ ] Pruebas E2E de alquileres y devoluciones en navegador
 
 ---
 
@@ -98,5 +102,7 @@
 
 ## Fase 10 - Mejoras Futuras (Backlog)
 [ ] Notificaciones automáticas (WhatsApp o Email al cliente)
-[ ] Historial de clientes con deudas o incidencias
-[ ] Múltiples imágenes por Danza (Galería - proyecto aparte)
+[ ] Múltiples imágenes por Danza (Galería - proyecto aparte - para index fuera del login, en caso de ser solo visitante)
+[ ] Versionar el esquema y las funciones de Supabase mediante migraciones reproducibles
+[ ] Revisar y documentar políticas RLS por rol (requiere exportar el esquema y las políticas actuales de Supabase)
+[x] Carga diferida de páginas por ruta para reducir la descarga inicial de JavaScript

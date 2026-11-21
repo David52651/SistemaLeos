@@ -3,6 +3,10 @@
 ## Frontend
 React + Vite
 
+Las páginas se cargan bajo demanda por ruta mediante `React.lazy` y `Suspense`,
+con un indicador de carga compartido. Esto separa los módulos de la descarga
+inicial sin cambiar las rutas ni sus controles de acceso.
+
 ## Backend
 Supabase
 - Authentication

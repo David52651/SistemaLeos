@@ -1,20 +1,18 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/authHook";
 
 export default function useRole() {
 
   const { user } = useAuth();
 
-  const [role, setRole] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [roleResult, setRoleResult] = useState({
+    userId: null,
+    role: null,
+  });
 
   useEffect(() => {
-
-    if (!user) {
-      setLoading(false);
-      return;
-    }
+    if (!user) return;
 
     async function obtenerRol() {
 
@@ -28,16 +26,20 @@ export default function useRole() {
         console.error(error);
       }
 
-      setRole(data?.rol ?? null);
-      setLoading(false);
+      setRoleResult({
+        userId: user.id,
+        role: data?.rol ?? null,
+      });
     }
 
     obtenerRol();
 
   }, [user]);
 
+  const isCurrentUser = roleResult.userId === user?.id;
+
   return {
-    role,
-    loading
+    role: isCurrentUser ? roleResult.role : null,
+    loading: Boolean(user) && !isCurrentUser
   };
 }

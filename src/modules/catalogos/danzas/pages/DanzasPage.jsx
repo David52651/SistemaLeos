@@ -7,7 +7,7 @@ import Button from "@/components/ui/Button";
 import Table from "@/components/ui/Table";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 
-import { useAuth } from "@/contexts/AuthContext";   
+import { useAuth } from "@/contexts/authHook";
 import { useDanzas } from "../hooks/useDanzas";
 
 import DanzaForm from "../components/DanzaForm";

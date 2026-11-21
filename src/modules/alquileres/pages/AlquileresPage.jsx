@@ -10,7 +10,7 @@ import Table from "@/components/ui/Table";
 import Badge from "@/components/ui/Badge";
 import CatalogoModal from "@/modules/inventario/components/CatalogoModal";
 
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/authHook";
 import { useAlquileres } from "../hooks/useAlquileres";
 import { useMovimientos } from "@/modules/movimientos/hooks/useMovimientos";
 import { exportToCSV } from "@/utils/exportToCSV";

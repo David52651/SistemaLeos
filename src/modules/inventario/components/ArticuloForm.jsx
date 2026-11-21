@@ -1,4 +1,4 @@
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { useEffect, useState } from "react";
 
 import Card from "@/components/ui/Card";
@@ -33,7 +33,7 @@ export default function ArticuloForm({
     register,
     handleSubmit,
     reset,
-    watch,
+    control,
     setValue,
   } = useForm({
     defaultValues: {
@@ -51,13 +51,15 @@ export default function ArticuloForm({
     },
   });
 
-  const nombre = watch("nombre");
-  const tallaId = watch("talla_id");
-  const danzasSeleccionadas = watch("danzas_ids") || [];
+  const nombre = useWatch({ control, name: "nombre" });
+  const tallaId = useWatch({ control, name: "talla_id" });
+  const danzasSeleccionadas = useWatch({ control, name: "danzas_ids" }) || [];
 
   useEffect(() => {
     if (initialValues) {
       reset(initialValues);
+      // Sincroniza el estado visual con los valores recibidos como props.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setInternalOpen(true);
       if (initialValues.imagen_url) {
         setImagenPreview(initialValues.imagen_url);

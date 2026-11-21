@@ -2,7 +2,7 @@ import { NavLink, Outlet } from "react-router-dom";
 import { useState } from "react";
 
 import { logout } from "@/services/auth.service";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/authHook";
 
 
 export default function MainLayout() {

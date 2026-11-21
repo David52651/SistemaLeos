@@ -1,5 +1,14 @@
 # Base de Datos
 
+## Estado de versionado
+
+Este documento describe la estructura esperada, pero no sustituye migraciones
+ejecutables. Los archivos `database/schema.sql`, `database/reset.sql` y
+`database/seed.sql` están vacíos actualmente. Por ello, la definición efectiva
+de tablas, funciones RPC y políticas RLS debe obtenerse del proyecto Supabase
+antes de generar migraciones o revisar permisos; hacerlo a partir de esta
+descripción incompleta podría cambiar el comportamiento o bloquear accesos.
+
 ## categorias
 
 | Campo         | Tipo      |
